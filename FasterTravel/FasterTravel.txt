@@ -1,5 +1,5 @@
-## Title: Faster Travel v1.0.0
-## Version 1.0.0
+## Title: Faster Travel v1.0.1
+## Version 1.0.1
 ## APIVersion: 100011
 ## SavedVariables: FasterTravel_SavedVariables
 

@@ -138,11 +138,17 @@ init(function()
 		
 	end
 	
-	local function AddCategory(control,categoryId,name,parentId)
+	local function AddCategory(control,categoryId,item)
+		local name,clicked = item.name,item.clicked
 		local header = { 
 							name=name, 
 							refresh = function(self,c) c.label:SetText(self.name) end,
-							clicked = function(self,c) control:ToggleCategoryHidden(control.list,categoryId) end,
+							clicked = function(self,c) 
+								control:ToggleCategoryHidden(control.list,categoryId) 
+								if clicked then 
+									clicked(self,control,c)
+								end
+							end,
 						}
 						
 		control:AddCategory(control.list,header,categoryId)
@@ -152,7 +158,7 @@ init(function()
 		local categoryId = 1
 		local parentId
 		for i,item in ipairs(data) do 
-			AddCategory(control,categoryId,item.name,item.parentId)
+			AddCategory(control,categoryId,item)
 			if #item.data > 0 then
 				control:AddEntries(control.list,item.data,1,categoryId)
 				item.categoryId=categoryId
@@ -211,15 +217,16 @@ init(function()
 	end
 	
 	local _locations = {}
-	
+	local _wsfirst = true
+	local _ctfirst = true 
 	local function RefreshWayshrines(nodeIndex)
 
 		local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
 		local current = GetZoneWayshrinesData({nodeIndex=nodeIndex})
 		
 		local categories ={
-			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT), data = recent,hidden=false},
-			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..GetZoneNameByIndex(GetCurrentMapZoneIndex())..")",data = current, hidden = false}
+			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT), data = recent,hidden= not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,1)},
+			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..GetZoneNameByIndex(GetCurrentMapZoneIndex())..")",data = current, hidden = not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,2)}
 		}
 		
 		local locations = _locations
@@ -227,9 +234,11 @@ init(function()
 			local data 
 			for i,item in ipairs(locations) do
 				data = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex=item.zoneIndex})
-				if #data > 0 then 
-					table.insert(categories,{name = item.name, hidden=true,data=data})
-				end
+				table.insert(categories,{name = item.name, hidden=_wsfirst or wayshrineControl:GetCategoryHidden(wayshrineControl.list,i+2),data=data, clicked= function(self) 
+					if wayshrineControl:GetCategoryHidden(wayshrineControl.list,i+2) == false then 
+						ZO_WorldMap_SetMapByIndex(item.mapIndex) 
+					end
+				end })
 			end
 		end
 		
@@ -239,7 +248,7 @@ init(function()
 		AddCategories(wayshrineControl,categories)
 		
 		RefreshControl(wayshrineControl,categories)
-		
+		_wsfirst = false 
 	end
 	
 	local function RefreshContacts(nodeIndex)
@@ -259,9 +268,9 @@ init(function()
 		local zones = {}
 		local categories ={
 		
-			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_GROUP).." ("..tostring(#group)..")", data = group, hidden= false},
-			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_FRIENDS).." ("..tostring(#friends)..")",data = friends, hidden = false},
-			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_ZONE),data=zones,hidden=false}
+			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_GROUP).." ("..tostring(#group)..")", data = group, hidden= not _ctfirst and playersControl:GetCategoryHidden(playersControl.list,1)},
+			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_FRIENDS).." ("..tostring(#friends)..")",data = friends, hidden= not _ctfirst and playersControl:GetCategoryHidden(playersControl.list,2)},
+			{name = GetString(SI_MAP_INFO_PLAYERS_CATEGORY_ZONE),data=zones,hidden= not _ctfirst and playersControl:GetCategoryHidden(playersControl.list,3)}
 		}
 		
 		local _lookup = {}
@@ -282,9 +291,9 @@ init(function()
 				table.insert(zone,{name=d.name})
 				return addHandlers(d) 
 			end)
-			table.insert(categories,{name=name.." ("..tostring(#data)..")",data=data,hidden=true})
+			table.insert(categories,{name=name.." ("..tostring(#data)..")",data=data,hidden=_ctfirst or playersControl:GetCategoryHidden(playersControl.list,i+3)})
 		end
-		
+
 		for k,v in pairs(_lookup) do
 			table.insert(zones,{name=k.." ("..tostring(#v)..")",
 								zoneName = k,
@@ -305,6 +314,7 @@ init(function()
 		
 		RefreshControl(playersControl,categories)
 		
+		_ctfirst = false 
 	end
 	
 	local function AddWorldMapFragment(strId,fragment,normal,highlight,pressed)

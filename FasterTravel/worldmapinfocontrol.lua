@@ -8,7 +8,7 @@ function InfoControl:AddCategory(control,data,categoryId,typeId,parentId)
 end
 
 function InfoControl:GetCategoryHidden(control,categoryId)
-	if control == nil or categoryId == nil then return end
+	if control == nil or categoryId == nil then return true end
 	return ZO_ScrollList_GetCategoryHidden(control,categoryId)
 end
 
