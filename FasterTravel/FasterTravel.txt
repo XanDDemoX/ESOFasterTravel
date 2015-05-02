@@ -1,0 +1,23 @@
+## Title: Faster Travel v1.0.0
+## Version 1.0.0
+## APIVersion: 100011
+## SavedVariables: FasterTravel_SavedVariables
+
+FasterTravel.lua
+Utils.lua
+RecentList.lua
+Wayshrine.lua
+Teleport.lua
+
+worldmapinfocontrol.lua
+
+worldmapwayshrines.xml
+worldmapwayshrines.lua
+
+worldmapplayers.xml
+worldmapplayers.lua
+
+
+
+
+
