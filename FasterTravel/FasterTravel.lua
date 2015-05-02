@@ -102,7 +102,8 @@ init(function()
 	ZO_CreateStringId("SI_MAP_INFO_PLAYERS_CATEGORY_GROUP","Group")
 	ZO_CreateStringId("SI_MAP_INFO_PLAYERS_CATEGORY_ZONE","Zone")
 
-	
+	local currentZoneIndex
+	local currentMapIndex
 	local currentNodeIndex
 	
 	local function ShowWayshrineConfirm(data,isRecall)
@@ -144,9 +145,10 @@ init(function()
 							name=name, 
 							refresh = function(self,c) c.label:SetText(self.name) end,
 							clicked = function(self,c) 
-								control:ToggleCategoryHidden(control.list,categoryId) 
 								if clicked then 
 									clicked(self,control,c)
+								else
+									control:ToggleCategoryHidden(control.list,categoryId) 
 								end
 							end,
 						}
@@ -222,11 +224,30 @@ init(function()
 	local function RefreshWayshrines(nodeIndex)
 
 		local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
-		local current = GetZoneWayshrinesData({nodeIndex=nodeIndex})
+		local current = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex = currentZoneIndex})
 		
 		local categories ={
-			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT), data = recent,hidden= not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,1)},
-			{name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..GetZoneNameByIndex(GetCurrentMapZoneIndex())..")",data = current, hidden = not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,2)}
+			{
+				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT), 
+				data = recent,
+				hidden= not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,1)
+			},
+			{	
+				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..GetZoneNameByIndex(currentZoneIndex)..")",
+				data = current, 
+				hidden = not _wsfirst and wayshrineControl:GetCategoryHidden(wayshrineControl.list,2),
+				clicked=function(self)
+					local idx = GetCurrentMapIndex()
+					if idx ~= currentMapIndex then 
+						ZO_WorldMap_SetMapByIndex(currentMapIndex) 
+						if wayshrineControl:GetCategoryHidden(wayshrineControl.list,2) == true then 
+							wayshrineControl:SetCategoryHidden(wayshrineControl.list,2,false)
+						end
+					elseif idx == currentMapIndex then
+						wayshrineControl:ToggleCategoryHidden(wayshrineControl.list,2)
+					end
+				end
+			}
 		}
 		
 		local locations = _locations
@@ -235,8 +256,14 @@ init(function()
 			for i,item in ipairs(locations) do
 				data = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex=item.zoneIndex})
 				table.insert(categories,{name = item.name, hidden=_wsfirst or wayshrineControl:GetCategoryHidden(wayshrineControl.list,i+2),data=data, clicked= function(self) 
-					if wayshrineControl:GetCategoryHidden(wayshrineControl.list,i+2) == false then 
+					local idx = GetCurrentMapIndex()
+					if idx ~= item.mapIndex then 
 						ZO_WorldMap_SetMapByIndex(item.mapIndex) 
+						if wayshrineControl:GetCategoryHidden(wayshrineControl.list,i+2) == true then 
+							wayshrineControl:SetCategoryHidden(wayshrineControl.list,i+2,false)
+						end
+					elseif idx == item.mapIndex then 
+						wayshrineControl:ToggleCategoryHidden(wayshrineControl.list,i+2)
 					end
 				end })
 			end
@@ -325,8 +352,11 @@ init(function()
 	function(base,self,value)
 		base(self,value)
 		if value == true then
-
+			currentZoneIndex = nil
+			currentMapIndex = nil
 		else
+			currentZoneIndex = GetCurrentMapZoneIndex()
+			currentMapIndex = GetCurrentMapIndex()
 			RefreshWayshrines(currentNodeIndex) 
 			RefreshContacts(currentNodeIndex)
 		end

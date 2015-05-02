@@ -1,4 +1,4 @@
-# ESOFasterTravel
+# ESOFasterTravel v1.0.2
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control with the following options.
