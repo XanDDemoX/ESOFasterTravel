@@ -44,8 +44,8 @@ Usage
 * Use a wayshrine or open the world map.
 
 * Slash commands
-  * /goto LocationName - attempts to teleport to a location via a player.
-  * /goto PlayerName - attempts to teleport to a player.
+  * /goto zoneName - attempts to teleport to a zone via a player.
+  * /goto @PlayerName - attempts to teleport to a player.
   * /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
 
 DISCLAIMER
