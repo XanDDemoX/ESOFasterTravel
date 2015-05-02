@@ -9,7 +9,7 @@ Two new tabs are added to the default world map information/navigation control w
   * Fast travel to or recall a wayshrine in another
   * All fast travels and recalls use the appropriate standard confirmation dialog.
   
-  ![alt text](https://github.com/XanDDemoX/ESOFasterTravel/raw/master/images/image01.png "Wayshrines Tab")
+  ![alt text](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image01.jpg "Wayshrines Tab")
   
 * Players
   * Teleport to players in your group
@@ -17,13 +17,14 @@ Two new tabs are added to the default world map information/navigation control w
   * Teleport to zones using players on your friends list, in your group or guild
   * Teleport to players in your any of your guilds
   
-  ![alt text](https://github.com/XanDDemoX/ESOFasterTravel/raw/master/images/image02.png "Players Tab")
+  ![alt text](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02.jpg "Players Tab")
   
 Installation
 =============
 1. Download Zip by clicking the "Download Zip" button on the right
 2. Open Zip and go into the folder named "EsoFasterTravel-master"
 3. Extract or copy the "FasterTravel" folder into your addons folder:
+4. This addon superceeds [PlayerPort](https://github.com/XanDDemoX/ESOPlayerPort). If PlayerPort is installed please uninstall it by deleting the "PlayerPort" folder from your addons folder. 
 
 Place the "FasterTravel" folder in your addons folder:
 
