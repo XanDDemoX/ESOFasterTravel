@@ -372,8 +372,9 @@ init(function()
 	local _curIndex 
 	
 	local _refreshFunc =  function() 
-		RefreshWayshrines(currentNodeIndex) 
-		RefreshContacts(currentNodeIndex)
+		if currentZoneIndex == nil and currentMapIndex == nil then -- prevent refresh whilst player is changing map
+			RefreshWayshrines(currentNodeIndex) 
+		end
 	end
 	
 	local _mouseClickQuest,_mouseDownLoc,_mouseUpLoc =WORLD_MAP_QUESTS.QuestHeader_OnClicked,WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown,WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp
