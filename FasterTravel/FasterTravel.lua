@@ -106,15 +106,12 @@ init(function()
 	local currentMapIndex
 	local currentNodeIndex
 	
-	local function ShowWayshrineConfirm(data,isRecall)
-		local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
-		ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
-		ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
-		name = name or select(2, GetFastTravelNodeInfo(nodeIndex))
-		local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
-		ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
+	ZO_Dialogs_ShowPlatformDialog = hook(ZO_Dialogs_ShowPlatformDialog,function(base,id,node,params,...)
+		base(id,node,params,...)
+		if id ~= "RECALL_CONFIRM" and id ~= "FAST_TRAVEL_CONFIRM" then return end
+		-- hack to get fast travel node for recent list from the map
+		local nodeIndex,name = node.nodeIndex,params.mainTextParams[1]
 		
-		--get accept and cancel buttons
 		local dialog = ZO_Dialogs_FindDialog(id)
 		local acceptButton = dialog.buttonControls[1]
 		local cancelButton = dialog.buttonControls[2]
@@ -122,21 +119,32 @@ init(function()
 		local acceptButton_m_callback = acceptButton.m_callback
 		local cancelButton_m_callback = cancelButton.m_callback
 		
+		--get accept and cancel buttons
 		acceptButton.m_callback = function(...)
 			if acceptButton_m_callback ~= nil then acceptButton_m_callback(...) end
-			recentList:push("name",{name=name,nodeIndex=nodeIndex,refresh=refresh,clicked=clicked})
+			recentList:push("name",{name=name,nodeIndex=nodeIndex})
 			_settings.recent = {}
 			for i,v in ipairs(recentTable) do
 				_settings.recent[i] = {name=v.name,nodeIndex=v.nodeIndex}
 			end
 			acceptButton.m_callback = acceptButton_m_callback
+			cancelButton.m_callback = cancelButton_m_callback
 		end
 		
 		cancelButton.m_callback = function(...)
 			if cancelButton_m_callback ~= nil then cancelButton_m_callback(...) end
+			acceptButton.m_callback = acceptButton_m_callback
 			cancelButton.m_callback = cancelButton_m_callback
 		end
-		
+	end)
+	
+	local function ShowWayshrineConfirm(data,isRecall)
+		local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
+		ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
+		ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
+		name = name or select(2, GetFastTravelNodeInfo(nodeIndex))
+		local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
+		ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
 	end
 	
 	local function AddCategory(control,categoryId,item)
