@@ -1,11 +1,15 @@
-## Title: Faster Travel v1.0.4
-## Version 1.0.4
+## Title: Faster Travel v1.0.5
+## Version 1.0.5
 ## APIVersion: 100011
 ## SavedVariables: FasterTravel_SavedVariables
 
+
 FasterTravel.lua
-Utils.lua
 RecentList.lua
+Strings.lua
+
+Utils.lua
+Location.lua
 Wayshrine.lua
 Teleport.lua
 

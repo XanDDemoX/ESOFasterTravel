@@ -2,24 +2,6 @@
 local Wayshrine = FasterTravel.Wayshrine or {}
 local Utils = FasterTravel.Utils
 
-local function GetLocations()
-    local locations = {}
-	
-		
-    for i = 1, GetNumMaps() do
-        local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
-		if Utils.stringIsEmpty(mapName) == false then
-			table.insert(locations,{ name = mapName, mapIndex = i })
-		end
-    end
-	
-	
-    table.sort(locations, function(x,y)
-        return x.name < y.name
-    end)
-	return locations
-end
-
 local function GetNodes()
 	local cur = 0
 	local count = GetNumFastTravelNodes()

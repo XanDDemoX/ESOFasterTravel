@@ -60,19 +60,18 @@ end
 
 local f = FasterTravel
 
---[[f.addEvent = addEvent
-f.hook = hook
-f.addCommand = addCommand]]--
-
-
-
 init(function()
 
 	local _prefix = "[FasterTravel]: "
 	local Wayshrine = f.Wayshrine
 	local Teleport = f.Teleport
+	local Location = f.Location
+	
 	local UI = f.UI
 	local Utils = f.Utils
+	
+	local _locations = {}
+	local _locationsLookup = {}
 	
 	local _settings = {recent={}}
 
@@ -89,33 +88,29 @@ init(function()
 	
 	local recentList = f.RecentList(recentTable,"name",5)
 	
-	ZO_CreateStringId("SI_MAP_INFO_MODE_WAYSHRINES","Wayshrines")
-	ZO_CreateStringId("SI_MAP_INFO_MODE_PLAYERS","Players")
-	
-	ZO_CreateStringId("SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT","Recent")
-	ZO_CreateStringId("SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT","Current")
-	
-	ZO_CreateStringId("SI_MAP_INFO_PLAYERS_CATEGORY_FRIENDS","Friends")
-	ZO_CreateStringId("SI_MAP_INFO_PLAYERS_CATEGORY_GROUP","Group")
-	ZO_CreateStringId("SI_MAP_INFO_PLAYERS_CATEGORY_ZONE","Zone")
-
 	local currentZoneIndex
 	local currentMapIndex
-	local lastZoneIndex
-	local lastMapIndex
+	local currentNodeIndex
 	
 	local wayshrinesRefreshRequired = true
 	local contactsRefreshRequired = true
 
 	local function SetCurrentZoneMapIndexes(zoneIndex,mapIndex)
-		if currentZoneIndex ~= nil then
-			lastZoneIndex = currentZoneIndex
-		end
-		if currentMapIndex ~= nil  then 
-			lastMapIndex = currentMapIndex
-		end
+
 		currentZoneIndex = zoneIndex
-		currentMapIndex = mapIndex
+		
+		if zoneIndex == nil then 
+			currentMapIndex = nil
+		elseif mapIndex == nil then 
+			local loc = _locationsLookup[zoneIndex]
+		
+			if loc ~= nil then 
+				currentMapIndex = loc.mapIndex
+			end
+		elseif mapIndex ~= nil then 
+			currentMapIndex = mapIndex
+		end 
+		
 	end
 	
 	local function IsWayshrineRefreshRequired()
@@ -166,11 +161,12 @@ init(function()
 		end
 	end)
 	
-	local function ShowWayshrineConfirm(data,isRecall)
+	local function ShowWayshrineConfirm(data)
 		local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
 		ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
 		ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
 		name = name or select(2, GetFastTravelNodeInfo(nodeIndex))
+		local isRecall = currentNodeIndex == nil 
 		local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
 		ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
 	end
@@ -208,11 +204,10 @@ init(function()
 	local function GetRecentWayshrinesData(args)
 		local nodeIndex = args.nodeIndex
 		local tbl =  Utils.where(recentTable, function(v) return (nodeIndex == nil or v.nodeIndex ~= nodeIndex) end)
-		local isRecall = nodeIndex == nil
 		
 		tbl = Utils.map(tbl,function(data)
 			data.refresh = function(self,control) control.label:SetText(self.name) end
-			data.clicked = function(self,control) ShowWayshrineConfirm(self,isRecall) end
+			data.clicked = function(self,control) ShowWayshrineConfirm(self) end
 			return data
 		end)
 		
@@ -229,12 +224,10 @@ init(function()
 		iter = Utils.where(iter,function(data)
 			return data.known and (nodeIndex == nil or data.nodeIndex ~= nodeIndex)
 		end)
-		
-		local isRecall = nodeIndex == nil
-		
+				
 		iter = Utils.map(iter,function(data)
 			data.refresh = function(self,control) control.label:SetText(self.name) end
-			data.clicked = function(self,control) ShowWayshrineConfirm(self,isRecall) end
+			data.clicked = function(self,control) ShowWayshrineConfirm(self) end
 			return data
 		end)
 		
@@ -254,12 +247,14 @@ init(function()
 		end
 	end
 	
-	local _locations = {}
+
+	
 	local _wsfirst = true
 	local _ctfirst = true 
+	
 	local function RefreshWayshrines(nodeIndex)
 
-	local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
+		local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
 		local current = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex = currentZoneIndex})
 		
 		local categories ={
@@ -381,14 +376,14 @@ init(function()
 	end
 	
 	local function RefreshContactsIfRequired(nodeIndex)
-		if IsContactsRefreshRequired() then 
+		if IsContactsRefreshRequired() == true then 
 			RefreshContacts(nodeIndex)
 			contactsRefreshRequired = false
 		end
 	end
 
 	local function RefreshWayshrinesIfRequired(nodeIndex)
-		if IsWayshrineRefreshRequired() then
+		if IsWayshrineRefreshRequired() == true then
 			RefreshWayshrines(nodeIndex)
 			wayshrinesRefreshRequired = false
 		end
@@ -398,13 +393,13 @@ init(function()
 	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight =highlight,normal = normal})
 	end
 	
-	ZO_WorldMap.SetHidden = hook(ZO_WorldMap.SetHidden,
-	function(base,self,value)
+	ZO_WorldMap.SetHidden = hook(ZO_WorldMap.SetHidden,function(base,self,value)
 		base(self,value)
 		if value == true then
-			SetCurrentZoneMapIndexes(nil,nil)
+			SetCurrentZoneMapIndexes(nil)
 		else
-			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex(),GetCurrentMapIndex())
+		
+			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex())
 
 			RefreshWayshrinesIfRequired() 
 
@@ -412,66 +407,50 @@ init(function()
 		end
 	end)
 	
-	_locations = _settings.locations or Wayshrine.GetLocations()
-	
-	local cur = 0
-	local count = #_locations
-	local _zoneIndexFunc 
-	
-	
-	local _curIndex 
-	
 	local _refreshFunc =  function() 
 		if currentZoneIndex == nil and currentMapIndex == nil then -- prevent refresh whilst player is changing map
 			SetWayshrinesDirty()
 		end
 	end
 	
-	local _mouseClickQuest,_mouseDownLoc,_mouseUpLoc =WORLD_MAP_QUESTS.QuestHeader_OnClicked,WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown,WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp
-	
-	-- hack to get location zoneIndexes by changing the map and using GetCurrentMapZoneIndex() (eugh >_<)
-	_zoneIndexFunc = function()
-		if cur == 0 then
-			WORLD_MAP_QUESTS.QuestHeader_OnClicked = function() end -- prevent mouse use on map locations whilst this is happening.
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown = function() end 
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp = function() end
-			_curIndex = GetCurrentMapIndex()
-			cur = cur + 1
-			ZO_WorldMap_SetMapByIndex(_locations[cur].mapIndex)
-			return
-		end
-		
-		_locations[cur].zoneIndex = GetCurrentMapZoneIndex()
-		
-		if cur >= count then
-			removeCallback("OnWorldMapChanged",_zoneIndexFunc)
-			addCallback("OnWorldMapChanged",_refreshFunc) -- remove this func attach normal refresh func restore initial map
-			ZO_WorldMap_SetMapByIndex(_curIndex)
-			_settings.locations = _locations -- save to settings to avoid doing this again - this will need cleaning if new locations are added!
-			WORLD_MAP_QUESTS.QuestHeader_OnClicked = _mouseClickQuest -- restore mouse use
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown = _mouseDownLoc
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp = _mouseUpLoc
+	if _settings.locations == nil or _settings.locationsLookup == nil then 
+		local locationFunc  
+		-- hack for zoneIndexes
+		locationFunc = Location.GetLocations(function(locations,zoneIndex,mapIndex)
+			
+			removeCallback("OnWorldMapChanged",locationFunc)
+			
+			_locations = locations
+			_settings.locations = locations
+			
+			_locationsLookup = Location.CreateLocationsLookup(locations)
+			
+			_settings.locationsLookup = _locationsLookup
+			
+			addCallback("OnWorldMapChanged",_refreshFunc)
+			
+			SetCurrentZoneMapIndexes(zoneIndex)
+			RefreshWayshrinesIfRequired()
+
 			d(_prefix.."First run location data initialised...")
-		elseif cur > 0 and cur < count then 
-			cur = cur + 1
-			ZO_WorldMap_SetMapByIndex(_locations[cur].mapIndex)
-		end
-	end
-	
-	if _settings.locations == nil then 
-		addCallback("OnWorldMapChanged",_zoneIndexFunc)
+		end)
+		
+		addCallback("OnWorldMapChanged",locationFunc)
 	else
+		_locations = _settings.locations
+		_locationsLookup = _settings.locationsLookup
 		addCallback("OnWorldMapChanged",_refreshFunc)
 	end
 
+
 	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
+		currentNodeIndex = nodeIndex
 		SetWayshrinesDirty()
-		RefreshWayshrinesIfRequired(nodeIndex)	
-		RefreshContactsIfRequired(nodeIndex)
 		WORLD_MAP_INFO:SelectTab(SI_MAP_INFO_MODE_WAYSHRINES)
 	end)
 	
 	addEvent(EVENT_END_FAST_TRAVEL_INTERACTION,function(eventCode)
+		currentNodeIndex = nil
 		SetWayshrinesDirty()
 	end)
 	
@@ -558,6 +537,8 @@ init(function()
 			d(_prefix.."Invalid teleport target "..name)
 		end
 	end
+	
+
 	
 end)
 
