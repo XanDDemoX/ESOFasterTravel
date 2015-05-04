@@ -76,9 +76,6 @@ init(function()
 	
 	local _settings = {recent={}}
 
-	local GetRecallCost = GetRecallCost
-	local FastTravelToNode = FastTravelToNode
-	
 	local wayshrineControl = FasterTravel_WorldMapWayshrines
 	local playersControl = FasterTravel_WorldMapPlayers
 
@@ -104,7 +101,38 @@ init(function()
 
 	local currentZoneIndex
 	local currentMapIndex
-	local currentNodeIndex
+	local lastZoneIndex
+	local lastMapIndex
+	
+	local wayshrinesRefreshRequired = true
+	local contactsRefreshRequired = true
+
+	local function SetCurrentZoneMapIndexes(zoneIndex,mapIndex)
+		if currentZoneIndex ~= nil then
+			lastZoneIndex = currentZoneIndex
+		end
+		if currentMapIndex ~= nil  then 
+			lastMapIndex = currentMapIndex
+		end
+		currentZoneIndex = zoneIndex
+		currentMapIndex = mapIndex
+	end
+	
+	local function IsWayshrineRefreshRequired()
+		return wayshrinesRefreshRequired
+	end
+	
+	local function IsContactsRefreshRequired()
+		return contactsRefreshRequired
+	end
+	
+	local function SetWayshrinesDirty()
+		wayshrinesRefreshRequired = true
+	end
+	
+	local function SetContactsDirty()
+		contactsRefreshRequired = true
+	end
 	
 	ZO_Dialogs_ShowPlatformDialog = hook(ZO_Dialogs_ShowPlatformDialog,function(base,id,node,params,...)
 		base(id,node,params,...)
@@ -231,7 +259,7 @@ init(function()
 	local _ctfirst = true 
 	local function RefreshWayshrines(nodeIndex)
 
-		local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
+	local recent = GetRecentWayshrinesData({nodeIndex=nodeIndex})
 		local current = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex = currentZoneIndex})
 		
 		local categories ={
@@ -287,7 +315,6 @@ init(function()
 	end
 	
 	local function RefreshContacts(nodeIndex)
-		
 		local group = Teleport.GetGroupInfo()
 		local friends = Teleport.GetFriendsInfo()
 		
@@ -350,6 +377,21 @@ init(function()
 		RefreshControl(playersControl,categories)
 		
 		_ctfirst = false 
+		
+	end
+	
+	local function RefreshContactsIfRequired(nodeIndex)
+		if IsContactsRefreshRequired() then 
+			RefreshContacts(nodeIndex)
+			contactsRefreshRequired = false
+		end
+	end
+
+	local function RefreshWayshrinesIfRequired(nodeIndex)
+		if IsWayshrineRefreshRequired() then
+			RefreshWayshrines(nodeIndex)
+			wayshrinesRefreshRequired = false
+		end
 	end
 	
 	local function AddWorldMapFragment(strId,fragment,normal,highlight,pressed)
@@ -360,13 +402,13 @@ init(function()
 	function(base,self,value)
 		base(self,value)
 		if value == true then
-			currentZoneIndex = nil
-			currentMapIndex = nil
+			SetCurrentZoneMapIndexes(nil,nil)
 		else
-			currentZoneIndex = GetCurrentMapZoneIndex()
-			currentMapIndex = GetCurrentMapIndex()
-			RefreshWayshrines(currentNodeIndex) 
-			RefreshContacts(currentNodeIndex)
+			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex(),GetCurrentMapIndex())
+
+			RefreshWayshrinesIfRequired() 
+
+			RefreshContactsIfRequired()
 		end
 	end)
 	
@@ -381,7 +423,7 @@ init(function()
 	
 	local _refreshFunc =  function() 
 		if currentZoneIndex == nil and currentMapIndex == nil then -- prevent refresh whilst player is changing map
-			RefreshWayshrines(currentNodeIndex) 
+			SetWayshrinesDirty()
 		end
 	end
 	
@@ -423,27 +465,74 @@ init(function()
 	end
 
 	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
-		currentNodeIndex = nodeIndex
-		RefreshWayshrines(nodeIndex)	
-		RefreshContacts(nodeIndex)
+		SetWayshrinesDirty()
+		RefreshWayshrinesIfRequired(nodeIndex)	
+		RefreshContactsIfRequired(nodeIndex)
 		WORLD_MAP_INFO:SelectTab(SI_MAP_INFO_MODE_WAYSHRINES)
 	end)
 	
 	addEvent(EVENT_END_FAST_TRAVEL_INTERACTION,function(eventCode)
-		currentNodeIndex = nil
+		SetWayshrinesDirty()
 	end)
 	
 	addEvent(EVENT_FAST_TRAVEL_NETWORK_UPDATED,function(eventCode,nodeIndex)
-		RefreshWayshrines()
+		SetWayshrinesDirty()
 	end)
 	
-	addEvent(EVENT_JUMP_FAILED,function(eventCode,reason)
-		d("Failed "..tostring(reason))
+	addEvent(EVENT_FRIEND_ADDED,function(eventCode)
+		SetContactsDirty()
 	end)
 	
-	FastTravelToNode = hook(FastTravelToNode,function(base,nodeIndex)
-		base(nodeIndex)
-		d("Travel "..tostring(nodeIndex))
+	addEvent(EVENT_FRIEND_REMOVED,function(eventCode,DisplayName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_FRIEND_CHARACTER_ZONE_CHANGED,function(eventCode, DisplayName, CharacterName, newZone)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GROUP_INVITE_RESPONSE,function(eventCode, inviterName, response)
+		if response == GROUP_INVITE_RESPONSE_ACCEPTED then
+			SetContactsDirty()
+		end
+	end)
+	
+	addEvent(EVENT_GROUP_MEMBER_JOINED,function(eventCode,memberName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GROUP_MEMBER_LEFT,function(eventCode,memberName,reason,wasLocalPlayer)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_MEMBER_ADDED,function(eventCode, guildId, DisplayName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_MEMBER_REMOVED,function(eventCode,guildId, DisplayName, CharacterName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GROUP_MEMBER_CONNECTED_STATUS,function(eventCode, unitTag, isOnline)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_SELF_JOINED_GUILD,function(eventCode, guildId, guildName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_SELF_LEFT_GUILD,function(eventCode, guildId, guildName)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_MEMBER_CHARACTER_ZONE_CHANGED,function(eventCode, guildId, DisplayName, CharacterName, newZone)
+		SetContactsDirty()
+	end)
+	
+	addEvent(EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED,function(eventCode, guildId, DisplayName, oldStatus, newStatus)
+		if newStatus == PLAYER_STATUS_OFFLINE or (oldStatus == PLAYER_STATUS_OFFLINE and newStatus == PLAYER_STATUS_ONLINE) then
+			SetContactsDirty()
+		end
 	end)
 	
 	-- finally add the controls
