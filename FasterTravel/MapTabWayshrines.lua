@@ -256,6 +256,12 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	
 	end
 	
+	self.HideAllZoneCategories = function(self)
+		for i, loc in ipairs(locations) do 
+			self:SetCategoryHidden(i+2,true)
+		end 
+	end 
+	
 end
 
 function MapTabWayshrines:OnCategoryClicked(i,item,lookup,data,control,c)

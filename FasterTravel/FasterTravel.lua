@@ -301,6 +301,8 @@ init(function()
 			RefreshWayshrinesIfRequired() 
 			RefreshQuestsIfRequired()
 			RefreshPlayersIfRequired()
+		elseif value == true and wayshrinesTab ~= nil then 
+			wayshrinesTab:HideAllZoneCategories()
 		end
 	end)
 	
