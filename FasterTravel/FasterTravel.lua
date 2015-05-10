@@ -66,35 +66,37 @@ init(function()
 	
 	local recentList = f.RecentList(recentTable,"name",5)
 		
-	local function GetZoneLocation()
-		return Location.GetZoneLocation(_locationsLookup)
+	local function GetZoneLocation(...)
+		return Location.GetZoneLocation(_locationsLookup,...)
 	end
-		
+	
 
+	local _initial = false
+	
 	local function Setup(callback)
 		
-		local InitFunc = function(locations,loc)
+		local InitFunc = function(locations,key)
 		
 			_locations = locations
 			_locationsLookup = Location.CreateLocationsLookup(locations)
-						
-			loc = loc or GetZoneLocation()
+			
+			local loc = (key ~= nil and GetZoneLocation(key)) or GetZoneLocation()
 			
 			callback(loc)
 
 		end
 		
 		if _settings.version ~= _settingsVersion or _settings.locations == nil or #_settings.locations < 1 then 
+			_initial = true 
 			local locationFunc  
 			-- hack for zoneIndexes
-			locationFunc = Location.GetLocations(function(locations,loc)   
+			locationFunc = Location.GetLocations(function(locations,key)   
 			
 				removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
 				_settings.locations = locations
 				
 				d(_prefix.."First run location data initialised...")
-				
-				InitFunc(locations,loc)
+				InitFunc(locations,key)
 				
 			end)
 
@@ -152,12 +154,15 @@ init(function()
 	end
 	
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
-		local loc = GetZoneLocation()
+		if _initial == false then -- prevent setting on first activate of first run as map maybe incorrect
+			local loc = GetZoneLocation()
+			SetCurrentZoneMapIndexes(loc)
+		else
+			_initial = false -- unset flag only need to skip the first
+		end
 		
-		SetCurrentZoneMapIndexes(loc)
 		SetWayshrinesDirty()
 		SetQuestsDirty()
-		
 	end)
 	
 	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
@@ -316,14 +321,11 @@ init(function()
 		playersTab = FasterTravel.MapTabPlayers(playersControl)
 		questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
 
-
 		SetCurrentZoneMapIndexes(loc)
-
 
 		addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,function()
 			SetQuestsDirty()
 			RefreshQuestsIfRequired()
-
 		end)
 		
 		

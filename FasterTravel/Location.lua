@@ -30,7 +30,7 @@ end
 local function GetZoneLocation(lookup,zone,subzone)
 
 	local key,zone,subzone = GetMapZoneKey(zone,subzone)
-
+	
 	-- try by zone/subzone key first
 	loc = lookup[key]
 	
@@ -73,10 +73,18 @@ local function GetLocations(callback)
 	local mouseClickQuest,mouseDownLoc,mouseUpLoc=WORLD_MAP_QUESTS.QuestHeader_OnClicked,WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown,WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp
 
 	local done = false 
+	local complete = false 
 	-- hack to get location zoneIndexes by changing the map and using GetCurrentMapZoneIndex() (eugh >_<)
 	return function()
+		
+		if complete == true then 
+			return 
+		end
+		
 		if done == true then 
-			callback(locations,GetZoneLocation(locations,curZoneKey))
+			complete = true 
+			ZO_WorldMap_SetMapByIndex(curIndex)
+			callback(locations,GetMapZoneKey(curZoneKey)) -- ensure callback is called
 			return 
 		end
 		
