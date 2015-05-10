@@ -21,11 +21,6 @@ function InfoControl:SetCategoryHidden(control,categoryId,hidden)
 	end
 end
 
-function InfoControl:ToggleCategoryHidden(control,categoryId)
-	if control == nil or categoryId == nil then return end
-	self:SetCategoryHidden(control,categoryId,not ZO_ScrollList_GetCategoryHidden(control,categoryId))
-end
-
 function InfoControl:Clear(...)
 	local count = select('#',...)
 	local control 
@@ -69,13 +64,13 @@ end
 
 local function RowMouseDown(control, button)
     if(button == 1) then
-        control.label:SetAnchor(LEFT, nil, LEFT, 0, 1)
+        control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 1)
     end
 end
 
 local function RowMouseUp(control, button, upInside)
     if(button == 1) then
-        control.label:SetAnchor(LEFT, nil, LEFT, 0, 0)
+        control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 0)
         if(upInside) then
 			local data = ZO_ScrollList_GetData(control)
 			if data.clicked then 
@@ -85,13 +80,23 @@ local function RowMouseUp(control, button, upInside)
     end
 end
 
+function InfoControl:OnRefreshRow(control,data)
+
+end
+
 function InfoControl:RefreshRow(control,data)
+
 	if data ~= nil and data.refresh ~= nil then 
 		data:refresh(control)
 	end
+	
 	control.label:SetHidden(data == nil or (data.hidden ~= nil and data.hidden == true))
+
 	control.RowMouseDown = RowMouseDown
+	
 	control.RowMouseUp = RowMouseUp
+	
+	self:OnRefreshRow(control,data)
 end
 
 local WorldMapInfoControl = {}

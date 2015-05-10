@@ -6,7 +6,7 @@
 				self.label = self:GetNamedChild("Label")
 				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
 			</OnInitialized>
-            <Dimensions x="200" y="23"/>
+            <Dimensions x="285" y="23"/>
             <Controls>
                 <Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" modifyTextType="UPPERCASE">
                     <Anchor point="TOPLEFT"/>
@@ -22,19 +22,39 @@
 		
         <Control name="FasterTravel_WorldMapWayshrineRow" virtual="true">
 			<OnInitialized>
+				self.icon = self:GetNamedChild("Icon")
 				self.label = self:GetNamedChild("Label")
+				self.offsetX = 20
 			</OnInitialized>
-            <Dimensions x="200" y="23"/>
+            <Dimensions x="285" y="23"/>
             <Controls>
-                <Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader">
-                    <Anchor point="TOPLEFT"/>
-                    <OnMouseDown>
-                        self:GetParent():RowMouseDown(button)
-                    </OnMouseDown>
-                    <OnMouseUp>
-                        self:GetParent():RowMouseUp(button, upInside)
-                    </OnMouseUp>
-                </Label>
+				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="true" mouseEnabled="true">
+					<Dimensions x="24" y="23"/>
+					<Anchor point="TOPLEFT" offsetX="-6" offsetY="-2" />
+					<TextureCoords top="0" bottom="1" left="0" right="1"/>
+					<OnMouseEnter>
+						self:GetParent():IconMouseEnter(self)
+					</OnMouseEnter>
+                    <OnMouseExit>
+						self:GetParent():IconMouseExit(self)
+					</OnMouseExit>
+					<OnMouseDown>
+						self:GetParent():IconMouseDown(button)
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():IconMouseUp(button, upInside)
+					</OnMouseUp>
+				</Texture>
+				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader" newLineIndent="8">
+					<Anchor point="TOPLEFT" offsetX="20" />
+					<OnMouseDown>
+						self:GetParent():RowMouseDown(button)
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():RowMouseUp(button, upInside)
+					</OnMouseUp>
+				</Label>
+
             </Controls>
         </Control>
         
@@ -48,7 +68,7 @@
             <Controls>
 				
 			    <Control name="$(parent)List" inherits="ZO_ScrollList">
-					<Dimensions x="200" y="400" />
+					<Dimensions x="285" y="400" />
                     <Anchor point="TOPLEFT" offsetX="20" />
                     <Anchor point="BOTTOMRIGHT"/>
                 </Control>

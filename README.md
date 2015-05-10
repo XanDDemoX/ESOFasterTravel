@@ -1,15 +1,17 @@
-# ESOFasterTravel v1.0.5
+# ESOFasterTravel v1.2.1
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control with the following options.
 
 * Wayshrines
+  * Displays the closest known wayshrine to a quest by marking wayshrine with the quest's icon when the data is available
+  * Displays quest objective tooltips for wayshrines marked with a quest icon
   * Fast travel to or recall a recently used wayshrine
   * Fast travel to or recall a wayshrine in the current zone
   * Fast travel to or recall a wayshrine in another
   * All fast travels and recalls use the appropriate standard confirmation dialog.
   
-  ![alt text](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image01.jpg "Wayshrines Tab")
+  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image03.jpg "Wayshrines Tab")
   
 * Players
   * Teleport to players in your group
@@ -17,7 +19,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   * Teleport to zones using players on your friends list, in your group or guild
   * Teleport to players in your any of your guilds
   
-  ![alt text](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02.jpg "Players Tab")
+  ![Image of Faster Travel's players tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02.jpg "Players Tab")
   
 Installation
 =============

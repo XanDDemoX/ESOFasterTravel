@@ -32,6 +32,14 @@ local function copy(source,target)
 	return target
 end
 
+local function extend(source,target)
+	target = target or {}
+	for k,v in pairs(source) do 
+		target[k]=v
+	end 
+	return target
+end
+
 local function toTable(value)
 	local t = type(value)
 	
@@ -96,5 +104,6 @@ u.stringStartsWith = stringStartsWith
 u.toTable = toTable
 u.map = map
 u.where = where 
+u.extend = extend
 
 FasterTravel.Utils = u

@@ -1,11 +1,11 @@
 
 
+local RecentList = FasterTravel.class()
+FasterTravel.RecentList = RecentList
 
-
-local function RecentList(items,key,size)
+function RecentList:init(items,key,size)
 	local lookup = {}
 	local items = items or {}
-	local list = {}
 	
 	for i=1,#items do
 		if i <= size then 
@@ -15,7 +15,7 @@ local function RecentList(items,key,size)
 		end
 	end
 	
-	list.push = function(self,key,value)
+	self.push = function(self,key,value)
 		local idx = lookup[value[key]]
 		
 		local hasValue = idx ~= nil
@@ -49,7 +49,7 @@ local function RecentList(items,key,size)
 		return self
 	end
 
-	list.items = function(self)
+	self.items = function(self)
 		local cur = 0
 		local count = math.min(#items,size)
 		return function()
@@ -61,7 +61,4 @@ local function RecentList(items,key,size)
 		end
 	end
 	
-	return list
 end
-
-FasterTravel.RecentList = RecentList
