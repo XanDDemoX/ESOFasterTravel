@@ -4,8 +4,8 @@ An addon for The Elder Scrolls Online which improves the usability of in game tr
 FasterTravel adds two new tabs to the default world map information/navigation control with the following options.
 
 * Wayshrines
-  * Displays the closest known wayshrine to a quest by marking wayshrine with the quest's icon when the data is available
-  * Displays quest objective tooltips for wayshrines marked with a quest icon
+  * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
+  * Displays quest objective tooltips when the mouse is over quest icons.
   * Fast travel to or recall a recently used wayshrine
   * Fast travel to or recall a wayshrine in the current zone
   * Fast travel to or recall a wayshrine in another

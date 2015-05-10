@@ -158,9 +158,7 @@ local function RefreshQuests(locations,locationsLookup,tab)
 			end
 		end
 	end
-	
-
-		
+			
 	RefreshCategories(lookups.categories,locations,locationsLookup,quests)
 	
 	tab:RefreshControl(lookups.categoriesTable)
@@ -197,7 +195,7 @@ local function RefreshQuests(locations,locationsLookup,tab)
 				end
 				
 				if closest ~= nil then 
-					
+
 					if UpdateLookups(closest,result,currentRowLookup,zoneRowLookup[closest.zoneIndex]) == true then
 						tab:RefreshControl()
 					end
