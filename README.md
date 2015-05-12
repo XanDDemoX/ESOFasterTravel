@@ -28,8 +28,6 @@ Installation
 3. Extract or copy the "FasterTravel" folder into your addons folder:
 4. This addon superceeds [PlayerPort](https://github.com/XanDDemoX/ESOPlayerPort). If PlayerPort is installed please uninstall it by deleting the "PlayerPort" folder from your addons folder. 
 
-Place the "FasterTravel" folder in your addons folder:
-
 "Documents\Elder Scrolls Online\live\Addons"
 
 "Documents\Elder Scrolls Online\liveeu\Addons"
