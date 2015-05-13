@@ -52,7 +52,9 @@ local function GetZoneWayshrinesData(args)
 
 	local iter = Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
 			
-	iter = Utils.map(iter,function(d) return AttachWayshrineDataHandlers(args,d) end)
+	iter = Utils.map(iter,function(item) 
+		return AttachWayshrineDataHandlers(args,item) 
+	end)
 	
 	local data = Utils.toTable(iter)
 	
@@ -175,7 +177,8 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		
 		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,nodeIndex)
 			
-		local curName = _locationsLookup[currentZoneIndex].name
+		local curLoc = _locationsLookup[currentZoneIndex]
+		local curName = curLoc.name
 		
 		local categories ={
 			{
@@ -187,7 +190,12 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..curName..")",
 				data = current, 
 				hidden = not _first and self:IsCategoryHidden(2),
-				clicked=function(data,control,c) HandleCategoryClicked(self,2,{zoneIndex=currentZoneIndex,mapIndex=currentMapIndex},currentlookup,data,control,c) end
+				clicked=function(data,control,c) 
+					HandleCategoryClicked(self,2,{zoneIndex=currentZoneIndex,mapIndex=currentMapIndex},currentlookup,data,control,c) 
+					if self:IsCategoryHidden(2) == false and curLoc.click then 
+						curLoc.click()
+					end
+				end
 			}
 		}
 		
@@ -223,6 +231,9 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 					clicked= function(data,control,c) 
 					
 						HandleCategoryClicked(self,id,item,lookup,data,control,c) 
+						if item.click then 
+							item.click()
+						end
 						if self:IsCategoryHidden(id) == false then 
 							for ii=count+1,lcount do
 								if ii ~= id and self:IsCategoryHidden(ii) == false then

@@ -265,7 +265,11 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
 		base(control,icon,data)
 		if data.questIndexes == nil then return end 
-		ClearTooltip(ZO_MapQuestDetailsTooltip)
+		self:HideToolTip()
 	end)
+	
+	self.HideToolTip = function(self) 
+		ClearTooltip(ZO_MapQuestDetailsTooltip)
+	end 
 	
 end

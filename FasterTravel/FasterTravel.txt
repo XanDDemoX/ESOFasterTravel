@@ -1,6 +1,6 @@
-## Title: Faster Travel v1.2.2
+## Title: Faster Travel v1.2.6
 ## Author: XanDDemoX
-## Version 1.2.2
+## Version 1.2.6
 
 ## APIVersion: 100011
 ## SavedVariables: FasterTravel_SavedVariables
@@ -15,7 +15,9 @@ Strings.lua
 
 Utils.lua
 Location.lua
+LocationCorrections.lua
 Wayshrine.lua
+WayshrineCorrections.lua
 Teleport.lua
 Quest.lua
 

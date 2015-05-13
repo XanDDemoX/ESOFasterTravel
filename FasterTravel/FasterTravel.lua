@@ -51,7 +51,7 @@ init(function()
 	local _locationsLookup = {}
 	
 	local _settings = {recent={}}
-	local _settingsVersion = "4"
+	local _settingsVersion = "5"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
 	
@@ -77,8 +77,8 @@ init(function()
 		
 		local InitFunc = function(locations,key)
 		
-			_locations = locations
-			_locationsLookup = Location.CreateLocationsLookup(locations)
+			_locations = Location.InitLocations(locations)
+			_locationsLookup = Location.CreateLocationsLookup(_locations)
 			
 			local loc = (key ~= nil and GetZoneLocation(key)) or GetZoneLocation()
 			
@@ -277,7 +277,7 @@ init(function()
 		if id ~= "RECALL_CONFIRM" and id ~= "FAST_TRAVEL_CONFIRM" then return end
 		-- hack to get fast travel node for recent list from the map
 		local nodeIndex,name = node.nodeIndex,params.mainTextParams[1]
-		
+				
 		local dialog = ZO_Dialogs_FindDialog(id)
 		local acceptButton = dialog.buttonControls[1]
 		local cancelButton = dialog.buttonControls[2]
@@ -308,6 +308,8 @@ init(function()
 			RefreshPlayersIfRequired()
 		elseif value == true and wayshrinesTab ~= nil then 
 			wayshrinesTab:HideAllZoneCategories()
+			questTracker:HideToolTip()
+			--SetQuestsDirty()
 		end
 	end)
 	
@@ -356,6 +358,9 @@ init(function()
 		end
 	end
 	
+	SLASH_COMMANDS["/zk"] = function()
+		d(Location.GetMapZoneKey(),GetCurrentMapZoneIndex(),GetMapTileTexture())
+	end
 end)
 
 

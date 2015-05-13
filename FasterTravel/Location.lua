@@ -33,7 +33,6 @@ local function GetZoneLocation(lookup,zone,subzone)
 	
 	-- try by zone/subzone key first
 	loc = lookup[key]
-	
 	-- subzone next to handle places like khenarthis roost
 	if loc == nil then
 		loc = lookup[subzone]
@@ -59,10 +58,6 @@ local function GetLocations(callback)
 			table.insert(locations,{ name = mapName, mapIndex = i })
 		end
     end
-	
-    table.sort(locations, function(x,y)
-        return x.name < y.name
-    end)
 	
 	local curIndex
 	local curZoneIndex
@@ -126,6 +121,21 @@ local function GetLocations(callback)
 		end
 	end
 	
+end
+
+
+local function InitLocations(locations)
+	if locations == nil then return end 
+	
+	local newLocations = Utils.copy(locations)
+	
+	newLocations = Location.Corrections.UpdateLocations(newLocations)
+	
+	table.sort(newLocations, function(x,y)
+        return x.name < y.name
+    end)
+	
+	return newLocations
 end
 
 local function CreateLocationsLookup(locations,func)
@@ -195,7 +205,7 @@ local function IsCurrentZoneCyrodiil(lookup)
 end
 
 local l = Location
-
+l.InitLocations = InitLocations
 l.GetClosestLocation = GetClosestLocation
 l.GetLocations = GetLocations
 l.CreateLocationsLookup = CreateLocationsLookup

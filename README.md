@@ -1,4 +1,4 @@
-# ESOFasterTravel v1.2.2
+# ESOFasterTravel v1.2.6
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control with the following options.
@@ -47,6 +47,15 @@ Usage
   * /goto zoneName - attempts to teleport to a zone via a player.
   * /goto @PlayerName - attempts to teleport to a player.
   * /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
+  
+Change Log
+=============
+* **Version 1.2.6**
+  * Added support for Eyevea
+  * Fixed handling of The Harborage
+  * Fixed quest tooltip potentially remaining open after closing the map
+* **Version 1.2.2**
+  * Initial Release
 
 DISCLAIMER
 =============
