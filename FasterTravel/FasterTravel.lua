@@ -363,7 +363,6 @@ init(function()
 
 	AddWorldMapFragment(SI_MAP_INFO_MODE_PLAYERS,playersControl.fragment,path.."up.dds",path.."over.dds",path.."down.dds")
 
-	
 	SLASH_COMMANDS["/goto"] = function(args)
 		if Utils.stringIsEmpty(args) == true then return end
 		local result,name
@@ -379,9 +378,6 @@ init(function()
 		end
 	end
 	
-	SLASH_COMMANDS["/zk"] = function()
-		d(Location.GetMapZoneKey(),GetCurrentMapZoneIndex(),GetMapTileTexture())
-	end
 end)
 
 
