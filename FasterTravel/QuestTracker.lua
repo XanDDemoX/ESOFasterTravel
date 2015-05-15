@@ -17,7 +17,7 @@ local _questPinTextures ={
 	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon.dds",
 }
 
-local breadcrumbQuestPinTextures =
+local _breadcrumbQuestPinTextures =
 {
 	[MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
 	[MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
@@ -30,18 +30,10 @@ local breadcrumbQuestPinTextures =
 local function GetQuestIconPath(quest)
 	local pinType = quest.pinType
 	if quest.isBreadcrumb then 
-		return breadcrumbQuestPinTextures[pinType]
+		return _breadcrumbQuestPinTextures[pinType]
 	else
 		return _questPinTextures[pinType]
 	end
-end
-
-local function GetQuestLocations(quest,callback)
-	
-	return Quest.GetQuestLocations(quest.index,function(result)
-		callback(quest,result)
-	end)
-	
 end
 
 local function ClearIcons(lookup)
@@ -99,11 +91,13 @@ local function UpdateLookups(closest,result,...)
 end
 
 local function IsValidResult(result)
+	if result == nil then return false end 
 	return result.hasPosition == true and result.insideBounds == true
 end
 
 local function RefreshCategories(categories,locations,locationsLookup,quests)
-
+	if categories == nil or locations == nil or locationsLookup == nil or quests == nil then return end 
+	
 	local counts ={}
 	
 	for i,loc in ipairs(locations) do 
@@ -123,25 +117,9 @@ local function RefreshCategories(categories,locations,locationsLookup,quests)
 	
 end
 
-local function RefreshQuests(locations,locationsLookup,tab)
-	if locations == nil or tab == nil then return end
+local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
 
-	local quests = Quest.GetQuests()
-	
-	local wayshrines = Wayshrine.GetKnownNodesZoneLookup(locations)
-
-	local lookups = tab:GetRowLookups()
-	
-	if lookups == nil then return end 
-	
-	local curLookup = lookups.current
-	local recLookup = lookups.recent
-	local zoneLookup = lookups.zone
-	
-	if curLookup == nil or recLookup == nil or zoneLookup == nil then return end 
-	
-	local currentZoneIndex = tab:GetCurrentZoneMapIndexes()
-	local loc = Location.GetZoneLocation(locationsLookup)
+	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil then return end 
 	
 	if loc.zoneIndex == currentZoneIndex then
 	
@@ -158,24 +136,15 @@ local function RefreshQuests(locations,locationsLookup,tab)
 			end
 		end
 	end
-			
-	RefreshCategories(lookups.categories,locations,locationsLookup,quests)
-	
-	tab:RefreshControl(lookups.categoriesTable)
-	
-	local lookups = tab:GetRowLookups()
+end
 
-	local recentRowLookup = lookups.recent
-
-	local currentRowLookup = lookups.current
-
-	local zoneRowLookup = lookups.zone
-
+local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines)
+	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
 	local curshrines = wayshrines[currentZoneIndex]
 	local mapshrines = wayshrines[loc.zoneIndex]
 	local questshrines
-	
+		
 	for i,quest in ipairs(quests) do
 
 		questshrines = wayshrines[quest.zoneIndex]
@@ -196,7 +165,7 @@ local function RefreshQuests(locations,locationsLookup,tab)
 				
 				if closest ~= nil then 
 
-					if UpdateLookups(closest,result,currentRowLookup,zoneRowLookup[closest.zoneIndex]) == true then
+					if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex]) == true then
 						tab:RefreshControl()
 					end
 					
@@ -241,7 +210,27 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	self.Refresh = function(self)
 		if _refreshing == true then return end 
-		RefreshQuests(_locations,_locationsLookup,_tab)
+		
+		local lookups = _tab:GetRowLookups()
+		
+		local currentZoneIndex = _tab:GetCurrentZoneMapIndexes()
+		
+		local loc = Location.GetZoneLocation(_locationsLookup)
+			
+		local curLookup,zoneLookup = lookups.current,lookups.zone
+			
+		ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
+		
+		local quests = Quest.GetQuests()
+		
+		RefreshCategories(lookups.categories,_locations,_locationsLookup,quests)
+		
+		_tab:RefreshControl(lookups.categoriesTable)
+		
+		local wayshrines = Wayshrine.GetKnownNodesZoneLookup(_locations)
+		
+		RefreshQuests(currentZoneIndex,loc,_tab,curLookup,zoneLookup,quests,wayshrines)
+		
 		_refreshing = false
 	end
 	
