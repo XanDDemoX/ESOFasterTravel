@@ -29,18 +29,23 @@ end
 
 local function GetZoneLocation(lookup,zone,subzone)
 
-	local key,zone,subzone = GetMapZoneKey(zone,subzone)
-	
-	-- try by zone/subzone key first
-	loc = lookup[key]
-	-- subzone next to handle places like khenarthis roost
-	if loc == nil then
-		loc = lookup[subzone]
-	end
-	-- then zone to handle locations within main zones which cannot be matched by key e.g coldharbor's hollow city
-	if loc == nil then 
+	if type(zone) == "number" then 
 		loc = lookup[zone]
+	else
+		local key,zone,subzone = GetMapZoneKey(zone,subzone)
+	
+		-- try by zone/subzone key first
+		loc = lookup[key]
+		-- subzone next to handle places like khenarthis roost
+		if loc == nil then
+			loc = lookup[subzone]
+		end
+		-- then zone to handle locations within main zones which cannot be matched by key e.g coldharbor's hollow city
+		if loc == nil then 
+			loc = lookup[zone]
+		end 
 	end 
+
 	-- if zone cant be found then return tamriel
 	if loc == nil then 
 		loc = lookup["tamriel"]

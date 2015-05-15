@@ -9,7 +9,7 @@ local Utils = FasterTravel.Utils
 function MapTabPlayers:init(control)
 	self.base.init(self,control)
 	
-	local _first = false
+	local _first = true
 	
 	local addHandlers = function(data)
 		data.refresh = function(self,control) control.label:SetText(self.name.." ["..self.zoneName.."] ") end

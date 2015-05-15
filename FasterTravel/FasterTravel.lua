@@ -153,16 +153,36 @@ init(function()
 		questTracker:RefreshIfRequired()
 	end
 	
+	local function IsWorldMapHidden()
+		return ZO_WorldMap:IsHidden()
+	end
+	
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
-		if _initial == false then -- prevent setting on first activate of first run as map maybe incorrect
+		-- prevent setting on first activate of first run as map maybe incorrect
+		if _initial == true then
+			_initial = false
+			return 
+		end	
+		
+		local func = function()
 			local loc = GetZoneLocation()
 			SetCurrentZoneMapIndexes(loc)
-		else
-			_initial = false -- unset flag only need to skip the first
-		end
+			SetWayshrinesDirty()
+			SetQuestsDirty()
+		end 
 		
-		SetWayshrinesDirty()
-		SetQuestsDirty()
+		-- handle the map changing from Tamriel 
+		if GetCurrentMapIndex() == 1 then 
+			local onChange
+			onChange = function()
+				func()
+				removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,onChange)
+			end 
+			addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,onChange)
+		else
+			func()
+		end 
+
 	end)
 	
 	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
@@ -258,7 +278,7 @@ init(function()
 		SetQuestsDirty()
 	end)
 	
-	
+	-- hack for detecting tracked quest change
 	FOCUSED_QUEST_TRACKER.FireCallbacks = hook(FOCUSED_QUEST_TRACKER.FireCallbacks,function(base,self,id,control,assisted, trackType,arg1,arg2)
 		if base then base(self,id,control,assisted, trackType,ar1, arg2) end
 		
@@ -266,7 +286,7 @@ init(function()
 
 		SetQuestsDirty()
 		
-		if ZO_WorldMap:IsHidden() == false then
+		if IsWorldMapHidden() == false then
 			RefreshQuestsIfRequired()
 		end
 
@@ -327,9 +347,10 @@ init(function()
 
 		addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,function()
 			SetQuestsDirty()
-			RefreshQuestsIfRequired()
+			if IsWorldMapHidden() == false then 
+				RefreshQuestsIfRequired()
+			end
 		end)
-		
 		
 	end)
 
