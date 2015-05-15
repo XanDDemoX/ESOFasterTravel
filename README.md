@@ -1,4 +1,4 @@
-# ESOFasterTravel v1.2.6
+# ESOFasterTravel v1.2.7
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -52,6 +52,10 @@ Usage
   
 Change Log
 =============
+* **Version 1.2.7**
+  * Fixed quest markers potentially not appearing following a location change.
+  * Fixed location detection potentially resolving Tamriel in a known location.
+  * Fixed guild categories on players tab opening in their initial state.
 * **Version 1.2.6**
   * Added support for Eyevea
   * Fixed handling of The Harborage
