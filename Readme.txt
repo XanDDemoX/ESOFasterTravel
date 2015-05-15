@@ -31,6 +31,13 @@ Slash Commands
 
 Change Log
 
+Version 1.2.7
+
+	- Fixed quest markers potentially not appearing following a location change.
+	- Fixed location detection potentially resolving Tamriel in a known location.
+
+	- Fixed guild categories on players tab opening in their initial state.
+
 Version 1.2.6
 
 	- Added support for Eyevea
