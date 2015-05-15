@@ -1,21 +1,6 @@
 
 local u = FasterTravel.Utils or {}
 
--- http://www.lua.org/pil/19.3.html
-local function pairsByKeys(t, f)
-  local a = {}
-  for n in pairs(t) do table.insert(a, n) end
-  table.sort(a, f)
-  local i = 0      -- iterator variable
-  local iter = function ()   -- iterator function
-	i = i + 1
-	if a[i] == nil then return nil
-	else return a[i], t[a[i]]
-	end
-  end
-  return iter
-end
-
 local function stringIsEmpty(str)
 	return str == nil or str == ""
 end
@@ -77,8 +62,6 @@ local function where(iter,predicate)
 	end
 end
 
-
-
 local function map(iter,func)
 	local t = type(iter)
 	if t == "table" then
@@ -97,7 +80,26 @@ local function map(iter,func)
 	end
 end
 
-u.pairsByKeys = pairsByKeys
+local _lang
+
+local function FormatStringLanguage(lang,str)
+	if stringIsEmpty(str) == true then return str end
+	lang = string.lower(lang)
+	if lang == "en" then 
+		return str
+	else
+		return zo_strformat("<<!AC:1>>", str)
+	end 
+end 
+
+local function FormatStringCurrentLanguage(str)
+	if _lang == nil then 
+		_lang = GetCVar("language.2")
+		_lang = string.lower(_lang)
+	end 
+	return FormatStringLanguage(_lang,str)
+end
+
 u.copy = copy
 u.stringIsEmpty = stringIsEmpty
 u.stringStartsWith = stringStartsWith
@@ -105,5 +107,7 @@ u.toTable = toTable
 u.map = map
 u.where = where 
 u.extend = extend
+u.FormatStringLanguage = FormatStringLanguage
+u.FormatStringCurrentLanguage = FormatStringCurrentLanguage
 
 FasterTravel.Utils = u

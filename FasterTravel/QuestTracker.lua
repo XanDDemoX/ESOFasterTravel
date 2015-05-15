@@ -215,7 +215,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local currentZoneIndex = _tab:GetCurrentZoneMapIndexes()
 		
-		local loc = Location.GetZoneLocation(_locationsLookup)
+		local loc = Location.Data.GetZoneLocation(_locationsLookup)
 			
 		local curLookup,zoneLookup = lookups.current,lookups.zone
 			

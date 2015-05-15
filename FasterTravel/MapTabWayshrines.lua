@@ -75,15 +75,12 @@ local function GetRecentWayshrinesData(recentList,args)
 end
 
 local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,nodeIndex)
-	if Location.IsCurrentZoneCyrodiil(locationsLookup) == true then 
-		return {}
-	else
-		return GetZoneWayshrinesData({
-									nodeIndex=nodeIndex, 
-									zoneIndex = zoneIndex,
-									refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
-								})
-	end 
+
+	return GetZoneWayshrinesData({
+								nodeIndex=nodeIndex, 
+								zoneIndex = zoneIndex,
+								refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
+							})
 end
 
 

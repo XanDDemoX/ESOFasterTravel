@@ -1,9 +1,7 @@
-ESOFasterTravel v1.2.7
+ESOFasterTravel v1.3.1
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
-
-Please note: I am currently working on support for the Transitus shrine network in Cyrodiil so they will not appear yet 
 
 Wayshrines
 Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map (when it is possible to obtain the data ).
@@ -31,6 +29,12 @@ Slash Commands
 
 Change Log
 
+Version 1.3.1
+
+	- Multiple fixes and improvements for multi-language compatibility
+	- Fixed location detection potentially resolving the current zone incorrectly in some dungeons.
+	- Fixed quests markers potentially refreshing whilst world map is hidden
+	
 Version 1.2.7
 
 	- Fixed quest markers potentially not appearing following a location change.

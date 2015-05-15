@@ -14,93 +14,37 @@ local function GetNodes()
 	end
 end
 
-local function GetNodesLookup()
-	local lookup = {}
+local function GetNodesByZoneIndex(zoneIndex)
+
+	local nodes = Wayshrine.Data.GetNodesByZoneIndex(zoneIndex)
 	
-	local key, node
+	local known,name,normalizedX, normalizedY, textureName ,textureName,poiType,isShown
 	
-	for index,known,name,normalizedX, normalizedY, textureName ,textureName,poiType,isShown in GetNodes() do
-		
-		key = string.lower(name)
-		node = lookup[key]
-		
-		if Utils.stringIsEmpty(name) == false then
-			local curNode = {	
-					nodeIndex=index,
+	local cur = 0 
+	local count = #nodes
+	
+	return function()
+		if cur < count then 
+			cur = cur + 1
+	
+			local node = nodes[cur]
+	
+			local known,name,normalizedX, normalizedY, textureName ,textureName,poiType,isShown = Wayshrine.Data.GetNodeInfo(node.nodeIndex)
+			
+			return {
+					zoneIndex=zoneIndex,
+					nodeIndex=node.nodeIndex,
+					poiIndex=node.poiIndex,
 					known=known,
 					name=name,
 					normalizedX=normalizedX, 
 					normalizedY=normalizedY, 
-					textureName=textureName ,
+					textureName=textureName,
 					poiType=poiType,
-					isShown=isShown 
+					isShown=isShown,
 				}
-		
-			if node == nil then 
-				node = curNode
-				lookup[key] = node
-			else -- accumulate additional nodes where there are multiple nodes of the same name e.g The harborage.
-				if node.nodes == nil then 
-					node.nodes = {Utils.extend(node)}
-				end 
-				table.insert(node.nodes,curNode)
-			end
-			
 		end
-	end
-	
-	lookup = Wayshrine.Corrections.UpdateLookup(lookup)
-	
-	return lookup
-end
-
-local function GetItemFromLookup(lookup,name,zoneIndex)
-	if Utils.stringIsEmpty(name) == true then return nil end
-	local item = lookup[string.lower(name)]
-	
-	item = Wayshrine.Corrections.UpdateNode(item,zoneIndex)
-	
-	return item 
-end
-
-
-local function GetNodesByZoneIndex(zoneIndex)
-	zoneIndex = zoneIndex or GetCurrentMapZoneIndex()
-
-	local i = 0
-	local count = GetNumPOIs(zoneIndex)
-	local lookup = GetNodesLookup()
-	local name
-	local item 
-	
-	return function()
-		
-		local isWayshrine = false 
-		
-		while i < count and isWayshrine == false do
-			i = i + 1
-			isWayshrine = IsPOIWayshrine(zoneIndex,i) or IsPOIGroupDungeon(zoneIndex,i)
-			
-			if isWayshrine == true then
-			
-				name = GetPOIInfo(zoneIndex, i)
-
-				item = GetItemFromLookup(lookup,name,zoneIndex)
-				
-				if item ~= nil then 
-					item.zoneIndex = zoneIndex
-					return item
-				else
-					-- if not in lookup then skip
-					isWayshrine = false
-				end
-				
-			end
-			
-		end
-		
-		return nil
-	end
+	end 
 end
 
 local function GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
@@ -112,32 +56,24 @@ local function GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
 	return iter
 end
 
-local function GetNodesZoneLookup(locations)
-
+local function GetNodesZoneLookup(locations,func)
+	func = func or GetNodesByZoneIndex
 	local lookup ={}
 	for i,loc in ipairs(locations) do 
-		lookup[loc.zoneIndex] = Utils.toTable(GetNodesByZoneIndex(loc.zoneIndex))
-	end 
-	return lookup
-end
-
-local function GetKnownNodesZoneLookup(locations)
-
-	local lookup ={}
-	for i,loc in ipairs(locations) do 
-		lookup[loc.zoneIndex] = Utils.toTable(GetKnownWayshrinesByZoneIndex(loc.zoneIndex))
+		lookup[loc.zoneIndex] = Utils.toTable(func(loc.zoneIndex))
 	end 
 	return lookup
 end
 
 
 local w = Wayshrine
-w.GetLocations = GetLocations
 w.GetNodes = GetNodes
-w.GetNodesLookup = GetNodesLookup
 w.GetNodesByZoneIndex = GetNodesByZoneIndex
 w.GetKnownWayshrinesByZoneIndex = GetKnownWayshrinesByZoneIndex
 w.GetNodesZoneLookup = GetNodesZoneLookup
-w.GetKnownNodesZoneLookup = GetKnownNodesZoneLookup
+
+w.GetKnownNodesZoneLookup = function(locations)
+	return GetNodesZoneLookup(locations,GetKnownWayshrinesByZoneIndex)
+end 
 
 FasterTravel.Wayshrine = w

@@ -1,4 +1,18 @@
 local Teleport = FasterTravel.Teleport or {}
+local Utils = FasterTravel.Utils
+
+-- cache for formatted zone names
+local _zoneNameCache = {}
+
+local function GetZoneName(zoneName)
+	if Utils.stringIsEmpty(zoneName) == true then return zoneName end
+	local localeName = _zoneNameCache[zoneName]
+	if localeName == nil then 
+		localeName = Utils.FormatStringCurrentLanguage(zoneName)
+		_zoneNameCache[zoneName] = localeName
+	end 
+	return localeName
+end 
 
 local function GetGuildPlayers(guildId)
 	if guildId == nil then return {} end 
@@ -14,8 +28,9 @@ local function GetGuildPlayers(guildId)
 			if playerStaus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 then
 			
 				local hasChar, charName, zoneName,classtype,alliance = GetGuildMemberCharacterInfo(guildId,i)
-					
+				
 				if hasChar == true and alliance == pAlliance then 
+					zoneName = GetZoneName(zoneName)
 					table.insert(tbl,{name=name,zoneName=zoneName})
 				end
 				
@@ -53,6 +68,7 @@ local function GetZonesGuildLookup()
 				local hasChar, charName, zoneName,classtype,alliance = GetGuildMemberCharacterInfo(id,p)
 				
 				if hasChar == true and alliance == pAlliance then 
+					zoneName = GetZoneName(zoneName)
 					local lowerZoneName = string.lower(zoneName)
 					returnValue[lowerZoneName] = returnValue[lowerZoneName] or {}
 					table.insert(returnValue[lowerZoneName],{name=playerName,zoneName=zoneName,alliance=alliance,charName=charName})
@@ -78,6 +94,7 @@ local function GetFriendsInfo()
 			local hasChar, charName, zoneName,classtype,alliance = GetFriendCharacterInfo(i)
 			
 			if hasChar == true and pAlliance == alliance then 
+				zoneName = GetZoneName(zoneName)
 				table.insert(returnValue,{name=displayName,zoneName=zoneName,alliance=alliance})
 			end
 		end
@@ -100,7 +117,9 @@ local function GetGroupInfo()
 		local unitName = GetUnitName(unitTag)
 		-- only get players that are online >_<
 		if unitTag ~= nil and IsUnitOnline(unitTag) and string.lower(unitName) ~= pChar then 
-			table.insert(returnValue,{name=unitName,zoneName=GetUnitZone(unitTag),alliance=GetUnitAlliance(unitTag),isLeader=IsUnitGroupLeader(unitTag),charName=GetUniqueNameForCharacter(GetUnitName(unitTag))})
+			local zoneName = GetUnitZone(unitTag)
+			zoneName = GetZoneName(zoneName)
+			table.insert(returnValue,{name=unitName,zoneName=zoneName,alliance=GetUnitAlliance(unitTag),isLeader=IsUnitGroupLeader(unitTag),charName=GetUniqueNameForCharacter(GetUnitName(unitTag))})
 		end 
 		
 	end

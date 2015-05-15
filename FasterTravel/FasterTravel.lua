@@ -47,11 +47,11 @@ init(function()
 	local Teleport = f.Teleport
 	local Utils = f.Utils
 	
-	local _locations = {}
-	local _locationsLookup = {}
+	local _locations
+	local _locationsLookup
 	
 	local _settings = {recent={}}
-	local _settingsVersion = "5"
+	local _settingsVersion = "6"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
 	
@@ -67,46 +67,8 @@ init(function()
 	local recentList = f.RecentList(recentTable,"name",5)
 		
 	local function GetZoneLocation(...)
-		return Location.GetZoneLocation(_locationsLookup,...)
+		return Location.Data.GetZoneLocation(_locationsLookup,...)
 	end
-	
-
-	local _initial = false
-	
-	local function Setup(callback)
-		
-		local InitFunc = function(locations,key)
-		
-			_locations = Location.InitLocations(locations)
-			_locationsLookup = Location.CreateLocationsLookup(_locations)
-			
-			local loc = (key ~= nil and GetZoneLocation(key)) or GetZoneLocation()
-			
-			callback(loc)
-
-		end
-		
-		if _settings.version ~= _settingsVersion or _settings.locations == nil or #_settings.locations < 1 then 
-			_initial = true 
-			local locationFunc  
-			-- hack for zoneIndexes
-			locationFunc = Location.GetLocations(function(locations,key)   
-			
-				removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
-				_settings.locations = locations
-				
-				d(_prefix.."First run location data initialised...")
-				InitFunc(locations,key)
-				
-			end)
-
-			addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
-		else
-			InitFunc(_settings.locations)
-		end
-	end
-	
-
 		
 	local function PushRecent(name,nodeIndex)
 		recentList:push("name",{name=name,nodeIndex=nodeIndex})
@@ -120,6 +82,7 @@ init(function()
 	
 	local function SetCurrentZoneMapIndexes(loc)
 		if wayshrinesTab == nil then return end 
+		loc = loc or GetZoneLocation()
 		wayshrinesTab:SetCurrentZoneMapIndexes(loc.zoneIndex,loc.mapIndex)
 	end
 	
@@ -158,15 +121,9 @@ init(function()
 	end
 	
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
-		-- prevent setting on first activate of first run as map maybe incorrect
-		if _initial == true then
-			_initial = false
-			return 
-		end	
 		
 		local func = function()
-			local loc = GetZoneLocation()
-			SetCurrentZoneMapIndexes(loc)
+			SetCurrentZoneMapIndexes()
 			SetWayshrinesDirty()
 			SetQuestsDirty()
 		end 
@@ -204,6 +161,7 @@ init(function()
 	
 	addEvent(EVENT_FAST_TRAVEL_NETWORK_UPDATED,function(eventCode,nodeIndex)
 		SetWayshrinesDirty()
+		SetQuestsDirty()
 	end)
 	
 	addEvent(EVENT_FRIEND_ADDED,function(eventCode)
@@ -278,17 +236,23 @@ init(function()
 		SetQuestsDirty()
 	end)
 	
+	local function RefreshQuestsIfMapVisible()
+		SetQuestsDirty()
+		
+		if IsWorldMapHidden() == false then 
+			RefreshQuestsIfRequired()
+		end
+	end
+	
+	addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,RefreshQuestsIfMapVisible)
+	
 	-- hack for detecting tracked quest change
 	FOCUSED_QUEST_TRACKER.FireCallbacks = hook(FOCUSED_QUEST_TRACKER.FireCallbacks,function(base,self,id,control,assisted, trackType,arg1,arg2)
 		if base then base(self,id,control,assisted, trackType,ar1, arg2) end
 		
 		if id ~= CALLBACK_ID_ON_QUEST_TRACKER_TRACKING_STATE_CHANGED then return end 
 
-		SetQuestsDirty()
-		
-		if IsWorldMapHidden() == false then
-			RefreshQuestsIfRequired()
-		end
+		RefreshQuestsIfMapVisible()
 
 	end)
 	
@@ -329,30 +293,19 @@ init(function()
 		elseif value == true and wayshrinesTab ~= nil then 
 			wayshrinesTab:HideAllZoneCategories()
 			questTracker:HideToolTip()
-			--SetQuestsDirty()
 		end
 	end)
 	
 	local function AddWorldMapFragment(strId,fragment,normal,highlight,pressed)
 	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight =highlight,normal = normal})
 	end
-
-	Setup(function(loc)
-		
-		wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList)
-		playersTab = FasterTravel.MapTabPlayers(playersControl)
-		questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
-
-		SetCurrentZoneMapIndexes(loc)
-
-		addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,function()
-			SetQuestsDirty()
-			if IsWorldMapHidden() == false then 
-				RefreshQuestsIfRequired()
-			end
-		end)
-		
-	end)
+	
+	_locations = Location.Data.GetList()
+	_locationsLookup = Location.Data.GetLookup()
+			
+	wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList)
+	playersTab = FasterTravel.MapTabPlayers(playersControl)
+	questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
 
 	-- finally add the controls
 	local path = "/esoui/art/treeicons/achievements_indexicon_alliancewar_"
@@ -363,6 +316,8 @@ init(function()
 
 	AddWorldMapFragment(SI_MAP_INFO_MODE_PLAYERS,playersControl.fragment,path.."up.dds",path.."over.dds",path.."down.dds")
 
+	SetCurrentZoneMapIndexes()
+	
 	SLASH_COMMANDS["/goto"] = function(args)
 		if Utils.stringIsEmpty(args) == true then return end
 		local result,name
