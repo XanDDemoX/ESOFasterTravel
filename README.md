@@ -24,9 +24,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
 Installation
 =============
 1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.3.1.zip)
-2. Open Zip and go into the folder named "EsoFasterTravel-master"
-3. Extract or copy the "FasterTravel" folder into your addons folder:
-4. This addon superceeds [PlayerPort](https://github.com/XanDDemoX/ESOPlayerPort). If PlayerPort is installed please uninstall it by deleting the "PlayerPort" folder from your addons folder. 
+2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
 
