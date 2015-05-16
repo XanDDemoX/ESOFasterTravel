@@ -55,6 +55,8 @@ init(function()
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
 	
+	if _settings.locations then _settings.locations = nil end -- cleanup old saved vars 
+	
 	local wayshrineControl = FasterTravel_WorldMapWayshrines
 	local playersControl = FasterTravel_WorldMapPlayers
 
@@ -80,10 +82,13 @@ init(function()
 		end
 	end
 	
-	local function SetCurrentZoneMapIndexes(loc)
+	local function SetCurrentZoneMapIndexes(zoneIndex)
 		if wayshrinesTab == nil then return end 
-		loc = loc or GetZoneLocation()
-		wayshrinesTab:SetCurrentZoneMapIndexes(loc.zoneIndex,loc.mapIndex)
+		local loc = GetZoneLocation()
+		
+		local isTamriel = (loc.mapIndex==nil or loc.mapIndex== 1)
+		
+		wayshrinesTab:SetCurrentZoneMapIndexes((isTamriel and zoneIndex) or loc.zoneIndex,loc.mapIndex)
 	end
 	
 	local function SetWayshrinesDirty()
@@ -123,13 +128,13 @@ init(function()
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
 		
 		local func = function()
-			SetCurrentZoneMapIndexes()
+			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex())
 			SetWayshrinesDirty()
 			SetQuestsDirty()
 		end 
-		
+		local idx = GetCurrentMapIndex()
 		-- handle the map changing from Tamriel 
-		if GetCurrentMapIndex() == 1 then 
+		if idx == nil or idx == 1 then 
 			local onChange
 			onChange = function()
 				func()
