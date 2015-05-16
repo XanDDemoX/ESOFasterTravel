@@ -174,7 +174,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		
 		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,nodeIndex)
 			
-		local curLoc = _locationsLookup[currentZoneIndex]
+		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name
 		
 		local categories ={

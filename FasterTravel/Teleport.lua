@@ -91,8 +91,8 @@ local function GetFriendsInfo()
 		
 		-- only get players that are online >_<
 		if playerstaus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 then 
-			local hasChar, charName, zoneName,classtype,alliance = GetFriendCharacterInfo(i)
 			
+			local hasChar, charName, zoneName,classtype,alliance = GetFriendCharacterInfo(i)
 			if hasChar == true and pAlliance == alliance then 
 				zoneName = GetZoneName(zoneName)
 				table.insert(returnValue,{name=displayName,zoneName=zoneName,alliance=alliance})

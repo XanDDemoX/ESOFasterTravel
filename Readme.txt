@@ -29,6 +29,10 @@ Slash Commands
 
 Change Log
 
+Version 1.3.2
+
+	- Fixed error message when opening map in an unknown location / main quest dungeon.
+
 Version 1.3.1
 
 	- Multiple fixes and improvements for multi-language compatibility
