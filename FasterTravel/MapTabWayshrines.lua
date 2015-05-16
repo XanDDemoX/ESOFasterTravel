@@ -173,7 +173,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		local recent = GetRecentWayshrinesData(recentList,{nodeIndex=nodeIndex, refresh=function(self,control) AddRowToLookup(self,control,recentlookup) end})
 		
 		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,nodeIndex)
-			
+		
 		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name
 		

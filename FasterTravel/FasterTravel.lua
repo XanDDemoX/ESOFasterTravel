@@ -88,7 +88,7 @@ init(function()
 		
 		local isTamriel = (loc.mapIndex==nil or loc.mapIndex== 1)
 		
-		wayshrinesTab:SetCurrentZoneMapIndexes((isTamriel and zoneIndex) or loc.zoneIndex,loc.mapIndex)
+		wayshrinesTab:SetCurrentZoneMapIndexes((isTamriel and zoneIndex) or loc.zoneIndex,((not (isTamriel and zoneIndex)) and loc.mapIndex) or nil)
 	end
 	
 	local function SetWayshrinesDirty()

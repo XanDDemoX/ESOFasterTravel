@@ -1,4 +1,4 @@
-ESOFasterTravel v1.3.2
+ESOFasterTravel v1.3.3
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -28,6 +28,10 @@ Slash Commands
 
 
 Change Log
+
+Version 1.3.3
+
+	- Fixed mapIndex for the "Zone" category potentially being resolved to Tamriel within a city map
 
 Version 1.3.2
 
