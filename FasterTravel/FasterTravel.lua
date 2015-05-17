@@ -51,7 +51,7 @@ init(function()
 	local _locationsLookup
 	
 	local _settings = {recent={}}
-	local _settingsVersion = "6"
+	local _settingsVersion = "7"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
 	
@@ -66,19 +66,19 @@ init(function()
 	
 	local recentTable = Utils.map(_settings.recent,function(v) return {name=v.name,nodeIndex=v.nodeIndex} end)
 	
-	local recentList = f.RecentList(recentTable,"name",5)
+	local recentList = f.RecentList(recentTable,"nodeIndex",5)
 		
 	local function GetZoneLocation(...)
 		return Location.Data.GetZoneLocation(_locationsLookup,...)
 	end
 		
-	local function PushRecent(name,nodeIndex)
-		recentList:push("name",{name=name,nodeIndex=nodeIndex})
+	local function PushRecent(nodeIndex)
+		recentList:push("nodeIndex",{nodeIndex=nodeIndex})
 		_settings.recent = {}
 		local i = 0
 		for v in recentList:items() do
 			i = i + 1
-			_settings.recent[i] = {name=v.name,nodeIndex=v.nodeIndex}
+			_settings.recent[i] = {nodeIndex=v.nodeIndex}
 		end
 	end
 	
@@ -265,7 +265,7 @@ init(function()
 		base(id,node,params,...)
 		if id ~= "RECALL_CONFIRM" and id ~= "FAST_TRAVEL_CONFIRM" then return end
 		-- hack to get fast travel node for recent list from the map
-		local nodeIndex,name = node.nodeIndex,params.mainTextParams[1]
+		local nodeIndex = node.nodeIndex
 				
 		local dialog = ZO_Dialogs_FindDialog(id)
 		local acceptButton = dialog.buttonControls[1]
@@ -277,7 +277,7 @@ init(function()
 		--get accept and cancel buttons
 		acceptButton.m_callback = function(...)
 			if acceptButton_m_callback ~= nil then acceptButton_m_callback(...) end
-			PushRecent(name,nodeIndex)
+			PushRecent(nodeIndex)
 			acceptButton.m_callback = acceptButton_m_callback
 			cancelButton.m_callback = cancelButton_m_callback
 		end

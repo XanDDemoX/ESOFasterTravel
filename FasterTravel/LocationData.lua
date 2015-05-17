@@ -186,7 +186,7 @@ local function GetMapZoneKey(zone,subzone)
 	elseif subzone == nil then
 		zone,subzone = GetMapZone(zone)
 	end
-	return zone.."/"..subzone,zone,subzone
+	return table.concat({zone,"/",subzone}),zone,subzone
 end
 
 local function GetList()

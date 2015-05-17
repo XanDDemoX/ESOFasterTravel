@@ -1,4 +1,4 @@
-ESOFasterTravel v1.3.3
+ESOFasterTravel v1.3.4
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -28,6 +28,9 @@ Slash Commands
 
 
 Change Log
+Version 1.3.4
+
+	- Fixed unformatted strings potentially being saved into saved variables via recent list.
 
 Version 1.3.3
 

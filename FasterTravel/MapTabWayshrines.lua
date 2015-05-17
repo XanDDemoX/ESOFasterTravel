@@ -11,7 +11,7 @@ local function ShowWayshrineConfirm(data,isRecall)
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
 	ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
 	ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
-	name = name or select(2, GetFastTravelNodeInfo(nodeIndex))
+	name = name or select(2, Wayshrine.Data.GetNodeInfo(nodeIndex)) -- just in case
 	local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
 end
@@ -69,7 +69,14 @@ local function GetRecentWayshrinesData(recentList,args)
 
 	local iter =  Utils.where(recentList:items(), function(v) return (nodeIndex == nil or v.nodeIndex ~= nodeIndex) end)
 	
-	iter = Utils.map(iter,function(d) return AttachWayshrineDataHandlers(args,d) end)
+	iter = Utils.map(iter,function(d) 
+	
+		local known,name = Wayshrine.Data.GetNodeInfo(d.nodeIndex)
+		
+		d.name = name
+	
+		return AttachWayshrineDataHandlers(args,d) 
+	end)
 	
 	return Utils.toTable(iter)
 end
