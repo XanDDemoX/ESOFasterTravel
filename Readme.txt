@@ -1,4 +1,4 @@
-ESOFasterTravel v1.3.4
+ESOFasterTravel v1.3.5
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -28,6 +28,11 @@ Slash Commands
 
 
 Change Log
+
+Version 1.3.5
+	
+	- Fixed error message when opening the store with with the Wayshrines or Players tab displayed.
+
 Version 1.3.4
 
 	- Fixed unformatted strings potentially being saved into saved variables via recent list.

@@ -62,6 +62,7 @@
             <OnInitialized>
                 self.list = self:GetNamedChild("List")
 				self.fragment = ZO_FadeSceneFragment:New(self)
+				self.fragment.duration = 100
 				ZO_ScrollList_AddDataType(self.list,0,"FasterTravel_WorldMapWayshrineCategoryRow", 23, function(control, data) self:RefreshRow(control,data) end)
 				ZO_ScrollList_AddDataType(self.list,1,"FasterTravel_WorldMapWayshrineRow", 23, function(control, data) self:RefreshRow(control,data) end)
 	        </OnInitialized>
