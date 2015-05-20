@@ -1,6 +1,6 @@
-## Title: Faster Travel v1.3.8
+## Title: Faster Travel v1.3.9
 ## Author: XanDDemoX
-## Version 1.3.8
+## Version 1.3.9
 
 ## APIVersion: 100011
 ## SavedVariables: FasterTravel_SavedVariables

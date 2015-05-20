@@ -135,29 +135,30 @@ local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quest
 	local mapshrines = wayshrines[loc.zoneIndex]
 		
 	for i,quest in ipairs(quests) do
-	
-		Quest.GetQuestLocations(quest.index,function(result)
-		
-			if IsValidResult(result) == true then
+	    -- always request where zoneIndex is nil
+		if (quest.zoneIndex == nil or quest.zoneIndex == loc.zoneIndex) then 
+			Quest.GetQuestLocations(quest.index,function(result)
+			
+				if IsValidResult(result) == true then
 
-				local closest 
-								
-				if (quest.zoneIndex == nil or quest.zoneIndex == loc.zoneIndex) and result.insideCurrentMapWorld == true then
-					closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,mapshrines)
-				end
-				
-				if closest ~= nil then 
+					local closest 
+									
+					if result.insideCurrentMapWorld == true then
+						closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,mapshrines)
+					end
+					
+					if closest ~= nil then 
 
-					if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex]) == true then
-						tab:RefreshControl()
+						if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex]) == true then
+							tab:RefreshControl()
+						end
+						
 					end
 					
 				end
-				
-			end
 
-		end)
-			
+			end)
+		end 
 	end
 	
 end
