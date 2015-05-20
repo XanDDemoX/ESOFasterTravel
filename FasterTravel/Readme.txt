@@ -1,4 +1,4 @@
-ESOFasterTravel v1.3.6
+ESOFasterTravel v1.3.7
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -28,6 +28,11 @@ Slash Commands
 
 
 Change Log
+
+Version 1.3.7
+
+	- Improved quest closest wayshrine resolution in quest tracker.
+	- Fixed issue where zone location could change to the parent zone in areas such as Bal Foyen upon a ui reload.
 
 Version 1.3.6
 	

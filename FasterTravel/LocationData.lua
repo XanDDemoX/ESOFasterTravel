@@ -231,12 +231,14 @@ local function GetLookup()
 end
 
 local function GetZoneLocation(lookup,zone,subzone)
-
+	local loc
+	
 	if type(zone) == "number" then 
 		loc = lookup[zone]
-	else
+		zone = nil 
+	end 
+	if loc == nil then
 		local key,zone,subzone = Location.Data.GetMapZoneKey(zone,subzone)
-	
 		-- try by zone/subzone key first
 		loc = lookup[key]
 		-- subzone next to handle places like khenarthis roost

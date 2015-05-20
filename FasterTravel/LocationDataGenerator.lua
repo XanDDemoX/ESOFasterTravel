@@ -1,12 +1,13 @@
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 
+
 local function GetLocations(callback)
     local locations = {}
 	
     for i = 1, GetNumMaps() do
         local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
 		if Utils.stringIsEmpty(mapName) == false then
-			table.insert(locations,{ name = mapName, mapIndex = i })
+			table.insert(locations,{ name = mapName, mapIndex = i, zoneIndex=zoneId })
 		end
     end
 	
@@ -50,7 +51,6 @@ local function GetLocations(callback)
 		end
 		
 		local item = locations[cur]
-		item.zoneIndex = GetCurrentMapZoneIndex()
 		
 		local path = GetMapTileTexture()
 		

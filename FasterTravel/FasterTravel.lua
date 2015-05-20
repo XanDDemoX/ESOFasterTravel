@@ -84,11 +84,8 @@ init(function()
 	
 	local function SetCurrentZoneMapIndexes(zoneIndex)
 		if wayshrinesTab == nil then return end 
-		local loc = GetZoneLocation()
-		
-		local isTamriel = (loc.mapIndex==nil or loc.mapIndex== 1)
-		
-		wayshrinesTab:SetCurrentZoneMapIndexes((isTamriel and zoneIndex) or loc.zoneIndex,((not (isTamriel and zoneIndex)) and loc.mapIndex) or nil)
+		local loc = GetZoneLocation(zoneIndex)		
+		wayshrinesTab:SetCurrentZoneMapIndexes(loc.zoneIndex,loc.mapIndex)
 	end
 	
 	local function SetWayshrinesDirty()

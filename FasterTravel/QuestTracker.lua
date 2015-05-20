@@ -139,27 +139,23 @@ local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
 end
 
 local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines)
+
 	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
 	local curshrines = wayshrines[currentZoneIndex]
 	local mapshrines = wayshrines[loc.zoneIndex]
-	local questshrines
 		
 	for i,quest in ipairs(quests) do
-
-		questshrines = wayshrines[quest.zoneIndex]
-
+	
 		Quest.GetQuestLocations(quest.index,function(result)
 		
 			if IsValidResult(result) == true then
 
 				local closest 
-				
-				if questshrines ~= nil then
-					closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,questshrines)
-				elseif currentZoneIndex == loc.zoneIndex and result.insideCurrentMapWorld == true then
+								
+				if currentZoneIndex == loc.zoneIndex and result.insideCurrentMapWorld == true then
 					closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,curshrines)
-				elseif result.insideCurrentMapWorld == true then
+				elseif (quest.zoneIndex == nil or quest.zoneIndex == loc.zoneIndex) and result.insideCurrentMapWorld == true then
 					closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,mapshrines)
 				end
 				
