@@ -123,10 +123,9 @@ local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
 	
 	if loc.zoneIndex == currentZoneIndex then
 		ClearIcons(curLookup)
-		ClearIcons(zoneLookup[currentZoneIndex])
-	else
-		ClearIcons(zoneLookup[loc.zoneIndex])
 	end
+	
+	ClearIcons(zoneLookup[loc.zoneIndex])
 end
 
 local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines)
