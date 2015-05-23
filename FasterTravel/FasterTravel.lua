@@ -238,6 +238,18 @@ init(function()
 		SetQuestsDirty()
 	end)
 	
+	addEvent(EVENT_QUEST_COMPLETE,function(eventCode, questName, level, previousExperience, currentExperience, rank, previousPoints, currentPoints)
+		SetQuestsDirty()
+	end)
+	
+	addEvent(EVENT_OBJECTIVES_UPDATED,function(eventCode)
+		SetQuestsDirty()
+	end)
+	
+	addEvent(EVENT_OBJECTIVE_COMPLETED,function(eventCode, zoneIndex, poiIndex, level, previousExperience, currentExperience, rank, previousPoints, currentPoints)
+		SetQuestsDirty()
+	end)
+	
 	local function RefreshQuestsIfMapVisible()
 		SetQuestsDirty()
 		
