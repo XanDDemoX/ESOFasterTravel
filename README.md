@@ -3,7 +3,7 @@ An addon for The Elder Scrolls Online which improves the usability of in game tr
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.0.zip)
+[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.1.zip)
 
 * Wayshrines
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -25,7 +25,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.0.zip)
+1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.1.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -50,6 +50,8 @@ Usage
   
 Change Log
 =============
+* **Version 1.4.1**
+  * Renamed Readme.txt to README to prevent ESO detecting it as an addon
 * **Version 1.4.0**
   * Fixed quest tracker not being invalidated on some quest events
 * **Version 1.3.9**
