@@ -127,11 +127,25 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		self:IconMouseExit(...)
 	end)
 	
-	control.IconMouseClicked = FasterTravel.hook(control.iconMouseClicked,function(base,control,...)
+	control.IconMouseClicked = FasterTravel.hook(control.IconMouseClicked,function(base,control,...)
 		base(control,...)
-		
+		self:IconMouseClicked(...)
 	end)
 
+	control.RowMouseEnter = FasterTravel.hook(control.RowMouseEnter,function(base,control,...)
+		base(control,...)
+		self:RowMouseEnter(...)
+	end)
+	
+	control.RowMouseExit = FasterTravel.hook(control.RowMouseExit,function(base,control,...)
+		base(control,...)
+		self:RowMouseExit(...)
+	end)
+	
+	control.RowMouseClicked = FasterTravel.hook(control.RowMouseClicked,function(base,control,...)
+		base(control,...)
+		self:RowMouseClicked(...)
+	end)
 	
 	local _first = true
 	
@@ -142,6 +156,12 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	
 	local _locations = locations
 	local _locationsLookup = locationsLookup
+	
+	local currentNodeIndex
+	
+	self.IsRecall = function(self)
+		return currentNodeIndex == nil
+	end
 	
 	self.GetRowLookups = function(self)
 		return _rowLookup
@@ -173,7 +193,9 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		_rowLookup.current = {}
 		_rowLookup.recent = {}
 		_rowLookup.zone = {}
-
+		
+		currentNodeIndex = nodeIndex
+		
 		local recentlookup = _rowLookup.recent
 		local currentlookup = _rowLookup.current
 		
@@ -288,5 +310,21 @@ function MapTabWayshrines:IconMouseEnter(...)
 end
 
 function MapTabWayshrines:IconMouseExit(...)
+
+end
+
+function MapTabWayshrines:IconMouseClicked(...)
+
+end 
+
+function MapTabWayshrines:RowMouseEnter(...)
+
+end
+
+function MapTabWayshrines:RowMouseExit(...)
+
+end
+
+function MapTabWayshrines:RowMouseClicked(...)
 
 end

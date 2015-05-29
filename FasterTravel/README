@@ -1,4 +1,4 @@
-ESOFasterTravel v1.4.2
+ESOFasterTravel v1.4.3
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -29,20 +29,31 @@ Slash Commands
 
 Change Log
 
+Version 1.4.3
+
+	- Added selection of tracked quest by clicking quest icons
+	- Added map panning to quests
+	- Added support to quest tracker for displaying quest objectives on the recent list.
+	- Added sorting of tracked quest objectives to the top of tooltips.
+	- Added displaying wayshrine name in tooltip.
+	- Added recall cost display to tooltip.
+	- Added displaying quest names, objectives and objective icons in tooltip.
+	- Improved wayshrine tooltip layout and formatting.
+
 Version 1.4.2
 
 	- Added support to quest tracker for quest objectives potentially spanning multiple wayshrines.
 	- Fixed quest tracker potentially not displaying all quest objectives for some quests.
 	- Fixed quest tracker displaying all objectives against wayshrines which are closest to one or more objectives.
-	- Fixed zone category displaying Tamriel as location in delves and dungeons of Coldharbour
+	- Fixed zone category displaying Tamriel as location in delves and dungeons of Coldharbour.
 	
 Version 1.4.1
 
-	- Renamed Readme.txt to README to prevent ESO detecting it as an addon
+	- Renamed Readme.txt to README to prevent ESO detecting it as an addon.
 	
 Version 1.4.0
 
-	- Fixed quest tracker not being invalidated on some quest events
+	- Fixed quest tracker not being invalidated on some quest events.
 
 Version 1.3.9
 

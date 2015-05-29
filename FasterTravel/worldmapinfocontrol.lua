@@ -62,22 +62,27 @@ function InfoControl:Refresh(...)
 
 end
 
-local function RowMouseDown(control, button)
+function InfoControl:RowMouseDown(control, button)
     if(button == 1) then
         control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 1)
     end
 end
 
-local function RowMouseUp(control, button, upInside)
+function InfoControl:RowMouseUp(control, button, upInside)
     if(button == 1) then
         control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 0)
         if(upInside) then
 			local data = ZO_ScrollList_GetData(control)
 			if data.clicked then 
 				data:clicked(control)
+				self:RowMouseClicked(control,data)
 			end
         end
     end
+end
+
+function InfoControl:RowMouseClicked(control,data)
+
 end
 
 function InfoControl:OnRefreshRow(control,data)
@@ -92,9 +97,9 @@ function InfoControl:RefreshRow(control,data)
 	
 	control.label:SetHidden(data == nil or (data.hidden ~= nil and data.hidden == true))
 
-	control.RowMouseDown = RowMouseDown
+	control.RowMouseDown = function(...) self:RowMouseDown(...) end 
 	
-	control.RowMouseUp = RowMouseUp
+	control.RowMouseUp = function(...) self:RowMouseUp(...) end
 	
 	self:OnRefreshRow(control,data)
 end

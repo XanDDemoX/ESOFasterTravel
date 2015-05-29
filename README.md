@@ -1,9 +1,9 @@
-# ESOFasterTravel v1.4.2
+# ESOFasterTravel v1.4.3
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.2.zip)
+[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.3.zip)
 
 * Wayshrines
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -25,7 +25,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.2.zip)
+1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.3.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -50,6 +50,15 @@ Usage
   
 Change Log
 =============
+* **Version 1.4.3**
+  * Added selection of tracked quest by clicking quest icons
+  * Added map panning to quests
+  * Added support to quest tracker for displaying quest objectives on the recent list.
+  * Added sorting of tracked quest objectives to the top of tooltips.
+  * Added displaying wayshrine name in tooltip.
+  * Added recall cost display to tooltip.
+  * Added displaying quest names, objectives and objective icons in tooltip.
+  * Improved wayshrine tooltip layout and formatting.
 * **Version 1.4.2**
   * Added support to quest tracker for quest objectives potentially spanning multiple wayshrines.
   * Fixed quest tracker potentially not displaying all quest objectives for some quests.

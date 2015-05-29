@@ -30,8 +30,23 @@ function MapWayshrines:IconMouseClicked(...)
 
 end
 
+
+function MapWayshrines:RowMouseEnter(control, label,data)
+	ZO_SelectableLabel_OnMouseEnter(label)
+
+end 
+
+function MapWayshrines:RowMouseExit(control,label,data)
+	ZO_SelectableLabel_OnMouseExit(label)
+
+end
+
 function MapWayshrines:OnRefreshRow(control,data)
 	local icon = control.icon 
+	
+	control.RowMouseEnter = function(c,label) self:RowMouseEnter(c,label,data) end 
+	control.RowMouseExit = function(c,label) self:RowMouseExit(c,label,data) end
+	
 	if icon then
 	
 		control.IconMouseEnter = function(c,icon) self:IconMouseEnter(icon,data) end 

@@ -39,14 +39,20 @@
 						self:GetParent():IconMouseExit(self)
 					</OnMouseExit>
 					<OnMouseDown>
-						self:GetParent():IconMouseDown(button)
+						self:GetParent():IconMouseDown(self,button)
 					</OnMouseDown>
 					<OnMouseUp>
-						self:GetParent():IconMouseUp(button, upInside)
+						self:GetParent():IconMouseUp(self,button, upInside)
 					</OnMouseUp>
 				</Texture>
 				<Label name="$(parent)Label" inherits="ZO_SelectableLabel" font="ZoFontHeader" newLineIndent="8">
 					<Anchor point="TOPLEFT" offsetX="20" />
+					<OnMouseEnter>
+						self:GetParent():RowMouseEnter(self)
+					</OnMouseEnter>
+                    <OnMouseExit>
+						self:GetParent():RowMouseExit(self)
+					</OnMouseExit>
 					<OnMouseDown>
 						self:GetParent():RowMouseDown(button)
 					</OnMouseDown>
