@@ -239,14 +239,61 @@ local function AddQuestTasksToTooltip(tooltip, quest)
 	end 
 end
 
-local function AddRecallToTooltip(tooltip)
+local function GetRecallCostInfo()
 	local cost = GetRecallCost()
 	local hasEnough = CURRENCY_HAS_ENOUGH
 	if cost > GetCurrentMoney() then 
 		hasEnough = CURRENCY_NOT_ENOUGH
 	end
+	return cost,hasEnough
+end
+
+local function AddRecallToTooltip(tooltip)
+	local cost,hasEnough = GetRecallCostInfo()
 	tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
 end
+
+local function SetRecallAmount(tooltip,amount,hasEnough)
+	local currencyControl = GetControl(GetControl(tooltip, "SellPrice"), "Currency")
+	if currencyControl ~= nil then 
+		ZO_CurrencyControl_SetSimpleCurrency(currencyControl, CURRENCY_TYPE_MONEY, amount, {showTooltips = false}, CURRENCY_DONT_SHOW_ALL, hasEnough)
+	end
+end
+
+local function UpdateRecallAmount(tooltip)
+	local cost,hasEnough = GetRecallCostInfo()
+	SetRecallAmount(tooltip,cost,hasEnough)
+end
+
+local function CreateTimer(func, interval)
+	
+	local enabled = false
+	
+	local instance = { 
+		Tick = function(self)
+			zo_callLater(function() 
+				if enabled == true then 
+					func() 
+					if enabled == true then 
+						self:Tick()
+					end
+				end 
+			end, interval)
+		end,
+		Start = function(self)
+			if enabled == true then return end 
+			enabled = true
+			self:Tick()
+		end, 
+		Stop = function(self)
+			if enabled == false then return end 
+			enabled = false 
+		end
+	}
+	
+	return instance
+end 
+
 
 local function CreateQuestsTable(quests)
 	
@@ -396,13 +443,36 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		_isDirty = false
 	end
 
-	self.HideToolTip = function(self) HideToolTip(InformationTooltip) end 
+	local recallTimer
+	
+	local function StartRecallTimer()
+		if tab:IsRecall() == false then return end
+		
+		if recallTimer == nil then
+			recallTimer = CreateTimer(function()
+				UpdateRecallAmount(InformationTooltip)
+			end,1000)
+		end 
+		recallTimer:Start()
+	end 
+	
+	local function StopRecallTimer()
+		if recallTimer == nil then return end
+		recallTimer:Stop()
+	end
+	
+	self.HideToolTip = function(self) 
+	
+		StopRecallTimer()
+		
+		HideToolTip(InformationTooltip) 
+	end 
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
-	
+		
 		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall())
-
+		StartRecallTimer()
 	end)
 	
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
@@ -419,6 +489,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		base(control,row,label,data)
 		
 		ShowToolTip(InformationTooltip, row.icon,data,-25,tab:IsRecall())
+		StartRecallTimer()
 	end)
 	
 	tab.RowMouseExit = FasterTravel.hook(tab.RowMouseExit,function(base,control,row,label,data)
