@@ -1,6 +1,34 @@
 local Location = FasterTravel.Location
 local Utils = FasterTravel.Utils
 local Data = {}
+
+local ALLIANCE_SHARED = -2147483647
+local ALLIANCE_WORLD = -2147483648
+
+local _factionZoneOrderLookup = {
+
+	[ALLIANCE_ALDMERI_DOMINION]={"khenarthisroost","auridon","grahtwood","greenshade","malabaltor","reapersmarch"},
+	
+	[ALLIANCE_DAGGERFALL_COVENANT]={"strosmkai","betnihk","glenumbra","stormhaven","rivenspire","alikr","bangkorai"},
+	
+	[ALLIANCE_EBONHEART_PACT]= {"bleakrock","balfoyen","stonefalls","deshaan","shadowfen","eastmarch","therift"},
+	
+	[ALLIANCE_SHARED] = {"coldharbor","eyevea","cyrodiil"},
+	
+	[ALLIANCE_WORLD] = {"tamriel","mundus"}
+	
+}
+
+local _factionAllianceOrderLookup = {
+
+	[ALLIANCE_ALDMERI_DOMINION] = {	ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT, ALLIANCE_DAGGERFALL_COVENANT,ALLIANCE_SHARED, ALLIANCE_WORLD },
+	
+	[ALLIANCE_DAGGERFALL_COVENANT] = { ALLIANCE_DAGGERFALL_COVENANT,  ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT,ALLIANCE_SHARED, ALLIANCE_WORLD },
+	
+	[ALLIANCE_EBONHEART_PACT] ={ ALLIANCE_EBONHEART_PACT,  ALLIANCE_DAGGERFALL_COVENANT, ALLIANCE_ALDMERI_DOMINION,ALLIANCE_SHARED, ALLIANCE_WORLD }
+
+}
+
 -- generated locations list
 local _locationsList = {
 	[1] = 
@@ -166,8 +194,16 @@ local _locationsList = {
 	}
 }
 
+local LocationOrder = {
+	A_Z = 1,
+	FACTION_A_Z = 2,
+	FACTION_LEVEL = 3,
+}
+
 local _locations
 local _locationsLookup
+local _zoneFactionLookup
+
 
 local function GetMapZone(path)
 	path = path or GetMapTileTexture()
@@ -219,6 +255,7 @@ local function CreateLocationsLookup(locations,func)
 		elseif lookup[loc.zone] == nil then 
 			lookup[loc.zone] = item
 		end
+		
 	end
 	
 	for i,loc in ipairs(locations) do 
@@ -246,6 +283,7 @@ local function GetZoneLocation(lookup,zone,subzone)
 	end 
 	if loc == nil then
 		local key,zone,subzone = Location.Data.GetMapZoneKey(zone,subzone)
+		
 		-- try by zone/subzone key first
 		loc = lookup[key]
 		-- subzone next to handle places like khenarthis roost
@@ -266,12 +304,90 @@ local function GetZoneLocation(lookup,zone,subzone)
 	return loc
 end
 
+local function GetZoneFactionLookup()
+
+	local zoneLookup = GetLookup()
+	
+	if _zoneFactionLookup == nil then 
+		local lookup = {}
+		
+		for faction,zones in pairs(_factionZoneOrderLookup) do
+			for i,zone in ipairs(zones) do 
+				lookup[zoneLookup[zone]] = faction
+			end
+		end
+		
+		_zoneFactionLookup = lookup
+	end 
+	
+	return _zoneFactionLookup
+end 
+
+local function GetZoneFaction(loc)
+	local lookup = GetZoneFactionLookup()
+	return lookup[loc]
+end 
+
+local function GetFactionOrderedList(faction,lookup,sortFunc)
+
+	local alliances = _factionAllianceOrderLookup[faction]
+	
+	local zoneOrder
+	
+	local list = {}
+	
+	local zones
+	
+	for i,alliance in ipairs(alliances) do 
+		zones = _factionZoneOrderLookup[alliance]
+		zones = Utils.map(zones,function(key) return lookup[key] end)
+		if sortFunc ~= nil then 
+			table.sort(zones,sortFunc)
+		end
+		Utils.copy(zones,list)
+	end
+	
+	return list
+end
+
+local function IsFactionWorldOrShared(faction)
+	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD
+end
+
+local function UpdateLocationOrder(order,locations)
+	local newList 
+	
+	local lookup = GetLookup()
+	
+	if order == LocationOrder.FACTION_A_Z then 
+		newList = GetFactionOrderedList(currentFaction, lookup,function(x) return x.name < y.name end)
+	elseif order == LocationOrder.FACTION_LEVEL then 
+		newList = GetFactionOrderedList(currentFaction, lookup)
+	else
+		newList = GetList()
+	end
+	
+	for i,v in ipairs(newList) do
+		locations[i] = v 
+	end 
+end
+
+local function IsLocationOrderFaction(order)
+	return order == LocationOrder.FACTION_A_Z or LocationOrder.FACTION_LEVEL
+end
+
 local d = Data
 d.Initialise = Initialise
 d.GetMapZoneKey = GetMapZoneKey
 d.GetList = GetList
 d.GetLookup = GetLookup
 d.GetZoneLocation = GetZoneLocation
+d.GetZoneFaction = GetZoneFaction
+d.GetFactionOrderedList = GetFactionOrderedList
+d.IsFactionWorldOrShared = IsFactionWorldOrShared
+d.LocationOrder = LocationOrder
+d.UpdateLocationOrder = UpdateLocationOrder
+d.IsLocationOrderFaction = IsLocationOrderFaction
 
 FasterTravel.Location.Data = d
 	

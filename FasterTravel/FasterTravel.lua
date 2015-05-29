@@ -49,8 +49,10 @@ init(function()
 	
 	local _locations
 	local _locationsLookup
-	
-	local _settings = {recent={}}
+
+
+		
+	local _settings = {recent={},locationOrder = Location.Data.LocationOrder.A_Z}
 	local _settingsVersion = "7"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
@@ -67,7 +69,10 @@ init(function()
 	local recentTable = Utils.map(_settings.recent,function(v) return {name=v.name,nodeIndex=v.nodeIndex} end)
 	
 	local recentList = f.RecentList(recentTable,"nodeIndex",5)
-		
+	
+	local currentFaction
+	local locationsDirty = true
+
 	local function GetZoneLocation(...)
 		return Location.Data.GetZoneLocation(_locationsLookup,...)
 	end
@@ -81,11 +86,16 @@ init(function()
 			_settings.recent[i] = {nodeIndex=v.nodeIndex}
 		end
 	end
+
+	local function SetLocationsDirty()
+		locationsDirty = true
+	end
 	
-	local function SetCurrentZoneMapIndexes(zoneIndex)
+	local function RefreshLocationsIfRequired()
 		if wayshrinesTab == nil then return end 
-		local loc = GetZoneLocation(zoneIndex)		
-		wayshrinesTab:SetCurrentZoneMapIndexes(loc.zoneIndex,loc.mapIndex)
+		if locationsDirty == false or wayshrinesTab:IsDirty() == false then return end
+		Location.Data.UpdateLocationOrder(_settings.locationOrder,_locations)
+		locationsDirty = false
 	end
 	
 	local function SetWayshrinesDirty()
@@ -95,7 +105,8 @@ init(function()
 	
 	local function RefreshWayshrinesIfRequired(nodeIndex)
 		if wayshrinesTab == nil then return end 
-		 wayshrinesTab:RefreshIfRequired(nodeIndex)
+		RefreshLocationsIfRequired()
+		wayshrinesTab:RefreshIfRequired(nodeIndex)
 	end
 		
 	local function SetPlayersDirty()
@@ -116,6 +127,39 @@ init(function()
 	local function RefreshQuestsIfRequired()
 		if questTracker == nil then return end 
 		questTracker:RefreshIfRequired()
+	end
+	
+	local function IsLocationOrderFaction()
+		return Location.Data.IsLocationOrderFaction(_settings.locationOrder)
+	end 
+	
+	local function SetCurrentFaction(loc)
+		
+		local oldfaction = currentFaction
+	
+		if currentFaction == nil then 
+			currentFaction = GetUnitAlliance("player")
+		end
+		
+		local faction = Location.Data.GetZoneFaction(loc)
+			
+		if Location.Data.IsFactionWorldOrShared(faction) == false then 
+			currentFaction = faction 
+		end 
+		
+		if oldfaction ~= currentFaction and IsLocationOrderFaction() == true then
+			SetLocationsDirty()
+		end
+	end 
+	
+	local function SetCurrentZoneMapIndexes(zoneIndex)
+		if wayshrinesTab == nil then return end 
+
+		local loc = GetZoneLocation(zoneIndex)		
+		
+		SetCurrentFaction(loc)
+		
+		wayshrinesTab:SetCurrentZoneMapIndexes(loc.zoneIndex,loc.mapIndex)
 	end
 	
 	local function IsWorldMapHidden()
@@ -314,9 +358,10 @@ init(function()
 	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight =highlight,normal = normal})
 	end
 	
-	_locations = Location.Data.GetList()
 	_locationsLookup = Location.Data.GetLookup()
-			
+	
+	_locations = {} 
+	
 	wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList)
 	playersTab = FasterTravel.MapTabPlayers(playersControl)
 	questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
