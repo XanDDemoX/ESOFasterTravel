@@ -46,7 +46,6 @@ end
 local l = Location
 
 l.GetClosestLocation = GetClosestLocation
-l.GetZoneLocation = GetZoneLocation
 l.IsCyrodil = IsCyrodiil
 
 FasterTravel.Location = l 

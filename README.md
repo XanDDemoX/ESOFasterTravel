@@ -1,9 +1,9 @@
-# ESOFasterTravel v1.4.1
+# ESOFasterTravel v1.4.2
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.1.zip)
+[Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.2.zip)
 
 * Wayshrines
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -25,7 +25,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.1.zip)
+1. [Download the latest version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.2.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -50,6 +50,11 @@ Usage
   
 Change Log
 =============
+* **Version 1.4.2**
+  * Added support to quest tracker for quest objectives potentially spanning multiple wayshrines.
+  * Fixed quest tracker potentially not displaying all quest objectives for some quests.
+  * Fixed quest tracker displaying all objectives against wayshrines which are closest to one or more objectives.
+  * Fixed zone category displaying Tamriel as location in delves and dungeons of Coldharbour
 * **Version 1.4.1**
   * Renamed Readme.txt to README to prevent ESO detecting it as an addon
 * **Version 1.4.0**

@@ -42,22 +42,34 @@ local function ClearIcons(lookup)
 			local data = row.data 
 			if data ~= nil and data.iconHidden ~= nil then 
 				data.iconHidden = nil 
-				data.questIndexes = nil
+				data.quests = nil
 			end
 		end
 	end
 end
 
-local function AddQuest(data, index)
-	if data.questIndexes == nil then 
-		data.questIndexes = {}
+local function AddQuest(data, questIndex, stepIndex, conditionIndex)
+
+	if data.quests == nil then 
+		data.quests = {}
 	end
-	if data.questIndexes.table == nil then 
-		data.questIndexes.table = {}
+	
+	local questInfo = data.quests[questIndex]
+	
+	if questInfo == nil then
+		questInfo = { index = questIndex, steps = {} }
+		data.quests[questIndex] = questInfo
 	end
-	if data.questIndexes[index] == nil then
-		table.insert(data.questIndexes.table,index)
-		data.questIndexes[index] = index
+
+	local stepInfo = questInfo.steps[stepIndex]
+	
+	if stepInfo == nil then 
+		stepInfo = {index = stepIndex, conditions = {}}
+		questInfo.steps[stepIndex] = stepInfo
+	end 
+	
+	if stepInfo.conditions[conditionIndex] == nil then 
+		stepInfo.conditions[conditionIndex] = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
 	end
 end
 
@@ -66,7 +78,7 @@ local function SetIcon(lookup,closest,result)
 	if row ~= nil then 
 		local data = row.data 
 		
-		AddQuest(data,result.questIndex)
+		AddQuest(data,result.questIndex,result.stepIndex,result.conditionIndex)
 		
 		if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
 			data.iconHidden = false
@@ -163,14 +175,31 @@ local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quest
 	
 end
 
-local function AddQuestToolTip(questIndex)
-	local labels, width = ZO_WorldMapQuests_Shared_SetupQuestDetails(ZO_MapQuestDetailsTooltip, questIndex)
+local function AddQuestTaskToToolTip(text)
+	
+    local label = ZO_MapQuestDetailsTooltip.labelPool:AcquireObject()
+	
+    label:SetWidth(0)
+	
+    zo_bulletFormat(label, text)
 
-	for i,label in ipairs(labels) do 
-		ZO_MapQuestDetailsTooltip:AddControl(label)
-		label:SetAnchor(CENTER)
-		ZO_MapQuestDetailsTooltip:AddVerticalPadding(-8)
-	end
+	ZO_MapQuestDetailsTooltip:AddControl(label)
+	
+	label:SetAnchor(CENTER)
+	
+	ZO_MapQuestDetailsTooltip:AddVerticalPadding(-8)
+end
+
+local function AddQuestTasksToToolTip(quest)
+	
+	local questIndex = quest.index
+	
+	for stepIndex,stepInfo in pairs(quest.steps) do 
+	
+		for conditionIndex,text in pairs(stepInfo.conditions) do 
+			AddQuestTaskToToolTip(text)
+		end
+	end 
 end
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
@@ -226,18 +255,18 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
-		if data.questIndexes == nil or data.questIndexes.table == nil or #data.questIndexes.table == 0 then return end 
+		if data.quests == nil then return end 
 		
 		InitializeTooltip(ZO_MapQuestDetailsTooltip, icon, RIGHT, -25)
-		for i,index in ipairs(data.questIndexes.table) do 
-			AddQuestToolTip(index)
+		for index,quest in pairs(data.quests) do 
+			AddQuestTasksToToolTip(quest)
 		end 
 
 	end)
 	
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
 		base(control,icon,data)
-		if data.questIndexes == nil then return end 
+		if data.quests == nil then return end 
 		self:HideToolTip()
 	end)
 	

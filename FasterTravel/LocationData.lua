@@ -220,6 +220,13 @@ local function CreateLocationsLookup(locations,func)
 			lookup[loc.zone] = item
 		end
 	end
+	
+	for i,loc in ipairs(locations) do 
+		if lookup[loc.zone] == nil then 
+			lookup[loc.zone] = lookup[loc.zoneIndex]
+		end
+	end
+	
 	return lookup
 end
 
