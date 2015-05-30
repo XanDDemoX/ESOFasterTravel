@@ -21,7 +21,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   * Teleport to zones using players on your friends list, in your group or guild
   * Teleport to players in your any of your guilds
   
-  ![Image of Faster Travel's players tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02.jpg "Players Tab")
+  ![Image of Faster Travel's players tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02-cropped.jpg "Players Tab")
   
 Installation
 =============
