@@ -1,4 +1,4 @@
-ESOFasterTravel v1.4.4
+ESOFasterTravel v1.4.5
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -28,6 +28,13 @@ Slash Commands
 
 
 Change Log
+
+Version 1.4.5
+
+	- Fixed multiple tracked quest icons being displayed when the tracked quest has been changed
+	- Fixed setting map to quest objectives potentially changing the current map inside a delve / city.
+	- Fixed ordering of quest objectives potentially not updating when the tracked quest has been changed.
+
 Version 1.4.4
 
 	- Fixed recall cost display not updating during cooldown.
