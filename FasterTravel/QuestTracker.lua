@@ -161,7 +161,9 @@ local function SetIcon(lookup,closest,result)
 	local row = lookup[closest.nodeIndex]
 	if row ~= nil then 
 		local data = row.data 
-
+		
+		result.zoneIndex = result.zoneIndex or closest.zoneIndex
+		
 		AddQuest(data,result,_iconWidth,_iconHeight)
 		
 		if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
@@ -574,7 +576,13 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		base(control,icon,data)
 		ShowQuestMenu(control,data,function(quest)
 			
-			local mapIndex = _locationsLookup[data.zoneIndex].mapIndex
+			local loc = _locationsLookup[data.zoneIndex]
+			
+			if loc == nil then 
+				loc = _locationsLookup[quest.zoneIndex]
+			end 
+			
+			local mapIndex = loc.mapIndex
 			
 			local questIndex = quest.index
 			local lookups = _tab:GetRowLookups()
