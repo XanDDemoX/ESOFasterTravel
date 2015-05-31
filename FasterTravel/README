@@ -25,7 +25,7 @@ Slash Commands
 /goto zoneName - attempts to teleport to a zone via a player.
 /goto @PlayerName - attempts to teleport to a player.
 /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
-
+/goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc) (only works in a group) 
 
 Change Log
 

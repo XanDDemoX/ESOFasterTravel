@@ -334,12 +334,16 @@ init(function()
 	
 	SLASH_COMMANDS["/goto"] = function(args)
 		if Utils.stringIsEmpty(args) == true then return end
+		
+		args = Utils.stringTrim(args)
+		
 		local result,name
 		if Teleport.IsPlayerTeleportable(args) == true then
 			result,name = Teleport.TeleportToPlayer(args)
 		else
 			result,name = Teleport.TeleportToZone(args)
 		end
+		
 		if result == true then 
 			d(_prefix.."Teleporting to "..name)
 		elseif result == false and name ~= nil then 

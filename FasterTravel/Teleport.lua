@@ -166,7 +166,7 @@ end
 local function GetPlayerName(playerName)
 	local unitName = GetUnitName(string.lower(playerName))
 	
-	if unitName ~= nil then 
+	if Utils.stringIsEmpty(unitName) == false then 
 		playerName = unitName
 	end
 	
