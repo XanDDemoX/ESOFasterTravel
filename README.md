@@ -1,4 +1,4 @@
-# ESOFasterTravel v1.4.6
+# ESOFasterTravel v1.4.7
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -47,9 +47,12 @@ Usage
   * /goto zoneName - attempts to teleport to a zone via a player.
   * /goto @PlayerName - attempts to teleport to a player.
   * /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
+  * /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc) (only works in a group) 
   
 Change Log
 =============
+* **Version 1.4.7**
+  * Added teleport to unit tag (group1 ,group2 group3 etc) via /goto slash command 
 * **Version 1.4.6**
   * Fixed error message on attempting to focus quests from recent list.
 * **Version 1.4.5**

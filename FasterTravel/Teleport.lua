@@ -130,7 +130,7 @@ end
 local function IsPlayerReallyInGroup(playerName)
 	local gCount = GetGroupSize()
 	local pName = string.lower(playerName)
-	
+
 	for i = 1, gCount do 
 		local unitTag = GetGroupUnitTagByIndex(i)
 		-- only get players that are online >_<
@@ -163,11 +163,31 @@ local function IsPlayerInGuild(playerName)
 	return false
 end
 
+local function GetPlayerName(playerName)
+	local unitName = GetUnitName(string.lower(playerName))
+	
+	if unitName ~= nil then 
+		playerName = unitName
+	end
+	
+	return playerName
+end
+
+local function IsCurrentPlayerName(playerName)
+	return string.lower(playerName) == string.lower(GetUnitName("player"))
+end 
+
 local function IsPlayerTeleportable(playerName)
-	return IsPlayerReallyInGroup(playerName) or IsFriend(playerName) or IsPlayerInGuild(playerName)
+	if playerName == nil then return false end 
+	playerName = GetPlayerName(playerName)
+	return (not IsCurrentPlayerName(playerName)) and ( IsPlayerReallyInGroup(playerName) or IsFriend(playerName) or IsPlayerInGuild(playerName) )
 end
 
 local function TeleportToPlayer(playerName)
+	if playerName == nil then return false end 
+	
+	playerName = GetPlayerName(playerName)
+	
 	if IsPlayerReallyInGroup(playerName) then
 		JumpToGroupMember(playerName)
 	elseif IsFriend(playerName) then 
