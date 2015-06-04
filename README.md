@@ -47,8 +47,9 @@ Usage
   * /goto zoneName - attempts to teleport to a zone via a player.
   * /goto @PlayerName - attempts to teleport to a player.
   * /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
-  * /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc) (only works in a group) 
-  
+  * /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
+  * /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc)
+
 Change Log
 =============
 * **Version 1.4.7**
