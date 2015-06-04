@@ -6,6 +6,7 @@ FasterTravel.QuestTracker = QuestTracker
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
 local Quest = FasterTravel.Quest
+local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
 
 local _questPinTextures ={
@@ -621,6 +622,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	tab.RowMouseClicked = FasterTravel.hook(tab.RowMouseClicked,function(base,control,row,data)
 		base(control,row,data)
+		WorldMap.PanToPoint(-1,data.normalizedX,data.normalizedY)
 	end)
 	
 end

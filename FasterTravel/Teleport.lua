@@ -163,11 +163,15 @@ local function IsPlayerInGuild(playerName)
 	return false
 end
 
+local function IsCurrentPlayerName(playerName)
+	return string.lower(playerName) == string.lower(GetUnitName("player"))
+end 
+
 local function GetPlayerName(playerName)
 	local unitName
 	
 	if playerName == "group" then
-		unitName = GetGroupLeaderUnitTag()
+		unitName = GetUnitName(GetGroupLeaderUnitTag())
 		if IsCurrentPlayerName(unitName) == true then 
 			local info = GetGroupInfo() -- first group member if current player is the leader
 			unitName = info[1] ~= nil and info[1].name
@@ -182,10 +186,6 @@ local function GetPlayerName(playerName)
 	
 	return playerName
 end
-
-local function IsCurrentPlayerName(playerName)
-	return string.lower(playerName) == string.lower(GetUnitName("player"))
-end 
 
 local function IsPlayerTeleportable(playerName)
 	if playerName == nil then return false end 

@@ -20,6 +20,7 @@ Wayshrine.lua
 WayshrineData.lua
 Teleport.lua
 Quest.lua
+WorldMap.lua
 
 MapTab.lua
 MapTabWayshrines.lua
