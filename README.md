@@ -5,7 +5,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
 
 [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.6.zip)
 
-[Try the latest beta version (1.4.8)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/Faster%20Travel-latest-beta.zip)
+[Try the latest beta version (1.4.8)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 
 * Wayshrines
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -67,7 +67,7 @@ Change Log
   * Fixed setting map to quest objectives potentially changing the current map inside a delve / city.
   * Fixed ordering of quest objectives potentially not updating when the tracked quest has been changed.
 
-[View Full Change Log](https://github.com/XanDDemoX/ESOFasterTravel/VERSIONS.md)
+[View Full Change Log](https://github.com/XanDDemoX/ESOFasterTravel/blob/master/VERSIONS.md)
 
 DISCLAIMER
 =============
