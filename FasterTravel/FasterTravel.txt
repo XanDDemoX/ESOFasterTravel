@@ -18,6 +18,8 @@ Location.lua
 LocationData.lua
 Wayshrine.lua
 WayshrineData.lua
+Transitus.lua
+Social.lua
 Teleport.lua
 Quest.lua
 WorldMap.lua
