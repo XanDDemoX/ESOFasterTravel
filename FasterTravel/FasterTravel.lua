@@ -34,6 +34,7 @@ local function init(func,...)
 end
 
 local f = FasterTravel
+f.CALLBACK_ID_ON_WORLDMAP_CHANGED = CALLBACK_ID_ON_WORLDMAP_CHANGED
 f.hook = hook
 f.addEvent = addEvent
 f.addCallback = addCallback

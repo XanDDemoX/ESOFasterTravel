@@ -42,12 +42,37 @@ local function GetPinManager()
 	return _pinManager
 end
 
-local function PanToPoint(mapIndex,x,y)
+local function OnMap(mapIndex,func)
+	if mapIndex ~= GetCurrentMapIndex() then 
+		
+		local callback 
+		callback = function()
+			FasterTravel.removeCallback(FasterTravel.CALLBACK_ID_ON_WORLDMAP_CHANGED,callback)
+			func()
+		end
+	
+		FasterTravel.addCallback(FasterTravel.CALLBACK_ID_ON_WORLDMAP_CHANGED,callback)
+		
+		ZO_WorldMap_SetMapByIndex(mapIndex)
+
+	else
+		func()
+	end
+end 
+
+
+local function PanToPoint(mapIndex,func)
 
 	local manager = GetPinManager()
+	
+	
+	OnMap(mapIndex,function()
+		local x,y = func()
+		manager:PanToPoint(x,y)
+	end)
 
-	manager:PanToPoint(x,y)
 end
+
 
 local w = WorldMap
 

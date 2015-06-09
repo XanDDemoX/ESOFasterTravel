@@ -249,15 +249,20 @@ local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLook
 	ClearIcons(zoneLookup[loc.zoneIndex],recLookup)
 end
 
+local function IsQuestValidForZone(quest,loc)
+ local zoneIndex,questType = quest.zoneIndex,quest.questType
+ return zoneIndex == loc.zoneIndex or (questType == QUEST_TYPE_MAIN_STORY or questType == QUEST_TYPE_CRAFTING)
+end
+
 local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 
 	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
 	local mapshrines = wayshrines[loc.zoneIndex]
-		
+	
 	for i,quest in ipairs(quests) do
 	    -- always request where zoneIndex is nil
-		if (quest.zoneIndex == nil or quest.zoneIndex == loc.zoneIndex) then 
+		if IsQuestValidForZone(quest,loc,zoneLookup) == true then 
 			Quest.GetQuestLocations(quest.index,function(result)
 			
 				if IsValidResult(result) == true then
@@ -622,7 +627,19 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	tab.RowMouseClicked = FasterTravel.hook(tab.RowMouseClicked,function(base,control,row,data)
 		base(control,row,data)
-		WorldMap.PanToPoint(-1,data.normalizedX,data.normalizedY)
+		
+		local nodeIndex = data.nodeIndex
+		
+		if nodeIndex == nil then return end
+		
+		local loc = _locationsLookup[data.zoneIndex]
+		
+		if loc ~= nil then 
+			WorldMap.PanToPoint(loc.mapIndex,function()
+				local known,name,x,y = Wayshrine.Data.GetNodeInfo(nodeIndex)
+				return x,y
+			end)
+		end 
 	end)
 	
 end

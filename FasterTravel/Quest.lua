@@ -14,7 +14,7 @@ local function GetQuests()
 		if IsValidQuestIndex(i) == true then 
 			questName,backgroundText,activeStepText,activeStepType, activeStepTrackerOverrideText, completed, tracked, questLevel,pushed,questType,instanceDisplayType=GetJournalQuestInfo(i)
 			zoneName, objectiveName, zoneIndex, poiIndex = GetJournalQuestLocationInfo(i)
-			table.insert(quests,{index=i,name=questName,zoneName = zoneName,objectiveName=objectiveName,zoneIndex=zoneIndex,poiIndex=poiIndex})
+			table.insert(quests,{index=i,name=questName,zoneName = zoneName,objectiveName=objectiveName,zoneIndex=zoneIndex,poiIndex=poiIndex,questType=questType})
 		end
 	end
 	
