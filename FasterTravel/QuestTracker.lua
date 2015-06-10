@@ -589,7 +589,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
 		
-		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall(),tab:isKeep())
+		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall(),tab:IsKeep())
 		StartRecallTimer()
 	end)
 	
