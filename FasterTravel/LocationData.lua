@@ -166,6 +166,8 @@ local _locationsList = {
 	}
 }
 
+local ZONE_INDEX_CYRODIIL = 14
+
 local _locations
 local _locationsLookup
 
@@ -266,12 +268,18 @@ local function GetZoneLocation(lookup,zone,subzone)
 	return loc
 end
 
+local function IsZoneIndexCyrodiil(zoneIndex)
+	return zoneIndex == ZONE_INDEX_CYRODIIL
+end
+
 local d = Data
+d.ZONE_INDEX_CYRODIIL = ZONE_INDEX_CYRODIIL
 d.Initialise = Initialise
 d.GetMapZoneKey = GetMapZoneKey
 d.GetList = GetList
 d.GetLookup = GetLookup
 d.GetZoneLocation = GetZoneLocation
+d.IsZoneIndexCyrodiil = IsZoneIndexCyrodiil
 
 FasterTravel.Location.Data = d
 	

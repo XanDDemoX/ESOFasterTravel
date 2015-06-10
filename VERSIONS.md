@@ -1,5 +1,9 @@
 Change Log
 =============
+* **Version 1.4.9**
+  * Added Transitus shrine support in Cyrodiil 
+  * Fixed tooltip display within Cyrodiil not displaying recall disallowed. 
+  * Fixed confirmation travel confirmation message being displayed when recall / travel disallowed.
 * **Version 1.4.8**
   * Fixed Main Quest and Crafting quest markers not appearing.
   * Added pan map to wayshrine on click

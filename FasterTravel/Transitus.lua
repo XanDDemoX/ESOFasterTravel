@@ -2,6 +2,7 @@
 local Transitus = {}
 
 local Utils = FasterTravel.Utils
+local ZONE_INDEX_CYRODIIL = FasterTravel.Location.Data.ZONE_INDEX_CYRODIIL
 
 local function GetNodes(ctx)
 
@@ -21,7 +22,7 @@ local function GetNodes(ctx)
 	
 		name = GetKeepName(keepId)
 		
-		local node = {nodeIndex = keepId, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY}
+		local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY}
 		
 		table.insert(nodes, node)
 	
@@ -36,11 +37,11 @@ local function GetNodes(ctx)
 	return nodes
 end
 
-local function GetKnownNodes(ctx)
+local function GetKnownNodes(ctx,nodeIndex)
 
 	local nodes = GetNodes(ctx)
 	
-	return Utils.where(nodes,function(node) return node.known end)
+	return Utils.where(nodes,function(node) return node.known and (nodeIndex == nil or node.nodeIndex ~= nodeIndex) end)
 end
 
 

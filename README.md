@@ -1,4 +1,4 @@
-# ESOFasterTravel v1.4.6
+# ESOFasterTravel v1.4.9
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -52,9 +52,12 @@ Usage
   * /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
   * /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc)
 
-Change Log
+Recent Change Log
 =============
-
+* **Version 1.4.9**
+  * Added Transitus shrine support in Cyrodiil 
+  * Fixed tooltip display within Cyrodiil not displaying recall disallowed. 
+  * Fixed confirmation travel confirmation message being displayed when recall / travel disallowed.
 * **Version 1.4.8**
   * Fixed Main Quest and Crafting quest markers not appearing.
   * Added pan map to wayshrine on click

@@ -410,13 +410,25 @@ local function CreateQuestsTable(quests)
 	return questTable
 end
 
-local function ShowToolTip(tooltip, control,data,offsetX,isRecall)
+local function IsCyrodiilRow(data)
+	if data == nil then return false end 
+	return Location.Data.IsZoneIndexCyrodiil(data.zoneIndex)
+end
+
+local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
 	InitializeTooltip(tooltip, control, RIGHT, offsetX)
 	
 	AddTextToTooltip(tooltip, data.name,ZO_SELECTED_TEXT)
 	
 	if isRecall == true then 
 		AddRecallToTooltip(tooltip)
+	elseif isKeep == true then 
+		
+		if IsCyrodiilRow(data) == true then 
+		
+		else
+			AddRecallToTooltip(tooltip)
+		end 
 	end
 	
 	if data.quests == nil then return end 
@@ -577,7 +589,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
 		
-		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall())
+		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall(),tab:isKeep())
 		StartRecallTimer()
 	end)
 	
@@ -623,7 +635,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	tab.RowMouseEnter = FasterTravel.hook(tab.RowMouseEnter,function(base,control,row,label,data)
 		base(control,row,label,data)
 		
-		ShowToolTip(InformationTooltip, row.icon,data,-25,tab:IsRecall())
+		ShowToolTip(InformationTooltip, row.icon,data,-25,tab:IsRecall(),tab:IsKeep())
 		StartRecallTimer()
 	end)
 	
