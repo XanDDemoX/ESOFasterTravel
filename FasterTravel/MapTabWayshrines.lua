@@ -4,6 +4,7 @@ FasterTravel.MapTabWayshrines = MapTabWayshrines
 
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
+local Transitus = FasterTravel.Transitus
 local Utils = FasterTravel.Utils
 
 
@@ -16,23 +17,49 @@ local function ShowWayshrineConfirm(data,isRecall)
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
 end
 
-local function AttachWayshrineDataHandlers(args, data)
-	local refresh = args.refresh
-	local clicked = args.clicked
+local function ShowTransitusConfirm(data)
+	TravelToKeep(data.nodeIndex)
+end
 
+local function AttachRefreshHandler(args,data)
+	local refresh = args.refresh
 	data.refresh = function(self,control) 
 		control.label:SetText(self.name) 
 		if refresh then
 			refresh(self,control)
 		end
 	end
+end
+
+local function AttachWayshrineDataHandlers(args, data)
+
+	AttachRefreshHandler(args,data)
+
+	local clicked = args.clicked
+	
 	data.clicked = function(self,control) 
 
 		ShowWayshrineConfirm(self,args.nodeIndex == nil) 
 
 	end
+	
 	return data
 end
+
+local function AttachTransitusDataHandlers(args,data)
+	
+	AttachRefreshHandler(args,data)
+	
+	local clicked = args.clicked
+
+	data.clicked = function(self,control) 
+
+		ShowTransitusConfirm(self,args.nodeIndex == nil) 
+
+	end
+	
+	return data
+end 
 
 local function AddRowToLookup(self,control,lookup)
 	local nidx = self.nodeIndex
@@ -81,13 +108,29 @@ local function GetRecentWayshrinesData(recentList,args)
 	return Utils.toTable(iter)
 end
 
+local function GetCyrodiilWayshrinesData(ctx,args)
+	local nodes = Transitus.GetKnownNodes(ctx)
+	
+	nodes = Utils.map(nodes,function(item) 
+		return AttachTransitusDataHandlers(args,item) 
+	end)
+
+	return nodes
+end
+
 local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,nodeIndex)
 
-	return GetZoneWayshrinesData({
-								nodeIndex=nodeIndex, 
-								zoneIndex = zoneIndex,
-								refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
-							})
+	local args = {
+		nodeIndex=nodeIndex,
+		zoneIndex = zoneIndex,
+		refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
+		}
+
+	if IsInCampaign() and nodeIndex == nil then
+		return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
+	end
+
+	return GetZoneWayshrinesData(args)
 end
 
 

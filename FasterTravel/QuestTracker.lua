@@ -326,16 +326,24 @@ end
 
 local REASON_CURRENCY_SPACING = 3
 local function AddRecallToTooltip(tooltip)
-	local cost,hasEnough = GetRecallCostInfo()
-	tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
+
+	if IsInCampaign() then 
 	
-	local moneyLine = GetControl(tooltip, "SellPrice")  
-	local reasonLabel = GetControl(moneyLine, "Reason")
-    local currencyControl = GetControl(moneyLine, "Currency")
-	
-	-- fix vertical align 
-	currencyControl:ClearAnchors()
-	currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
+		tooltip:AddLine(GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), "", ZO_ERROR_COLOR:UnpackRGB())
+		
+	else
+		local cost,hasEnough = GetRecallCostInfo()
+		
+		tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
+		
+		local moneyLine = GetControl(tooltip, "SellPrice")  
+		local reasonLabel = GetControl(moneyLine, "Reason")
+		local currencyControl = GetControl(moneyLine, "Currency")
+		
+		-- fix vertical align 
+		currencyControl:ClearAnchors()
+		currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
+	end 
 end
 
 local function SetRecallAmount(tooltip,amount,hasEnough)
