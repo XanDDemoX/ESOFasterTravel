@@ -20,7 +20,8 @@ local function ShowWayshrineConfirm(data,isRecall,isKeep)
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
 end
 
-local function ShowTransitusConfirm(data)
+local function ShowTransitusConfirm(data,isRecall)
+	if isRecall == true then return end
 	TravelToKeep(data.nodeIndex)
 end
 
@@ -75,10 +76,34 @@ local function AddRowToLookup(self,control,lookup)
 	end
 end
 
+local function IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex)
+	return IsInCampaign() and (isKeep or nodeIndex == nil)
+end
+
+local function GetCyrodiilWayshrinesData(ctx,args)
+	local nodes = Transitus.GetKnownNodes(ctx,args.nodeIndex)
+	
+	nodes = Utils.map(nodes,function(item) 
+		return AttachTransitusDataHandlers(args,item) 
+	end)
+
+	return nodes
+end
+
 local function GetZoneWayshrinesData(args)
 
 	local zoneIndex = args.zoneIndex
 	local nodeIndex = args.nodeIndex
+	local isKeep = args.isKeep
+	
+	local isCyrodiil = Location.Data.IsZoneIndexCyrodiil(zoneIndex)
+	
+	if isCyrodiil == true and IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex) == true then 
+		return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
+	elseif isCyrodiil and IsInCampaign() == false then 
+		-- TODO: return player campaigns
+		return {}
+	end
 
 	local iter = Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
 			
@@ -111,17 +136,7 @@ local function GetRecentWayshrinesData(recentList,args)
 	return Utils.toTable(iter)
 end
 
-local function GetCyrodiilWayshrinesData(ctx,args)
-	local nodes = Transitus.GetKnownNodes(ctx,args.nodeIndex)
-	
-	nodes = Utils.map(nodes,function(item) 
-		return AttachTransitusDataHandlers(args,item) 
-	end)
-
-	return nodes
-end
-
-local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,nodeIndex,IsKeep)
+local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,isKeep,nodeIndex)
 
 	local args = {
 		nodeIndex=nodeIndex,
@@ -129,10 +144,6 @@ local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex
 		isKeep = isKeep,
 		refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
 	}
-
-	if IsInCampaign() and (IsKeep or nodeIndex == nil) then
-		return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
-	end
 
 	return GetZoneWayshrinesData(args)
 end
@@ -245,6 +256,8 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		_rowLookup.recent = {}
 		_rowLookup.zone = {}
 		
+		isKeep = isKeep == true 
+		
 		currentNodeIndex = nodeIndex
 		currentIsKeep = isKeep
 		
@@ -253,7 +266,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		
 		local recent = GetRecentWayshrinesData(recentList,{nodeIndex=nodeIndex, refresh=function(self,control) AddRowToLookup(self,control,recentlookup) end})
 		
-		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,nodeIndex,isKeep)
+		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,isKeep,nodeIndex)
 		
 		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name

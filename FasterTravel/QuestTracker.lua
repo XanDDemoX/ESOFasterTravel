@@ -420,15 +420,10 @@ local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
 	
 	AddTextToTooltip(tooltip, data.name,ZO_SELECTED_TEXT)
 	
-	if isRecall == true then 
+	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
 		AddRecallToTooltip(tooltip)
-	elseif isKeep == true then 
-		
-		if IsCyrodiilRow(data) == true then 
-		
-		else
-			AddRecallToTooltip(tooltip)
-		end 
+	elseif isRecall == false then 
+		tooltip:AddLine(GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), "", ZO_HIGHLIGHT_TEXT:UnpackRGB())
 	end
 	
 	if data.quests == nil then return end 
