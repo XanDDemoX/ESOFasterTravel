@@ -164,7 +164,8 @@ local function IsPlayerInGuild(playerName)
 end
 
 local function IsCurrentPlayerName(playerName)
-	return string.lower(playerName) == string.lower(GetUnitName("player"))
+	local unitName = GetUnitName("player")
+	return string.lower(playerName) == string.lower(unitName)
 end 
 
 local function GetPlayerName(playerName)
@@ -174,7 +175,7 @@ local function GetPlayerName(playerName)
 		unitName = GetUnitName(GetGroupLeaderUnitTag())
 		if IsCurrentPlayerName(unitName) == true then 
 			local info = GetGroupInfo() -- first group member if current player is the leader
-			unitName = info[1] ~= nil and info[1].name
+			unitName = (info[1] ~= nil and info[1].name) or ""
 		end 
 	else
 		unitName = GetUnitName(string.lower(playerName))
