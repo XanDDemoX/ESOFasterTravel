@@ -13,11 +13,24 @@ local function ShowWayshrineConfirm(data,isRecall,isKeep)
 	if isRecall == true or isKeep == true and IsInCampaign() then return end
 
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
+	
 	ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
 	ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
+	
 	name = name or select(2, Wayshrine.Data.GetNodeInfo(nodeIndex)) -- just in case
+	
 	local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
+	
+	if isRecall == true then 
+		local _, timeLeft = GetRecallCooldown()
+		if timeLeft ~= 0 then
+		    ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, zo_strformat(SI_FAST_TRAVEL_RECALL_COOLDOWN, name, ZO_FormatTimeMilliseconds(premiumTimeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS)))
+			return
+		end
+	end 
+	
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
+	
 end
 
 local function ShowTransitusConfirm(data,isRecall)

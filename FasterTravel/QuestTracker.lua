@@ -332,17 +332,31 @@ local function AddRecallToTooltip(tooltip)
 		tooltip:AddLine(GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), "", ZO_ERROR_COLOR:UnpackRGB())
 		
 	else
-		local cost,hasEnough = GetRecallCostInfo()
+	
+		local _, timeLeft = GetRecallCooldown()
 		
-		tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
+		if timeLeft == 0 then
 		
-		local moneyLine = GetControl(tooltip, "SellPrice")  
-		local reasonLabel = GetControl(moneyLine, "Reason")
-		local currencyControl = GetControl(moneyLine, "Currency")
+			local cost,hasEnough = GetRecallCostInfo()
 		
-		-- fix vertical align 
-		currencyControl:ClearAnchors()
-		currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
+			tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
+			
+			local moneyLine = GetControl(tooltip, "SellPrice")  
+			local reasonLabel = GetControl(moneyLine, "Reason")
+			local currencyControl = GetControl(moneyLine, "Currency")
+			
+			-- fix vertical align 
+			currencyControl:ClearAnchors()
+			currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
+			
+		else
+		
+			local text = zo_strformat(SI_TOOLTIP_WAYSHRINE_RECALL_COOLDOWN, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
+			
+            tooltip:AddLine(text, "", ZO_HIGHLIGHT_TEXT:UnpackRGB())
+		
+		end
+		
 	end 
 end
 
@@ -353,9 +367,22 @@ local function SetRecallAmount(tooltip,amount,hasEnough)
 	end
 end
 
+local function SetCooldownTimeleft(tooltip,timeLeft)
+	-- TODO: Set cooldown line
+end
+
 local function UpdateRecallAmount(tooltip)
-	local cost,hasEnough = GetRecallCostInfo()
-	SetRecallAmount(tooltip,cost,hasEnough)
+
+	local _, timeLeft = GetRecallCooldown()
+	
+	if timeLeft == 0 then
+	
+		local cost,hasEnough = GetRecallCostInfo()
+		SetRecallAmount(tooltip,cost,hasEnough)
+	else
+		SetCooldownTimeleft(tooltip,timeLeft)
+	end
+	
 end
 
 local function CreateTimer(func, interval)
@@ -418,7 +445,7 @@ end
 local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
 	InitializeTooltip(tooltip, control, RIGHT, offsetX)
 	
-	AddTextToTooltip(tooltip, data.name,ZO_SELECTED_TEXT)
+	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
 	
 	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
 		AddRecallToTooltip(tooltip)

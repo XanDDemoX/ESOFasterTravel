@@ -58,6 +58,7 @@ Recent Change Log
   * Added "Fast Travel Here" text. 
   * Fixed incorrect display of Cyrodiil wayshrines whilst player is not in Cyrodiil
   * Fixed Transitus shrines not being displayed under the "Cyrodiil" heading whilst the player is in Cyrodiil
+  * Added recall cooldown time display  
 * **Version 1.4.9**
   * Added Transitus shrine support in Cyrodiil 
   * Fixed tooltip display within Cyrodiil not displaying recall disallowed. 
