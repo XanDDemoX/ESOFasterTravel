@@ -329,7 +329,7 @@ local function AddRecallToTooltip(tooltip)
 
 	if IsInCampaign() then 
 	
-		tooltip:AddLine(GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), "", ZO_ERROR_COLOR:UnpackRGB())
+		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), ZO_ERROR_COLOR)
 		
 	else
 	
@@ -353,7 +353,7 @@ local function AddRecallToTooltip(tooltip)
 		
 			local text = zo_strformat(SI_TOOLTIP_WAYSHRINE_RECALL_COOLDOWN, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
 			
-            tooltip:AddLine(text, "", ZO_HIGHLIGHT_TEXT:UnpackRGB())
+            AddTextToTooltip(tooltip,text, ZO_HIGHLIGHT_TEXT)
 		
 		end
 		
@@ -450,7 +450,7 @@ local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
 	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
 		AddRecallToTooltip(tooltip)
 	elseif isRecall == false then 
-		tooltip:AddLine(GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), "", ZO_HIGHLIGHT_TEXT:UnpackRGB())
+		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
 	end
 	
 	if data.quests == nil then return end 
