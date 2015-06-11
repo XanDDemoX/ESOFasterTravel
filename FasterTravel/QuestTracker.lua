@@ -638,6 +638,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		HideToolTip(InformationTooltip) 
 		
 		ZO_KeepTooltip:SetHidden(true)
+		
 	end 
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 

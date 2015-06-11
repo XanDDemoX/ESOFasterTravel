@@ -274,6 +274,7 @@ init(function()
 		elseif value == true and wayshrinesTab ~= nil then 
 			wayshrinesTab:HideAllZoneCategories()
 			questTracker:HideToolTip()
+			ClearMenu()
 		end
 	end)
 	
