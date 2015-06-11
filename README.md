@@ -1,11 +1,11 @@
-# ESOFasterTravel v1.5.0
+# ESOFasterTravel v1.5.1
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
 [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.6.zip)
 
-[Try the latest beta version (1.5.0)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
+[Try the latest beta version (1.5.1)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 
 * Wayshrines
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -54,11 +54,13 @@ Usage
 
 Recent Change Log
 =============
+* **Version 1.5.1**
+  * Added display keep tooltip instead of wayshrine tooltip on mouse over keep rows 
+  * Added recall cooldown time display 
 * **Version 1.5.0**
   * Added "Fast Travel Here" text. 
   * Fixed incorrect display of Cyrodiil wayshrines whilst player is not in Cyrodiil
   * Fixed Transitus shrines not being displayed under the "Cyrodiil" heading whilst the player is in Cyrodiil
-  * Added recall cooldown time display  
 * **Version 1.4.9**
   * Added Transitus shrine support in Cyrodiil 
   * Fixed tooltip display within Cyrodiil not displaying recall disallowed. 

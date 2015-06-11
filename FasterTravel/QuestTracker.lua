@@ -442,6 +442,11 @@ local function IsCyrodiilRow(data)
 	return Location.Data.IsZoneIndexCyrodiil(data.zoneIndex)
 end
 
+local function IsKeepRow(data,isRecall,isKeep)
+	if IsCyrodiilRow(data) == false then return false end 
+	return isRecall == true or isKeep == true
+end 
+
 local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
 	InitializeTooltip(tooltip, control, RIGHT, offsetX)
 	
@@ -529,6 +534,17 @@ local function SetAssisted(questIndex,curLookup,recLookup,zoneLookup)
 	end 
 end
 
+
+local function ShowKeepTooltip(control, offsetX, data, isRecall,isKeep)
+
+	ZO_KeepTooltip:ClearAnchors()
+	ZO_KeepTooltip:SetAnchor(TOPRIGHT,control,TOPLEFT,offsetX,0)
+	
+	-- guess defaults for last values 
+	ZO_KeepTooltip:SetKeep(data.nodeIndex, BGQUERY_ASSIGNED_AND_LOCAL, 1.0)
+	ZO_KeepTooltip:SetHidden(false)
+end
+
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 
 local addCallback = FasterTravel.addCallback
@@ -601,18 +617,33 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		recallTimer:Stop()
 	end
 	
+	local function ShowCurrentTooltip(icon,data)
+		if data == nil then return end
+		
+		local isRecall,isKeep = tab:IsRecall(),tab:IsKeep()
+		
+		if IsKeepRow(data,isRecall,isKeep) == true then 
+			ShowKeepTooltip(icon,-25,data,isRecall,isKeep)
+		else
+			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep)
+		end
+		
+		StartRecallTimer()
+	end
+	
 	self.HideToolTip = function(self) 
 	
 		StopRecallTimer()
 		
 		HideToolTip(InformationTooltip) 
+		
+		ZO_KeepTooltip:SetHidden(true)
 	end 
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
 		
-		ShowToolTip(InformationTooltip, icon,data,-25,tab:IsRecall(),tab:IsKeep())
-		StartRecallTimer()
+		ShowCurrentTooltip(icon,data)
 	end)
 	
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
@@ -656,9 +687,9 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	tab.RowMouseEnter = FasterTravel.hook(tab.RowMouseEnter,function(base,control,row,label,data)
 		base(control,row,label,data)
+
+		ShowCurrentTooltip(row.icon,data)
 		
-		ShowToolTip(InformationTooltip, row.icon,data,-25,tab:IsRecall(),tab:IsKeep())
-		StartRecallTimer()
 	end)
 	
 	tab.RowMouseExit = FasterTravel.hook(tab.RowMouseExit,function(base,control,row,label,data)
