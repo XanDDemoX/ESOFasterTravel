@@ -7,7 +7,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
 
 [Try the latest beta version (1.5.1)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 
-* Wayshrines
+* **Wayshrines**
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
   * Displays quest objective tooltips when the mouse is over quest icons.
   * Fast travel to or recall a recently used wayshrine
@@ -15,17 +15,16 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   * Fast travel to or recall a wayshrine in another
   * All fast travels and recalls use the appropriate standard confirmation dialog.
   * Now supports Transitus Wayshrines in Cyrodiil1
-  
-  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image04-cropped.jpg "Wayshrines Tab")
-
-  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image07-cropped.jpg "Wayshrines Tab")
-
-* Players
+* **Players**
   * Teleport to players in your group
   * Teleport to players on your friends list
   * Teleport to zones using players on your friends list, in your group or guild
   * Teleport to players in your any of your guilds
   
+  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image04-cropped.jpg "Wayshrines Tab")
+
+  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image07-cropped.jpg "Wayshrines Tab")
+
   ![Image of Faster Travel's players tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image02-cropped.jpg "Players Tab")
   
 Installation
