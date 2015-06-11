@@ -10,7 +10,7 @@ local Utils = FasterTravel.Utils
 
 local function ShowWayshrineConfirm(data,isRecall,isKeep)
 
-	if isRecall == true or isKeep == true and IsInCampaign() then return end
+	if (isRecall == true or isKeep == true) and IsInCampaign() then return end
 
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
 	
