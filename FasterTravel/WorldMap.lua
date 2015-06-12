@@ -1,5 +1,7 @@
 local WorldMap = {}
 
+-- PinManager wrapper
+
 local PinManager = FasterTravel.class()
 
 function PinManager:init()
@@ -33,6 +35,121 @@ function PinManager:init()
 	end
 	
 end
+
+-- Keep tooltip wrapper
+local KeepToolTip = FasterTravel.class()
+
+local LINE_SPACING = 3
+local MAX_WIDTH = 400
+local function KeepToolTipAddLine(self, text, color)
+    local line = self.linePool:AcquireObject()
+    line:SetHidden(false)
+    line:SetDimensionConstraints(0, 0, MAX_WIDTH, 0)
+    line:SetText(text)
+
+    local r,g,b,a = color:UnpackRGBA()
+    line:SetColor(r,g,b,a)
+
+    local spacing = self.extraSpace or LINE_SPACING
+    if(self.lastLine) then
+        line:SetAnchor(TOPLEFT, self.lastLine, BOTTOMLEFT, 0, spacing)
+    else
+        line:SetAnchor(TOPLEFT, GetControl(self, "Name"), BOTTOMLEFT, 0, spacing)
+    end
+
+    self.extraSpace = nil
+    self.lastLine = line
+
+    local width, height = line:GetTextDimensions()
+
+    if(width > self.width) then
+        self.width = width
+    end
+
+    self.height = self.height + height + LINE_SPACING
+end
+
+function KeepToolTip:init(tooltip)
+	local _tooltip = tooltip
+	
+	self.AddLine = function(self,...)
+		KeepToolTipAddLine(_tooltip,...)
+	end 
+	
+	self.SetKeep = function(self,...)
+		_tooltip:SetKeep(...)
+	end
+	
+	self.Show = function(self,control, offsetX,nodeIndex)
+		_tooltip:ClearAnchors()
+		_tooltip:SetAnchor(TOPRIGHT,control,TOPLEFT,offsetX,0)
+		_tooltip:SetHidden(false)
+	end
+	
+	self.Hide = function(self)
+		_tooltip:SetHidden(true)
+	end
+	
+end 
+
+local _questPinTextures ={
+	[MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
+	[MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
+	[MAP_PIN_TYPE_ASSISTED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon.dds",
+}
+
+local _breadcrumbQuestPinTextures =
+{
+	[MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
+	[MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
+	[MAP_PIN_TYPE_ASSISTED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_door.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_door.dds",
+	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_door.dds",
+}
+
+local _iconWidth = 28 
+local _iconHeight = 28 
+
+local function GetPinTypeIconPath(textures,pinType)
+	return textures[pinType],pinType,textures
+end
+
+local function GetQuestIconPath(quest)
+	local pinType = quest.pinType
+	if quest.isBreadcrumb then 
+		return GetPinTypeIconPath(_breadcrumbQuestPinTextures,pinType)
+	else
+		return GetPinTypeIconPath(_questPinTextures,pinType)
+	end
+end
+
+local function ConvertPinType(pinType,assisted)
+	if assisted == true then 
+		if pinType == MAP_PIN_TYPE_TRACKED_QUEST_CONDITION then 
+			return MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION
+		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION then
+			return MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION
+		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_ENDING then 
+			return MAP_PIN_TYPE_ASSISTED_QUEST_ENDING
+		end 
+	else
+		if pinType == MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION then 
+			return MAP_PIN_TYPE_TRACKED_QUEST_CONDITION
+		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION then
+			return MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION
+		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_ENDING then 
+			return MAP_PIN_TYPE_TRACKED_QUEST_ENDING
+		end 
+	end
+	return pinType
+end
+
+
+
 
 local _pinManager
 local function GetPinManager()
@@ -73,9 +190,26 @@ local function PanToPoint(mapIndex,func)
 
 end
 
+local _keepTooltip
+
+local function GetKeepTooltip()
+	if _keepTooltip == nil then 
+		
+		_keepTooltip = KeepToolTip(ZO_KeepTooltip)
+	
+	end 
+	
+	return _keepTooltip
+end 
 
 local w = WorldMap
 
 w.PanToPoint = PanToPoint
+w.GetKeepTooltip = GetKeepTooltip
+
+w.GetPinTypeIconPath = GetPinTypeIconPath
+w.GetQuestIconPath = GetQuestIconPath
+w.ConvertPinType = ConvertPinType
+
 
 FasterTravel.WorldMap = w 

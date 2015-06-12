@@ -10,61 +10,14 @@ local Quest = FasterTravel.Quest
 local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
 
-local _questPinTextures ={
-	[MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
-	[MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
-	[MAP_PIN_TYPE_ASSISTED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_assisted.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon.dds",
-}
+local Timer = FasterTravel.Timer
 
-local _breadcrumbQuestPinTextures =
-{
-	[MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
-	[MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
-	[MAP_PIN_TYPE_ASSISTED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_door_assisted.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_CONDITION] = "EsoUI/Art/Compass/quest_icon_door.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION] = "EsoUI/Art/Compass/quest_icon_door.dds",
-	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_door.dds",
-}
+local GetPinTypeIconPath = WorldMap.GetPinTypeIconPath
+local GetQuestIconPath = WorldMap.GetQuestIconPath
+local ConvertPinType = WorldMap.ConvertPinType
 
 local _iconWidth = 28 
 local _iconHeight = 28 
-
-local function GetPinTypeIconPath(textures,pinType)
-	return textures[pinType],pinType,textures
-end
-
-local function GetQuestIconPath(quest)
-	local pinType = quest.pinType
-	if quest.isBreadcrumb then 
-		return GetPinTypeIconPath(_breadcrumbQuestPinTextures,pinType)
-	else
-		return GetPinTypeIconPath(_questPinTextures,pinType)
-	end
-end
-
-local function ConvertPinType(pinType,assisted)
-	if assisted == true then 
-		if pinType == MAP_PIN_TYPE_TRACKED_QUEST_CONDITION then 
-			return MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION
-		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION then
-			return MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION
-		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_ENDING then 
-			return MAP_PIN_TYPE_ASSISTED_QUEST_ENDING
-		end 
-	else
-		if pinType == MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION then 
-			return MAP_PIN_TYPE_TRACKED_QUEST_CONDITION
-		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION then
-			return MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION
-		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_ENDING then 
-			return MAP_PIN_TYPE_TRACKED_QUEST_ENDING
-		end 
-	end
-	return pinType
-end
 
 local function ClearRowIcons(row)
 	if row == nil then return end
@@ -386,36 +339,6 @@ local function UpdateRecallAmount(tooltip)
 	
 end
 
-local function CreateTimer(func, interval)
-	
-	local enabled = false
-	
-	local instance = { 
-		Tick = function(self)
-			zo_callLater(function() 
-				if enabled == true then 
-					func() 
-					if enabled == true then 
-						self:Tick()
-					end
-				end 
-			end, interval)
-		end,
-		Start = function(self)
-			if enabled == true then return end 
-			enabled = true
-			self:Tick()
-		end, 
-		Stop = function(self)
-			if enabled == false then return end 
-			enabled = false 
-		end
-	}
-	
-	return instance
-end 
-
-
 local function SortQuestsTable(questTable)
 	table.sort(questTable,function(x,y)
 		if x.assisted == true then 
@@ -448,17 +371,7 @@ local function IsKeepRow(data,isRecall,isKeep)
 	return isRecall == true or isKeep == true
 end 
 
-local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep,inCyrodiil)
-	InitializeTooltip(tooltip, control, RIGHT, offsetX)
-	
-	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
-	
-	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
-		AddRecallToTooltip(tooltip,inCyrodiil)
-	elseif isRecall == false then 
-		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
-	end
-	
+local function AppendQuestsToTooltip(tooltip,data)
 	if data.quests == nil then return end 
 
 	AddDividerToTooltip(tooltip)
@@ -477,6 +390,21 @@ local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep,inCyrod
 		AddQuestTasksToTooltip(tooltip, quest)
 		first = false
 	end 
+end
+
+local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep,inCyrodiil)
+	InitializeTooltip(tooltip, control, RIGHT, offsetX)
+	
+	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
+	
+	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
+		AddRecallToTooltip(tooltip,inCyrodiil)
+	elseif isRecall == false then 
+		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
+	end
+	
+	AppendQuestsToTooltip(tooltip,data)
+
 end
 
 local function HideToolTip(tooltip) 
@@ -535,15 +463,15 @@ local function SetAssisted(questIndex,curLookup,recLookup,zoneLookup)
 	end 
 end
 
+local function ShowKeepTooltip(tooltip,control, offsetX, data)
 
-local function ShowKeepTooltip(control, offsetX, data, isRecall,isKeep)
-
-	ZO_KeepTooltip:ClearAnchors()
-	ZO_KeepTooltip:SetAnchor(TOPRIGHT,control,TOPLEFT,offsetX,0)
+	-- guessed defaults for last values 
+	tooltip:SetKeep(data.nodeIndex, BGQUERY_ASSIGNED_AND_LOCAL, 1.0)
 	
-	-- guess defaults for last values 
-	ZO_KeepTooltip:SetKeep(data.nodeIndex, BGQUERY_ASSIGNED_AND_LOCAL, 1.0)
-	ZO_KeepTooltip:SetHidden(false)
+	AppendQuestsToTooltip(tooltip,data)
+	
+	tooltip:Show(control,offsetX)
+	
 end
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
@@ -563,11 +491,13 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	local recallTimer
 	
+	local keepTooltip = WorldMap.GetKeepTooltip()
+	
 	local function StartRecallTimer()
 		if tab:IsRecall() == false then return end
 		
 		if recallTimer == nil then
-			recallTimer = CreateTimer(function()
+			recallTimer = Timer(function()
 				UpdateRecallAmount(InformationTooltip)
 			end,500)
 		end 
@@ -585,7 +515,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		local isRecall,isKeep,inCyrodiil = tab:IsRecall(),tab:IsKeep(),tab:InCyrodiil()
 		
 		if IsKeepRow(data,isRecall,isKeep) == true then 
-			ShowKeepTooltip(icon,-25,data,isRecall,isKeep)
+			ShowKeepTooltip(keepTooltip,icon,-25,data)
 		else
 			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep, inCyrodiil)
 		end
@@ -647,7 +577,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		HideToolTip(InformationTooltip) 
 		
-		ZO_KeepTooltip:SetHidden(true)
+		keepTooltip:Hide()
 		
 	end 
 	

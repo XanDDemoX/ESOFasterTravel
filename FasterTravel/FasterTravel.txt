@@ -23,6 +23,7 @@ Social.lua
 Teleport.lua
 Quest.lua
 WorldMap.lua
+Timer.lua
 
 MapTab.lua
 MapTabWayshrines.lua
