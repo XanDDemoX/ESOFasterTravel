@@ -1,5 +1,12 @@
 Change Log
 =============
+* **Version 1.5.3**
+  * Added panning to keeps.
+  * Performance improvements to quest tracker.
+  * Fixed wayshrines / quests not being invalidated on campaign state initialised.
+  * Implemented quest display for Keep tooltips.
+  * Fixed Cyrodiil detection preventing display of keeps on initial entry.
+  * Fixed Cyrodiil detection in quest tracker
 * **Version 1.5.2**
   * Added zone ordering support.
   * Fixed recall confirmation not message being displayed outside of Cyrodiil preventing recall.
