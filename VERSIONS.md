@@ -1,5 +1,10 @@
 Change Log
 =============
+* **Version 1.5.2**
+  * Added zone ordering support.
+  * Fixed recall confirmation not message being displayed outside of Cyrodiil preventing recall.
+  * Fixed quest selection context menu not being hidden on world map hide.
+  * Fixed error message attempting to teleport within a group where player is the leader and all other players are offline.
 * **Version 1.5.1**
   * Added display keep tooltip instead of wayshrine tooltip on mouse over keep rows 
   * Added recall cooldown time display 

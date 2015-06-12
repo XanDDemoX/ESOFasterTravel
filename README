@@ -1,4 +1,4 @@
-ESOFasterTravel v1.5.0
+ESOFasterTravel v1.5.2
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -31,6 +31,13 @@ Slash Commands
  
 
 Recent Change Log
+
+Version 1.5.2
+
+	- Added zone ordering support.
+	- Fixed recall confirmation not message being displayed outside of Cyrodiil preventing recall.
+	- Fixed quest selection context menu not being hidden on world map hide.
+	- Fixed error message attempting to teleport within a group where player is the leader and all other players are offline.
 
 Version 1.5.1
 
