@@ -5,6 +5,7 @@ FasterTravel.QuestTracker = QuestTracker
 
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
+local Transitus = FasterTravel.Transitus
 local Quest = FasterTravel.Quest
 local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
@@ -325,9 +326,9 @@ local function GetRecallCostInfo()
 end
 
 local REASON_CURRENCY_SPACING = 3
-local function AddRecallToTooltip(tooltip)
+local function AddRecallToTooltip(tooltip,inCyrodiil)
 
-	if IsInCampaign() then 
+	if inCyrodiil == true then 
 	
 		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), ZO_ERROR_COLOR)
 		
@@ -447,13 +448,13 @@ local function IsKeepRow(data,isRecall,isKeep)
 	return isRecall == true or isKeep == true
 end 
 
-local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
+local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep,inCyrodiil)
 	InitializeTooltip(tooltip, control, RIGHT, offsetX)
 	
 	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
 	
 	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
-		AddRecallToTooltip(tooltip)
+		AddRecallToTooltip(tooltip,inCyrodiil)
 	elseif isRecall == false then 
 		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
 	end
@@ -560,6 +561,48 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	local _isDirty = true 
 	
+	local recallTimer
+	
+	local function StartRecallTimer()
+		if tab:IsRecall() == false then return end
+		
+		if recallTimer == nil then
+			recallTimer = CreateTimer(function()
+				UpdateRecallAmount(InformationTooltip)
+			end,500)
+		end 
+		recallTimer:Start()
+	end 
+	
+	local function StopRecallTimer()
+		if recallTimer == nil then return end
+		recallTimer:Stop()
+	end
+	
+	local function ShowCurrentTooltip(icon,data)
+		if data == nil then return end
+		
+		local isRecall,isKeep,inCyrodiil = tab:IsRecall(),tab:IsKeep(),tab:InCyrodiil()
+		
+		if IsKeepRow(data,isRecall,isKeep) == true then 
+			ShowKeepTooltip(icon,-25,data,isRecall,isKeep)
+		else
+			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep, inCyrodiil)
+		end
+		
+		StartRecallTimer()
+	end
+	
+	local function GetWayshrinesData(isKeep,inCyrodiil)
+		local wayshrines = Wayshrine.GetKnownNodesZoneLookup(_locations)
+		
+		if isKeep == false or inCyrodiil == false then return wayshrines end 
+		
+		wayshrines[Location.Data.ZONE_INDEX_CYRODIIL] = Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL)
+		
+		return wayshrines
+	end
+	
 	self.SetDirty = function(self)
 		_isDirty = true
 	end
@@ -585,7 +628,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		_tab:RefreshControl(lookups.categoriesTable)
 		
-		local wayshrines = Wayshrine.GetKnownNodesZoneLookup(_locations)
+		local wayshrines = GetWayshrinesData(_tab:IsKeep(),_tab:InCyrodiil())
 		
 		RefreshQuests(currentZoneIndex,loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 
@@ -598,39 +641,6 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		_isDirty = false
 	end
 
-	
-	local recallTimer
-	
-	local function StartRecallTimer()
-		if tab:IsRecall() == false then return end
-		
-		if recallTimer == nil then
-			recallTimer = CreateTimer(function()
-				UpdateRecallAmount(InformationTooltip)
-			end,500)
-		end 
-		recallTimer:Start()
-	end 
-	
-	local function StopRecallTimer()
-		if recallTimer == nil then return end
-		recallTimer:Stop()
-	end
-	
-	local function ShowCurrentTooltip(icon,data)
-		if data == nil then return end
-		
-		local isRecall,isKeep = tab:IsRecall(),tab:IsKeep()
-		
-		if IsKeepRow(data,isRecall,isKeep) == true then 
-			ShowKeepTooltip(icon,-25,data,isRecall,isKeep)
-		else
-			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep)
-		end
-		
-		StartRecallTimer()
-	end
-	
 	self.HideToolTip = function(self) 
 	
 		StopRecallTimer()
@@ -703,14 +713,21 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		base(control,row,data)
 		
 		local nodeIndex = data.nodeIndex
-		
+		local isTransitus = data.isTransitus
 		if nodeIndex == nil then return end
 		
 		local loc = _locationsLookup[data.zoneIndex]
 		
 		if loc ~= nil then 
 			WorldMap.PanToPoint(loc.mapIndex,function()
-				local known,name,x,y = Wayshrine.Data.GetNodeInfo(nodeIndex)
+				local x,y 
+				if isTransitus == true then 
+					local pinType
+					pinType, x,y = GetKeepPinInfo(nodeIndex, BGQUERY_LOCAL)
+				else
+					local known,name 
+					known,name,x,y = Wayshrine.Data.GetNodeInfo(nodeIndex)
+				end
 				return x,y
 			end)
 		end 

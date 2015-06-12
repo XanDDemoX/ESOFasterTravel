@@ -8,9 +8,7 @@ local Transitus = FasterTravel.Transitus
 local Utils = FasterTravel.Utils
 
 
-local function ShowWayshrineConfirm(data,isRecall,isKeep)
-
-	if (isRecall == true or isKeep == true) and IsInCampaign() then return end
+local function ShowWayshrineConfirm(data,isRecall)
 
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
 	
@@ -55,9 +53,15 @@ local function AttachWayshrineDataHandlers(args, data)
 
 	local clicked = args.clicked
 	
+	local isRecall = args.nodeIndex == nil
+	local isKeep = args.isKeep
+	local inCyrodiil = args.inCyrodiil
+	
 	data.clicked = function(self,control) 
-
-		ShowWayshrineConfirm(self,args.nodeIndex == nil,args.isKeep) 
+	
+		if inCyrodiil == true and (isRecall == true or isKeep == true) then return end
+	
+		ShowWayshrineConfirm(self,isRecall) 
 
 	end
 	
@@ -90,8 +94,8 @@ local function AddRowToLookup(self,control,lookup)
 	end
 end
 
-local function IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex)
-	return IsInCampaign() and (isKeep or nodeIndex == nil)
+local function IsTransitusDataRequired(isKeep,nodeIndex)
+	return (isKeep or nodeIndex == nil)
 end
 
 local function GetCyrodiilWayshrinesData(ctx,args)
@@ -104,21 +108,28 @@ local function GetCyrodiilWayshrinesData(ctx,args)
 	return nodes
 end
 
+local function GetPlayerCampaignsData(args)
+	-- TODO: return player campaigns
+	return {}
+end 
+
 local function GetZoneWayshrinesData(args)
 
 	local zoneIndex = args.zoneIndex
 	local nodeIndex = args.nodeIndex
 	local isKeep = args.isKeep
 	
-	local isCyrodiil = Location.Data.IsZoneIndexCyrodiil(zoneIndex)
+	local inCyrodiil = args.inCyrodiil 
 	
-	if isCyrodiil == true and IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex) == true then 
-		return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
-	elseif isCyrodiil and IsInCampaign() == false then 
-		-- TODO: return player campaigns
-		return {}
+	-- special handling for Cyrodiil =(
+	if Location.Data.IsZoneIndexCyrodiil(zoneIndex) == true then
+		if inCyrodiil == true and IsTransitusDataRequired(isKeep,nodeIndex) == true then 
+			return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
+		elseif inCyrodiil == false then 
+			return GetPlayerCampaignsData(args)
+		end
 	end
-
+	
 	local iter = Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
 			
 	iter = Utils.map(iter,function(item) 
@@ -149,19 +160,6 @@ local function GetRecentWayshrinesData(recentList,args)
 	
 	return Utils.toTable(iter)
 end
-
-local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,isKeep,nodeIndex)
-
-	local args = {
-		nodeIndex=nodeIndex,
-		zoneIndex = zoneIndex,
-		isKeep = isKeep,
-		refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
-	}
-
-	return GetZoneWayshrinesData(args)
-end
-
 
 					
 local function HandleCategoryClicked(self,i,item,data,control,c)
@@ -229,7 +227,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	local _locations = locations
 	local _locationsLookup = locationsLookup
 	
-	local currentNodeIndex,currentIsKeep
+	local currentNodeIndex,currentIsKeep, currentInCyrodiil
 	
 	self.IsRecall = function(self)
 		return currentNodeIndex == nil
@@ -238,6 +236,10 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	self.IsKeep = function(self)
 		return currentIsKeep
 	end
+	
+	self.InCyrodiil = function(self)
+		return currentInCyrodiil
+	end 
 	
 	self.GetRowLookups = function(self)
 		return _rowLookup
@@ -275,12 +277,16 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		currentNodeIndex = nodeIndex
 		currentIsKeep = isKeep
 		
+		local inCyrodiil = IsInCampaign() or IsInCyrodiil() or IsInImperialCity() or Location.Data.IsZoneIndexCyrodiil(currentZoneIndex)
+		
+		currentInCyrodiil = inCyrodiil
+		
 		local recentlookup = _rowLookup.recent
 		local currentlookup = _rowLookup.current
 		
 		local recent = GetRecentWayshrinesData(recentList,{nodeIndex=nodeIndex, refresh=function(self,control) AddRowToLookup(self,control,recentlookup) end})
 		
-		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,isKeep,nodeIndex)
+		local current = GetZoneWayshrinesData({nodeIndex = nodeIndex, zoneIndex = currentZoneIndex, isKeep = isKeep, inCyrodiil = inCyrodiil, refresh=function(self,control) AddRowToLookup(self,control,currentlookup) end})
 		
 		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name
@@ -325,7 +331,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 				local lookup = {}
 				zoneLookup[item.zoneIndex]=lookup
 
-				local data = GetZoneWayshrinesData({nodeIndex=nodeIndex,isKeep=isKeep, zoneIndex=item.zoneIndex,refresh = function(self,control) AddRowToLookup(self,control,lookup) end})
+				local data = GetZoneWayshrinesData({nodeIndex=nodeIndex,isKeep=isKeep, zoneIndex=item.zoneIndex, inCyrodiil = inCyrodiil ,refresh = function(self,control) AddRowToLookup(self,control,lookup) end})
 				
 				PopualteLookup(lookup,data)
 				
