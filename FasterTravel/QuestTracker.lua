@@ -111,56 +111,78 @@ local function AddQuest(data, result ,iconWidth,iconHeight)
 	end
 end
 
-local function SetIcon(lookup,closest,result)
-	if lookup == nil or closest == nil or result == nil then return false end 
-	local row = lookup[closest.nodeIndex]
-	if row ~= nil then 
-		local data = row.data 
-		
-		result.zoneIndex = result.zoneIndex or closest.zoneIndex
-		
-		AddQuest(data,result,_iconWidth,_iconHeight)
-		
-		if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
-			data.iconHidden = false
-			
-			local iconPath,pinType,textures = GetQuestIconPath(result)
-			
-			data.iconPath = iconPath
-			
-			data.setAssisted = data.setAssisted or function(self,questIndex)
-				
-				if self.quests == nil then return end 
-				
-				for idx,q in pairs(self.quests) do
-					if q.setAssisted ~= nil then 
-						q:setAssisted(idx == questIndex)
-					end
-				end
-			
-				local quest = self.quests[questIndex]
-				if quest ~= nil then 
-					self.iconPath = quest.path
-				else
-					self.iconPath = GetPinTypeIconPath(textures,ConvertPinType(pinType,false))
-				end
-			end
-			
-			return true
-		end
-	end
-	return false
+local function SetIcon(data,path,hidden)
+	if data == nil then return false end 
+	
+	hidden = hidden or (path == nil or path == "")
+	
+	data.iconPath = path
+	
+	data.iconHidden = hidden
+	
+	return true 
 end
 
+local function SetQuestIcon(data,closest,result)
+
+	if data == nil or closest == nil or result == nil then return false end 
+	
+	if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
+		
+		local iconPath,pinType,textures = GetQuestIconPath(result)
+		
+		data.setAssisted = data.setAssisted or function(self,questIndex)
+			if self.quests == nil then return end 
+			
+			for idx,q in pairs(self.quests) do
+				if q.setAssisted ~= nil then 
+					q:setAssisted(idx == questIndex)
+				end
+			end
+		
+			local quest = self.quests[questIndex]
+			if quest ~= nil then 
+				self.iconPath = quest.path
+			else
+				self.iconPath = GetPinTypeIconPath(textures,ConvertPinType(pinType,false))
+			end
+		end
+		
+		return SetIcon(data,iconPath)
+	end
+	
+	return false
+
+end
+
+
 local function UpdateLookups(closest,result,...)
+
+	result.zoneIndex = result.zoneIndex or closest.zoneIndex
+
 	local count = select('#',...)
 	local set = false 
 	local lookup
+	
+	local row,data 
+	
 	for i=1, count do 
 		lookup = select(i,...)
-		if SetIcon(lookup,closest,result) == true then 
-			set = true 
+		
+		row = lookup[closest.nodeIndex]
+		
+		if row ~= nil then
+		
+			data = row.data 
+			
+			AddQuest(data,result,_iconWidth,_iconHeight)
+			
+			if SetQuestIcon(data,closest,result) == true then 
+				set = true 
+			end 
+			
 		end 
+		
 	end 
 	return set
 end
@@ -208,11 +230,9 @@ local function IsQuestValidForZone(quest,loc)
  return zoneIndex == loc.zoneIndex or (questType == QUEST_TYPE_MAIN_STORY or questType == QUEST_TYPE_CRAFTING)
 end
 
-local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 
-	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
-	
-	local mapshrines = wayshrines[loc.zoneIndex]
+	if loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
 	for i,quest in ipairs(quests) do
 	    -- always request where zoneIndex is nil
@@ -224,7 +244,7 @@ local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quest
 					local closest 
 									
 					if result.insideCurrentMapWorld == true then
-						closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,mapshrines)
+						closest = Location.GetClosestLocation(result.normalizedX,result.normalizedY,wayshrines)
 					end
 					
 					if closest ~= nil then 
@@ -523,13 +543,21 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		StartRecallTimer()
 	end
 	
-	local function GetWayshrinesData(isKeep,inCyrodiil)
-		local wayshrines = Wayshrine.GetKnownNodesZoneLookup(_locations)
+	local function GetWayshrinesData(isRecall,isKeep,inCyrodiil,loc)
+		if loc == nil then return {} end 
 		
-		if isKeep == false or inCyrodiil == false then return wayshrines end 
+		local zoneIndex = loc.zoneIndex
 		
-		wayshrines[Location.Data.ZONE_INDEX_CYRODIIL] = Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL)
-		
+		local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
+
+		if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then 
+			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL)
+		elseif inCyrodiil == false or locIsCyrodiil == false then 
+			return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex))
+		else
+			return {}
+		end 
+	
 		return wayshrines
 	end
 	
@@ -558,9 +586,9 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		_tab:RefreshControl(lookups.categoriesTable)
 		
-		local wayshrines = GetWayshrinesData(_tab:IsKeep(),_tab:InCyrodiil())
+		local wayshrines = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
 		
-		RefreshQuests(currentZoneIndex,loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+		RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 
 		_refreshing = false
 	end
