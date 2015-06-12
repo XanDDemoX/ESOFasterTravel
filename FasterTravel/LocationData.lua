@@ -194,6 +194,8 @@ local _locationsList = {
 	}
 }
 
+local ZONE_INDEX_CYRODIIL = 38
+
 local LocationOrder = {
 	A_Z = 1,
 	FACTION_A_Z = 2,
@@ -203,7 +205,6 @@ local LocationOrder = {
 local _locations
 local _locationsLookup
 local _zoneFactionLookup
-
 
 local function GetMapZone(path)
 	path = path or GetMapTileTexture()
@@ -304,6 +305,15 @@ local function GetZoneLocation(lookup,zone,subzone)
 	return loc
 end
 
+local function IsZoneIndexCyrodiil(zoneIndex)
+	return zoneIndex == ZONE_INDEX_CYRODIIL
+end
+
+local function IsCyrodiil(loc)
+	if loc == nil then return end 
+	return IsZoneIndexCyrodiil(loc.zoneIndex)
+end
+
 local function GetZoneFactionLookup()
 
 	local zoneLookup = GetLookup()
@@ -354,7 +364,7 @@ local function IsFactionWorldOrShared(faction)
 	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD
 end
 
-local function UpdateLocationOrder(order,locations)
+local function UpdateLocationOrder(order,currentFaction, locations)
 	local newList 
 	
 	local lookup = GetLookup()
@@ -377,11 +387,14 @@ local function IsLocationOrderFaction(order)
 end
 
 local d = Data
+d.ZONE_INDEX_CYRODIIL = ZONE_INDEX_CYRODIIL
 d.Initialise = Initialise
 d.GetMapZoneKey = GetMapZoneKey
 d.GetList = GetList
 d.GetLookup = GetLookup
 d.GetZoneLocation = GetZoneLocation
+d.IsZoneIndexCyrodiil = IsZoneIndexCyrodiil
+d.IsCyrodiil = IsCyrodiil
 d.GetZoneFaction = GetZoneFaction
 d.GetFactionOrderedList = GetFactionOrderedList
 d.IsFactionWorldOrShared = IsFactionWorldOrShared

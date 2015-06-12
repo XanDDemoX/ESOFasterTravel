@@ -4,35 +4,80 @@ FasterTravel.MapTabWayshrines = MapTabWayshrines
 
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
+local Transitus = FasterTravel.Transitus
 local Utils = FasterTravel.Utils
 
 
-local function ShowWayshrineConfirm(data,isRecall)
+local function ShowWayshrineConfirm(data,isRecall,isKeep)
+
+	if (isRecall == true or isKeep == true) and IsInCampaign() then return end
+
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
+	
 	ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
 	ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
+	
 	name = name or select(2, Wayshrine.Data.GetNodeInfo(nodeIndex)) -- just in case
+	
 	local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
+	
+	if isRecall == true then 
+		local _, timeLeft = GetRecallCooldown()
+		if timeLeft ~= 0 then
+			local text = zo_strformat(SI_FAST_TRAVEL_RECALL_COOLDOWN, name, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
+		    ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, text)
+			return
+		end
+	end 
+	
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
+	
 end
 
-local function AttachWayshrineDataHandlers(args, data)
-	local refresh = args.refresh
-	local clicked = args.clicked
+local function ShowTransitusConfirm(data,isRecall)
+	if isRecall == true then return end
+	TravelToKeep(data.nodeIndex)
+end
 
+local function AttachRefreshHandler(args,data)
+	local refresh = args.refresh
 	data.refresh = function(self,control) 
 		control.label:SetText(self.name) 
 		if refresh then
 			refresh(self,control)
 		end
 	end
+end
+
+local function AttachWayshrineDataHandlers(args, data)
+
+	AttachRefreshHandler(args,data)
+
+	local clicked = args.clicked
+	
 	data.clicked = function(self,control) 
 
-		ShowWayshrineConfirm(self,args.nodeIndex == nil) 
+		ShowWayshrineConfirm(self,args.nodeIndex == nil,args.isKeep) 
 
 	end
+	
 	return data
 end
+
+local function AttachTransitusDataHandlers(args,data)
+	
+	AttachRefreshHandler(args,data)
+	
+	local clicked = args.clicked
+
+	data.clicked = function(self,control) 
+
+		ShowTransitusConfirm(self,args.nodeIndex == nil) 
+
+	end
+	
+	return data
+end 
 
 local function AddRowToLookup(self,control,lookup)
 	local nidx = self.nodeIndex
@@ -45,10 +90,34 @@ local function AddRowToLookup(self,control,lookup)
 	end
 end
 
+local function IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex)
+	return IsInCampaign() and (isKeep or nodeIndex == nil)
+end
+
+local function GetCyrodiilWayshrinesData(ctx,args)
+	local nodes = Transitus.GetKnownNodes(ctx,args.nodeIndex)
+	
+	nodes = Utils.map(nodes,function(item) 
+		return AttachTransitusDataHandlers(args,item) 
+	end)
+
+	return nodes
+end
+
 local function GetZoneWayshrinesData(args)
 
 	local zoneIndex = args.zoneIndex
 	local nodeIndex = args.nodeIndex
+	local isKeep = args.isKeep
+	
+	local isCyrodiil = Location.Data.IsZoneIndexCyrodiil(zoneIndex)
+	
+	if isCyrodiil == true and IsTransitusDataRequired(zoneIndex,isKeep,nodeIndex) == true then 
+		return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
+	elseif isCyrodiil and IsInCampaign() == false then 
+		-- TODO: return player campaigns
+		return {}
+	end
 
 	local iter = Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
 			
@@ -81,13 +150,16 @@ local function GetRecentWayshrinesData(recentList,args)
 	return Utils.toTable(iter)
 end
 
-local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,nodeIndex)
+local function GetCurrentWayshrinesData(locationsLookup, currentlookup,zoneIndex,isKeep,nodeIndex)
 
-	return GetZoneWayshrinesData({
-								nodeIndex=nodeIndex, 
-								zoneIndex = zoneIndex,
-								refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
-							})
+	local args = {
+		nodeIndex=nodeIndex,
+		zoneIndex = zoneIndex,
+		isKeep = isKeep,
+		refresh = function(self,control) AddRowToLookup(self,control,currentlookup) end
+	}
+
+	return GetZoneWayshrinesData(args)
 end
 
 
@@ -127,11 +199,25 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		self:IconMouseExit(...)
 	end)
 	
-	control.IconMouseClicked = FasterTravel.hook(control.iconMouseClicked,function(base,control,...)
+	control.IconMouseClicked = FasterTravel.hook(control.IconMouseClicked,function(base,control,...)
 		base(control,...)
-		
+		self:IconMouseClicked(...)
 	end)
 
+	control.RowMouseEnter = FasterTravel.hook(control.RowMouseEnter,function(base,control,...)
+		base(control,...)
+		self:RowMouseEnter(...)
+	end)
+	
+	control.RowMouseExit = FasterTravel.hook(control.RowMouseExit,function(base,control,...)
+		base(control,...)
+		self:RowMouseExit(...)
+	end)
+	
+	control.RowMouseClicked = FasterTravel.hook(control.RowMouseClicked,function(base,control,...)
+		base(control,...)
+		self:RowMouseClicked(...)
+	end)
 	
 	local _first = true
 	
@@ -142,6 +228,16 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	
 	local _locations = locations
 	local _locationsLookup = locationsLookup
+	
+	local currentNodeIndex,currentIsKeep
+	
+	self.IsRecall = function(self)
+		return currentNodeIndex == nil
+	end
+	
+	self.IsKeep = function(self)
+		return currentIsKeep
+	end
 	
 	self.GetRowLookups = function(self)
 		return _rowLookup
@@ -168,18 +264,23 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 		
 	end
 	
-	self.Refresh = function(self,nodeIndex)
+	self.Refresh = function(self,nodeIndex,isKeep)
 		_rowLookup.categories ={}
 		_rowLookup.current = {}
 		_rowLookup.recent = {}
 		_rowLookup.zone = {}
-
+		
+		isKeep = isKeep == true 
+		
+		currentNodeIndex = nodeIndex
+		currentIsKeep = isKeep
+		
 		local recentlookup = _rowLookup.recent
 		local currentlookup = _rowLookup.current
 		
 		local recent = GetRecentWayshrinesData(recentList,{nodeIndex=nodeIndex, refresh=function(self,control) AddRowToLookup(self,control,recentlookup) end})
 		
-		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,nodeIndex)
+		local current = GetCurrentWayshrinesData(locationsLookup,currentlookup,currentZoneIndex,isKeep,nodeIndex)
 		
 		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name
@@ -224,7 +325,7 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 				local lookup = {}
 				zoneLookup[item.zoneIndex]=lookup
 
-				local data = GetZoneWayshrinesData({nodeIndex=nodeIndex, zoneIndex=item.zoneIndex,refresh = function(self,control) AddRowToLookup(self,control,lookup) end})
+				local data = GetZoneWayshrinesData({nodeIndex=nodeIndex,isKeep=isKeep, zoneIndex=item.zoneIndex,refresh = function(self,control) AddRowToLookup(self,control,lookup) end})
 				
 				PopualteLookup(lookup,data)
 				
@@ -288,5 +389,21 @@ function MapTabWayshrines:IconMouseEnter(...)
 end
 
 function MapTabWayshrines:IconMouseExit(...)
+
+end
+
+function MapTabWayshrines:IconMouseClicked(...)
+
+end 
+
+function MapTabWayshrines:RowMouseEnter(...)
+
+end
+
+function MapTabWayshrines:RowMouseExit(...)
+
+end
+
+function MapTabWayshrines:RowMouseClicked(...)
 
 end

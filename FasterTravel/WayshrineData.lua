@@ -1230,6 +1230,8 @@ end
 
 
 local function GetNodeInfo(nodeIndex)
+	if nodeIndex == nil then return nil end 
+	
 	local known,name,normalizedX, normalizedY, textureName ,textureName,poiType,isShown = GetFastTravelNodeInfo(nodeIndex)
 	
 	name = GetNodeName(nodeIndex,name)

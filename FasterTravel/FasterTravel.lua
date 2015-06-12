@@ -8,6 +8,22 @@ local function addEvent(id,func)
 	EVENT_MANAGER:RegisterForEvent("FasterTravel_"..tostring(id),id,func)
 end
 
+local function addEvents(func,...)
+
+	local count = select('#',...)
+	
+	local id 
+	
+	for i =1,  count do 
+		
+		id = select(i,...)
+		
+		addEvent(id,func)
+	
+	end 
+
+end
+
 local function addCallback(id,func)
 	CALLBACK_MANAGER:RegisterCallback(id,func)
 end
@@ -34,8 +50,10 @@ local function init(func,...)
 end
 
 local f = FasterTravel
+f.CALLBACK_ID_ON_WORLDMAP_CHANGED = CALLBACK_ID_ON_WORLDMAP_CHANGED
 f.hook = hook
 f.addEvent = addEvent
+f.addEvents = addEvents
 f.addCallback = addCallback
 f.removeCallback = removeCallback
 
@@ -56,7 +74,7 @@ init(function()
 	local _settingsVersion = "7"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
-	
+
 	if _settings.locations then _settings.locations = nil end -- cleanup old saved vars 
 	
 	local wayshrineControl = FasterTravel_WorldMapWayshrines
@@ -94,7 +112,7 @@ init(function()
 	local function RefreshLocationsIfRequired()
 		if wayshrinesTab == nil then return end 
 		if locationsDirty == false or wayshrinesTab:IsDirty() == false then return end
-		Location.Data.UpdateLocationOrder(_settings.locationOrder,_locations)
+		Location.Data.UpdateLocationOrder(_settings.locationOrder,currentFaction,_locations)
 		locationsDirty = false
 	end
 	
@@ -103,10 +121,10 @@ init(function()
 		wayshrinesTab:SetDirty()
 	end
 	
-	local function RefreshWayshrinesIfRequired(nodeIndex)
+	local function RefreshWayshrinesIfRequired(...)
 		if wayshrinesTab == nil then return end 
 		RefreshLocationsIfRequired()
-		wayshrinesTab:RefreshIfRequired(nodeIndex)
+		 wayshrinesTab:RefreshIfRequired(...)
 	end
 		
 	local function SetPlayersDirty()
@@ -188,38 +206,22 @@ init(function()
 
 	end)
 	
-	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
-		
+	local function StartFastTravelInteract(...)
 		SetWayshrinesDirty()
 		SetQuestsDirty()
 		
-		RefreshWayshrinesIfRequired(nodeIndex)
+		RefreshWayshrinesIfRequired(...)
 		RefreshQuestsIfRequired()
 		
 		WORLD_MAP_INFO:SelectTab(SI_MAP_INFO_MODE_WAYSHRINES)
-		
+	end
+	
+	addEvent(EVENT_START_FAST_TRAVEL_INTERACTION, function(eventCode,nodeIndex)
+		StartFastTravelInteract(nodeIndex,false)
 	end)
 	
-	addEvent(EVENT_END_FAST_TRAVEL_INTERACTION,function(eventCode)
-		SetWayshrinesDirty()
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_FAST_TRAVEL_NETWORK_UPDATED,function(eventCode,nodeIndex)
-		SetWayshrinesDirty()
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_FRIEND_ADDED,function(eventCode)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_FRIEND_REMOVED,function(eventCode,DisplayName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_FRIEND_CHARACTER_ZONE_CHANGED,function(eventCode, DisplayName, CharacterName, newZone)
-		SetPlayersDirty()
+	addEvent(EVENT_START_FAST_TRAVEL_KEEP_INTERACTION, function(eventCode,nodeIndex)
+		StartFastTravelInteract(nodeIndex,true)
 	end)
 	
 	addEvent(EVENT_GROUP_INVITE_RESPONSE,function(eventCode, inviterName, response)
@@ -227,72 +229,37 @@ init(function()
 			SetPlayersDirty()
 		end
 	end)
-	
-	addEvent(EVENT_GROUP_MEMBER_JOINED,function(eventCode,memberName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GROUP_MEMBER_LEFT,function(eventCode,memberName,reason,wasLocalPlayer)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GUILD_MEMBER_ADDED,function(eventCode, guildId, DisplayName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GUILD_MEMBER_REMOVED,function(eventCode,guildId, DisplayName, CharacterName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GROUP_MEMBER_CONNECTED_STATUS,function(eventCode, unitTag, isOnline)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GUILD_SELF_JOINED_GUILD,function(eventCode, guildId, guildName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GUILD_SELF_LEFT_GUILD,function(eventCode, guildId, guildName)
-		SetPlayersDirty()
-	end)
-	
-	addEvent(EVENT_GUILD_MEMBER_CHARACTER_ZONE_CHANGED,function(eventCode, guildId, DisplayName, CharacterName, newZone)
-		SetPlayersDirty()
-	end)
-	
+
 	addEvent(EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED,function(eventCode, guildId, DisplayName, oldStatus, newStatus)
 		if newStatus == PLAYER_STATUS_OFFLINE or (oldStatus == PLAYER_STATUS_OFFLINE and newStatus == PLAYER_STATUS_ONLINE) then
 			SetPlayersDirty()
 		end
 	end)
 	
-	addEvent(EVENT_QUEST_ADDED ,function(eventCode, journalIndex, questName, objectiveName)
-		SetQuestsDirty()
-	end)
+	addEvents(
+		function()
+			SetWayshrinesDirty()
+			SetQuestsDirty()
+		end,
+		EVENT_END_FAST_TRAVEL_INTERACTION,EVENT_FAST_TRAVEL_NETWORK_UPDATED,
+		EVENT_END_FAST_TRAVEL_KEEP_INTERACTION,EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED,
+		EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED
+	)
 	
-	addEvent(EVENT_QUEST_ADVANCED,function(eventCode, journalIndex, questName, isPushed, isComplete, mainStepChanged)
-		SetQuestsDirty()
-	end)
+	addEvents(
+		function() SetPlayersDirty() end,
+		EVENT_GROUP_MEMBER_JOINED,EVENT_GROUP_MEMBER_LEFT,EVENT_GROUP_MEMBER_CONNECTED_STATUS,
+		EVENT_GUILD_SELF_JOINED_GUILD,EVENT_GUILD_SELF_LEFT_GUILD, EVENT_GUILD_MEMBER_ADDED,EVENT_GUILD_MEMBER_REMOVED,
+		EVENT_GUILD_MEMBER_CHARACTER_ZONE_CHANGED,EVENT_FRIEND_CHARACTER_ZONE_CHANGED,
+		EVENT_FRIEND_ADDED,EVENT_FRIEND_REMOVED
+	)
 	
-	addEvent(EVENT_QUEST_REMOVED,function(eventCode, isCompleted, journalIndex, questName, zoneIndex, poiIndex)
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_QUEST_OPTIONAL_STEP_ADVANCED,function(eventCode,  text)
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_QUEST_COMPLETE,function(eventCode, questName, level, previousExperience, currentExperience, rank, previousPoints, currentPoints)
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_OBJECTIVES_UPDATED,function(eventCode)
-		SetQuestsDirty()
-	end)
-	
-	addEvent(EVENT_OBJECTIVE_COMPLETED,function(eventCode, zoneIndex, poiIndex, level, previousExperience, currentExperience, rank, previousPoints, currentPoints)
-		SetQuestsDirty()
-	end)
+	addEvents(
+		function() SetQuestsDirty() end,
+		EVENT_QUEST_ADDED,EVENT_QUEST_ADVANCED,EVENT_QUEST_REMOVED,
+		EVENT_QUEST_OPTIONAL_STEP_ADVANCED,EVENT_QUEST_COMPLETE,
+		EVENT_OBJECTIVES_UPDATED,EVENT_OBJECTIVE_COMPLETED
+	)
 	
 	local function RefreshQuestsIfMapVisible()
 		SetQuestsDirty()
@@ -351,8 +318,15 @@ init(function()
 		elseif value == true and wayshrinesTab ~= nil then 
 			wayshrinesTab:HideAllZoneCategories()
 			questTracker:HideToolTip()
+			ClearMenu()
 		end
 	end)
+	
+	local function GetPaths(path,...)
+		return unpack(Utils.map({...},function(p)
+			return path..p
+		end))
+	end 
 	
 	local function AddWorldMapFragment(strId,fragment,normal,highlight,pressed)
 	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight =highlight,normal = normal})
@@ -367,24 +341,28 @@ init(function()
 	questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
 
 	-- finally add the controls
-	local path = "/esoui/art/treeicons/achievements_indexicon_alliancewar_"
+	local normal,highlight,pressed = GetPaths("/esoui/art/treeicons/achievements_indexicon_alliancewar_","up.dds","over.dds","down.dds")
 
-	AddWorldMapFragment(SI_MAP_INFO_MODE_WAYSHRINES,wayshrineControl.fragment,path.."up.dds",path.."over.dds",path.."down.dds")
+	AddWorldMapFragment(SI_MAP_INFO_MODE_WAYSHRINES,wayshrineControl.fragment,normal,highlight,pressed)
+	
+	normal,highlight,pressed = GetPaths("/esoui/art/mainmenu/menubar_group_","up.dds","over.dds","down.dds")
 
-	path = "/esoui/art/mainmenu/menubar_group_"
-
-	AddWorldMapFragment(SI_MAP_INFO_MODE_PLAYERS,playersControl.fragment,path.."up.dds",path.."over.dds",path.."down.dds")
+	AddWorldMapFragment(SI_MAP_INFO_MODE_PLAYERS,playersControl.fragment,normal,highlight,pressed)
 
 	SetCurrentZoneMapIndexes()
 	
 	SLASH_COMMANDS["/goto"] = function(args)
 		if Utils.stringIsEmpty(args) == true then return end
+		
+		args = Utils.stringTrim(args)
+		
 		local result,name
 		if Teleport.IsPlayerTeleportable(args) == true then
 			result,name = Teleport.TeleportToPlayer(args)
 		else
 			result,name = Teleport.TeleportToZone(args)
 		end
+		
 		if result == true then 
 			d(_prefix.."Teleporting to "..name)
 		elseif result == false and name ~= nil then 

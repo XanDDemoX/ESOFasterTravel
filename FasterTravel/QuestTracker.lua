@@ -6,6 +6,7 @@ FasterTravel.QuestTracker = QuestTracker
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
 local Quest = FasterTravel.Quest
+local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
 
 local _questPinTextures ={
@@ -27,28 +28,79 @@ local _breadcrumbQuestPinTextures =
 	[MAP_PIN_TYPE_TRACKED_QUEST_ENDING] = "EsoUI/Art/Compass/quest_icon_door.dds",
 }
 
+local _iconWidth = 28 
+local _iconHeight = 28 
+
+local function GetPinTypeIconPath(textures,pinType)
+	return textures[pinType],pinType,textures
+end
+
 local function GetQuestIconPath(quest)
 	local pinType = quest.pinType
 	if quest.isBreadcrumb then 
-		return _breadcrumbQuestPinTextures[pinType]
+		return GetPinTypeIconPath(_breadcrumbQuestPinTextures,pinType)
 	else
-		return _questPinTextures[pinType]
+		return GetPinTypeIconPath(_questPinTextures,pinType)
 	end
 end
 
-local function ClearIcons(lookup)
-	for nodeIndex,row in pairs(lookup) do
-		if type(row) == "table" then
-			local data = row.data 
-			if data ~= nil and data.iconHidden ~= nil then 
-				data.iconHidden = nil 
+local function ConvertPinType(pinType,assisted)
+	if assisted == true then 
+		if pinType == MAP_PIN_TYPE_TRACKED_QUEST_CONDITION then 
+			return MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION
+		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION then
+			return MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION
+		elseif pinType == MAP_PIN_TYPE_TRACKED_QUEST_ENDING then 
+			return MAP_PIN_TYPE_ASSISTED_QUEST_ENDING
+		end 
+	else
+		if pinType == MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION then 
+			return MAP_PIN_TYPE_TRACKED_QUEST_CONDITION
+		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_OPTIONAL_CONDITION then
+			return MAP_PIN_TYPE_TRACKED_QUEST_OPTIONAL_CONDITION
+		elseif pinType == MAP_PIN_TYPE_ASSISTED_QUEST_ENDING then 
+			return MAP_PIN_TYPE_TRACKED_QUEST_ENDING
+		end 
+	end
+	return pinType
+end
+
+local function ClearRowIcons(row)
+	if row == nil then return end
+	if type(row) == "table" then
+		local data = row.data 
+		if data ~= nil  then 
+			if data.iconHidden ~= nil then 
+				 data.iconHidden = nil
+			end 
+			
+			if data.quests ~= nil then 
 				data.quests = nil
 			end
 		end
 	end
 end
 
-local function AddQuest(data, questIndex, stepIndex, conditionIndex)
+local function ClearNodeIndexIcons(nodeIndex,lookups)
+	for i,lookup in ipairs(lookups) do
+		ClearRowIcons(lookup[nodeIndex])
+	end
+end 
+
+local function ClearIcons(lookup,...)
+	local count = select('#',...)
+	local lookups = count > 0 and {...}
+	for nodeIndex,row in pairs(lookup) do
+		ClearRowIcons(row)
+		if lookups ~= nil then 
+			ClearNodeIndexIcons(nodeIndex,lookups)
+		end
+	end
+end
+
+local function AddQuest(data, result ,iconWidth,iconHeight)
+
+	local questIndex, stepIndex, conditionIndex,assisted,zoneIndex = result.questIndex,result.stepIndex,result.conditionIndex,result.assisted, result.zoneIndex
 
 	if data.quests == nil then 
 		data.quests = {}
@@ -57,7 +109,24 @@ local function AddQuest(data, questIndex, stepIndex, conditionIndex)
 	local questInfo = data.quests[questIndex]
 	
 	if questInfo == nil then
-		questInfo = { index = questIndex, steps = {} }
+		local name = GetJournalQuestInfo(questIndex)
+		name = Utils.FormatStringCurrentLanguage(name)
+		questInfo = { index = questIndex, steps = {}, name = name, assisted = assisted, zoneIndex = zoneIndex,
+					 setAssisted = function(self,value)
+						self.path = nil
+						self.assisted = value
+						for stepIndex,step in pairs(self.steps) do
+							for conditionIndex, condition in pairs(step.conditions) do
+								condition:setAssisted(value)
+								if self.path == nil then
+									self.path = condition.path
+								end
+							end
+						end
+						
+						
+					 end
+		}
 		data.quests[questIndex] = questInfo
 	end
 
@@ -69,20 +138,60 @@ local function AddQuest(data, questIndex, stepIndex, conditionIndex)
 	end 
 	
 	if stepInfo.conditions[conditionIndex] == nil then 
-		stepInfo.conditions[conditionIndex] = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
+		
+		local text = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
+		
+		local iconPath,pinType,textures = GetQuestIconPath(result)
+		
+		local condition = {
+							text="",
+							setAssisted = function(self,assisted)
+								local path = GetPinTypeIconPath(textures,ConvertPinType(pinType,assisted))
+								self.path = path
+								self.text = zo_iconTextFormat(path,iconWidth,iconHeight,text)
+							end
+						}
+		condition:setAssisted(result.assisted)
+		stepInfo.conditions[conditionIndex] = condition
+											
 	end
 end
 
 local function SetIcon(lookup,closest,result)
+	if lookup == nil or closest == nil or result == nil then return false end 
 	local row = lookup[closest.nodeIndex]
 	if row ~= nil then 
 		local data = row.data 
 		
-		AddQuest(data,result.questIndex,result.stepIndex,result.conditionIndex)
+		result.zoneIndex = result.zoneIndex or closest.zoneIndex
+		
+		AddQuest(data,result,_iconWidth,_iconHeight)
 		
 		if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
 			data.iconHidden = false
-			data.iconPath = GetQuestIconPath(result)
+			
+			local iconPath,pinType,textures = GetQuestIconPath(result)
+			
+			data.iconPath = iconPath
+			
+			data.setAssisted = data.setAssisted or function(self,questIndex)
+				
+				if self.quests == nil then return end 
+				
+				for idx,q in pairs(self.quests) do
+					if q.setAssisted ~= nil then 
+						q:setAssisted(idx == questIndex)
+					end
+				end
+			
+				local quest = self.quests[questIndex]
+				if quest ~= nil then 
+					self.iconPath = quest.path
+				else
+					self.iconPath = GetPinTypeIconPath(textures,ConvertPinType(pinType,false))
+				end
+			end
+			
 			return true
 		end
 	end
@@ -121,7 +230,7 @@ local function RefreshCategories(categories,locations,locationsLookup,quests)
 	end 
 	
 	for zoneIndex,count in pairs(counts) do
-		local c =categories[zoneIndex] 
+		local c = categories[zoneIndex] 
 		if c ~= nil then 
 			c.name = table.concat({locationsLookup[zoneIndex].name," (",tostring(count),")"})
 		end
@@ -129,26 +238,31 @@ local function RefreshCategories(categories,locations,locationsLookup,quests)
 	
 end
 
-local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
+local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup)
 
-	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil then return end 
-	
+	if currentZoneIndex == nil or loc == nil or curLookup == nil or zoneLookup == nil then return end 
+
 	if loc.zoneIndex == currentZoneIndex then
-		ClearIcons(curLookup)
+		ClearIcons(curLookup,recLookup)
 	end
 	
-	ClearIcons(zoneLookup[loc.zoneIndex])
+	ClearIcons(zoneLookup[loc.zoneIndex],recLookup)
 end
 
-local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines)
+local function IsQuestValidForZone(quest,loc)
+ local zoneIndex,questType = quest.zoneIndex,quest.questType
+ return zoneIndex == loc.zoneIndex or (questType == QUEST_TYPE_MAIN_STORY or questType == QUEST_TYPE_CRAFTING)
+end
+
+local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 
 	if currentZoneIndex == nil or loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
 	local mapshrines = wayshrines[loc.zoneIndex]
-		
+	
 	for i,quest in ipairs(quests) do
 	    -- always request where zoneIndex is nil
-		if (quest.zoneIndex == nil or quest.zoneIndex == loc.zoneIndex) then 
+		if IsQuestValidForZone(quest,loc,zoneLookup) == true then 
 			Quest.GetQuestLocations(quest.index,function(result)
 			
 				if IsValidResult(result) == true then
@@ -161,7 +275,7 @@ local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quest
 					
 					if closest ~= nil then 
 
-						if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex]) == true then
+						if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex],recLookup) == true then
 							tab:RefreshControl()
 						end
 						
@@ -175,31 +289,260 @@ local function RefreshQuests(currentZoneIndex,loc,tab,curLookup,zoneLookup,quest
 	
 end
 
-local function AddQuestTaskToToolTip(text)
-	
-    local label = ZO_MapQuestDetailsTooltip.labelPool:AcquireObject()
-	
-    label:SetWidth(0)
-	
-    zo_bulletFormat(label, text)
 
-	ZO_MapQuestDetailsTooltip:AddControl(label)
-	
-	label:SetAnchor(CENTER)
-	
-	ZO_MapQuestDetailsTooltip:AddVerticalPadding(-8)
+local function AddTextToTooltip(tooltip,text,color)
+	color = color or ZO_TOOLTIP_DEFAULT_COLOR
+	tooltip:AddLine(text,"",color:UnpackRGB())
 end
 
-local function AddQuestTasksToToolTip(quest)
+local function AddDividerToTooltip(tooltip)
+	ZO_Tooltip_AddDivider(tooltip)
+end
+
+local function AddQuestTasksToTooltip(tooltip, quest)
+
+	AddTextToTooltip(tooltip, quest.name,ZO_SELECTED_TEXT)
 	
 	local questIndex = quest.index
 	
+	local label
+	
 	for stepIndex,stepInfo in pairs(quest.steps) do 
 	
-		for conditionIndex,text in pairs(stepInfo.conditions) do 
-			AddQuestTaskToToolTip(text)
+		for conditionIndex,condition in pairs(stepInfo.conditions) do 
+			AddTextToTooltip(tooltip, condition.text)
 		end
 	end 
+end
+
+local function GetRecallCostInfo()
+	local cost = GetRecallCost()
+	local hasEnough = CURRENCY_HAS_ENOUGH
+	if cost > GetCurrentMoney() then 
+		hasEnough = CURRENCY_NOT_ENOUGH
+	end
+	return cost,hasEnough
+end
+
+local REASON_CURRENCY_SPACING = 3
+local function AddRecallToTooltip(tooltip)
+
+	if IsInCampaign() then 
+	
+		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), ZO_ERROR_COLOR)
+		
+	else
+	
+		local _, timeLeft = GetRecallCooldown()
+		
+		if timeLeft == 0 then
+		
+			local cost,hasEnough = GetRecallCostInfo()
+		
+			tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
+			
+			local moneyLine = GetControl(tooltip, "SellPrice")  
+			local reasonLabel = GetControl(moneyLine, "Reason")
+			local currencyControl = GetControl(moneyLine, "Currency")
+			
+			-- fix vertical align 
+			currencyControl:ClearAnchors()
+			currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
+			
+		else
+		
+			local text = zo_strformat(SI_TOOLTIP_WAYSHRINE_RECALL_COOLDOWN, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
+			
+            AddTextToTooltip(tooltip,text, ZO_HIGHLIGHT_TEXT)
+		
+		end
+		
+	end 
+end
+
+local function SetRecallAmount(tooltip,amount,hasEnough)
+	local currencyControl = GetControl(GetControl(tooltip, "SellPrice"), "Currency")
+	if currencyControl ~= nil then 
+		ZO_CurrencyControl_SetSimpleCurrency(currencyControl, CURRENCY_TYPE_MONEY, amount, {showTooltips = false}, CURRENCY_DONT_SHOW_ALL, hasEnough)
+	end
+end
+
+local function SetCooldownTimeleft(tooltip,timeLeft)
+	-- TODO: Set cooldown line
+end
+
+local function UpdateRecallAmount(tooltip)
+
+	local _, timeLeft = GetRecallCooldown()
+	
+	if timeLeft == 0 then
+	
+		local cost,hasEnough = GetRecallCostInfo()
+		SetRecallAmount(tooltip,cost,hasEnough)
+	else
+		SetCooldownTimeleft(tooltip,timeLeft)
+	end
+	
+end
+
+local function CreateTimer(func, interval)
+	
+	local enabled = false
+	
+	local instance = { 
+		Tick = function(self)
+			zo_callLater(function() 
+				if enabled == true then 
+					func() 
+					if enabled == true then 
+						self:Tick()
+					end
+				end 
+			end, interval)
+		end,
+		Start = function(self)
+			if enabled == true then return end 
+			enabled = true
+			self:Tick()
+		end, 
+		Stop = function(self)
+			if enabled == false then return end 
+			enabled = false 
+		end
+	}
+	
+	return instance
+end 
+
+
+local function SortQuestsTable(questTable)
+	table.sort(questTable,function(x,y)
+		if x.assisted == true then 
+			return true
+		elseif y.assisted == true then 
+			return false 
+		end
+		return x.index < y.index
+	end)
+end 
+
+local function CreateQuestsTable(quests)
+	
+	local questTable = {}
+	
+	for index,quest in pairs(quests) do
+		table.insert(questTable,quest)
+	end 
+	
+	return questTable
+end
+
+local function IsCyrodiilRow(data)
+	if data == nil then return false end 
+	return Location.Data.IsZoneIndexCyrodiil(data.zoneIndex)
+end
+
+local function IsKeepRow(data,isRecall,isKeep)
+	if IsCyrodiilRow(data) == false then return false end 
+	return isRecall == true or isKeep == true
+end 
+
+local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep)
+	InitializeTooltip(tooltip, control, RIGHT, offsetX)
+	
+	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
+	
+	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
+		AddRecallToTooltip(tooltip)
+	elseif isRecall == false then 
+		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
+	end
+	
+	if data.quests == nil then return end 
+
+	AddDividerToTooltip(tooltip)
+	
+	local first = true
+	
+	local questsTable = data.quests.table
+	
+	if questsTable == nil then 
+		questsTable = CreateQuestsTable(data.quests)
+		data.quests.table = questsTable
+	end 
+	SortQuestsTable(questsTable)
+	for i,quest in ipairs(questsTable) do 
+		if first == false then AddDividerToTooltip(tooltip) end
+		AddQuestTasksToTooltip(tooltip, quest)
+		first = false
+	end 
+end
+
+local function HideToolTip(tooltip) 
+	ClearTooltip(tooltip)
+end 
+
+local function ShowQuestMenu(owner,data,func)
+	ClearMenu()
+	
+	if data == nil or data.quests == nil or data.quests.table == nil then return end 
+	
+	local name
+	local quest
+	
+	local quests = data.quests.table
+	
+	local count = #quests 
+	
+	if count == 1 then
+		func(quests[1])
+	elseif count > 1 then
+		
+		for i,quest in ipairs(quests) do 
+			name = quest.name
+
+			if quest.assisted == false then 
+				AddMenuItem(name, function()
+					func(quest)
+					ClearMenu()
+				end)
+			end
+		end 
+		
+		ShowMenu(owner)
+	end 
+end
+
+local function SetAssistedInLookup(questIndex, lookup)
+	for k,row in pairs(lookup) do 
+		if type(row) == "table" then
+			if row.data ~= nil and row.data.setAssisted ~= nil then 
+				row.data:setAssisted(questIndex)
+			end 
+		end
+	end
+end 
+
+local function SetAssisted(questIndex,curLookup,recLookup,zoneLookup)
+	QUEST_TRACKER:ForceAssist(questIndex)
+	SetAssistedInLookup(questIndex,curLookup)
+	SetAssistedInLookup(questIndex,recLookup)
+	if zoneLookup ~= nil then 
+		for zoneIndex,lookup in pairs(zoneLookup) do
+			SetAssistedInLookup(questIndex,lookup)
+		end
+	end 
+end
+
+
+local function ShowKeepTooltip(control, offsetX, data, isRecall,isKeep)
+
+	ZO_KeepTooltip:ClearAnchors()
+	ZO_KeepTooltip:SetAnchor(TOPRIGHT,control,TOPLEFT,offsetX,0)
+	
+	-- guess defaults for last values 
+	ZO_KeepTooltip:SetKeep(data.nodeIndex, BGQUERY_ASSIGNED_AND_LOCAL, 1.0)
+	ZO_KeepTooltip:SetHidden(false)
 end
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
@@ -230,9 +573,11 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local loc = Location.Data.GetZoneLocation(_locationsLookup)
 			
-		local curLookup,zoneLookup = lookups.current,lookups.zone
-			
-		ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup)
+		local curLookup,zoneLookup,recLookup = lookups.current,lookups.zone,lookups.recent
+		
+		self:HideToolTip()
+		
+		ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup)
 		
 		local quests = Quest.GetQuests()
 		
@@ -242,8 +587,8 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local wayshrines = Wayshrine.GetKnownNodesZoneLookup(_locations)
 		
-		RefreshQuests(currentZoneIndex,loc,_tab,curLookup,zoneLookup,quests,wayshrines)
-		
+		RefreshQuests(currentZoneIndex,loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+
 		_refreshing = false
 	end
 	
@@ -252,26 +597,123 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		self:Refresh(...)
 		_isDirty = false
 	end
+
+	
+	local recallTimer
+	
+	local function StartRecallTimer()
+		if tab:IsRecall() == false then return end
+		
+		if recallTimer == nil then
+			recallTimer = CreateTimer(function()
+				UpdateRecallAmount(InformationTooltip)
+			end,500)
+		end 
+		recallTimer:Start()
+	end 
+	
+	local function StopRecallTimer()
+		if recallTimer == nil then return end
+		recallTimer:Stop()
+	end
+	
+	local function ShowCurrentTooltip(icon,data)
+		if data == nil then return end
+		
+		local isRecall,isKeep = tab:IsRecall(),tab:IsKeep()
+		
+		if IsKeepRow(data,isRecall,isKeep) == true then 
+			ShowKeepTooltip(icon,-25,data,isRecall,isKeep)
+		else
+			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep)
+		end
+		
+		StartRecallTimer()
+	end
+	
+	self.HideToolTip = function(self) 
+	
+		StopRecallTimer()
+		
+		HideToolTip(InformationTooltip) 
+		
+		ZO_KeepTooltip:SetHidden(true)
+		
+	end 
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
 		base(control,icon,data)
-		if data.quests == nil then return end 
 		
-		InitializeTooltip(ZO_MapQuestDetailsTooltip, icon, RIGHT, -25)
-		for index,quest in pairs(data.quests) do 
-			AddQuestTasksToToolTip(quest)
-		end 
-
+		ShowCurrentTooltip(icon,data)
 	end)
 	
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
 		base(control,icon,data)
-		if data.quests == nil then return end 
 		self:HideToolTip()
 	end)
 	
-	self.HideToolTip = function(self) 
-		ClearTooltip(ZO_MapQuestDetailsTooltip)
-	end 
+	tab.IconMouseClicked = FasterTravel.hook(tab.IconMouseClicked,function(base,control,icon,data)
+		base(control,icon,data)
+		ShowQuestMenu(control,data,function(quest)
+			
+			local loc = _locationsLookup[data.zoneIndex]
+			
+			if loc == nil then 
+				loc = _locationsLookup[quest.zoneIndex]
+			end 
+			
+			local mapIndex = loc.mapIndex
+			
+			local questIndex = quest.index
+			local lookups = _tab:GetRowLookups()
+			
+			local curLookup,zoneLookup,recLookup = lookups.current,lookups.zone,lookups.recent
+			
+			_refreshing = true 
+			
+			SetAssisted(questIndex,curLookup,recLookup,zoneLookup)
+			
+			data:setAssisted(questIndex)
+			
+			_tab:RefreshControl()
+			
+			_refreshing = false
+			
+			if mapIndex ~= GetCurrentMapIndex() then 
+				ZO_WorldMap_SetMapByIndex(mapIndex)
+			end
+
+		end)
+	end)
+	
+	tab.RowMouseEnter = FasterTravel.hook(tab.RowMouseEnter,function(base,control,row,label,data)
+		base(control,row,label,data)
+
+		ShowCurrentTooltip(row.icon,data)
+		
+	end)
+	
+	tab.RowMouseExit = FasterTravel.hook(tab.RowMouseExit,function(base,control,row,label,data)
+		base(control,row,label,data)
+		
+		self:HideToolTip()
+	end)
+	
+	tab.RowMouseClicked = FasterTravel.hook(tab.RowMouseClicked,function(base,control,row,data)
+		base(control,row,data)
+		
+		local nodeIndex = data.nodeIndex
+		
+		if nodeIndex == nil then return end
+		
+		local loc = _locationsLookup[data.zoneIndex]
+		
+		if loc ~= nil then 
+			WorldMap.PanToPoint(loc.mapIndex,function()
+				local known,name,x,y = Wayshrine.Data.GetNodeInfo(nodeIndex)
+				return x,y
+			end)
+		end 
+	end)
 	
 end

@@ -9,6 +9,11 @@ local function stringStartsWith(str,value)
 	return string.sub(str,1,string.len(value)) == value
 end
 
+local function stringTrim(str)
+	if str == nil or str == "" then return str end 
+	return (str:gsub("^%s*(.-)%s*$", "%1"))
+end 
+
 local function copy(source,target)
 	target = target or {}
 	for i,v in ipairs(source) do
@@ -103,6 +108,7 @@ end
 u.copy = copy
 u.stringIsEmpty = stringIsEmpty
 u.stringStartsWith = stringStartsWith
+u.stringTrim = stringTrim
 u.toTable = toTable
 u.map = map
 u.where = where 
