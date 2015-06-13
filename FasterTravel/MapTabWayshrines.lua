@@ -5,6 +5,7 @@ FasterTravel.MapTabWayshrines = MapTabWayshrines
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
 local Transitus = FasterTravel.Transitus
+local Campaign = FasterTravel.Campaign
 local Utils = FasterTravel.Utils
 
 
@@ -83,6 +84,17 @@ local function AttachTransitusDataHandlers(args,data)
 	return data
 end 
 
+local function AttachCampaignDataHandlers(args,data)
+	AttachRefreshHandler(args,data)
+	
+	data.clicked = function(self,control) 
+	
+		d(tostring(data.id)..": "..data.name)
+
+	end
+	return data 
+end
+
 local function AddRowToLookup(self,control,lookup)
 	local nidx = self.nodeIndex
 	local lk = lookup[nidx]
@@ -110,7 +122,14 @@ end
 
 local function GetPlayerCampaignsData(args)
 	-- TODO: return player campaigns
-	return {}
+	
+	local nodes = Campaign.GetPlayerCampaigns()
+	
+	nodes = Utils.map(nodes,function(item)
+		return AttachCampaignDataHandlers(args,item)
+	end)
+	
+	return nodes
 end 
 
 local function GetZoneWayshrinesData(args)

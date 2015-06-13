@@ -16,7 +16,7 @@ local ConvertQuestPinType = WorldMap.ConvertQuestPinType
 local GetPinTexture = WorldMap.GetPinTexture
 
 local _questIcon = {
-	size={width=27,height=27}, 
+	size={width=27,height=26}, 
 	offset={x=-6,y=-4}
 }
 

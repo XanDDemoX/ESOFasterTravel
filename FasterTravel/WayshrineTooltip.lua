@@ -1,6 +1,8 @@
 
 local Location = FasterTravel.Location
 
+local Campaign = FasterTravel.Campaign
+
 local Timer = FasterTravel.Timer
 
 local WayshrineTooltip = FasterTravel.class()
@@ -129,8 +131,13 @@ end
 
 local function IsKeepRow(data,isRecall,isKeep)
 	if IsCyrodiilRow(data) == false then return false end 
-	return isRecall == true or isKeep == true
+	return (isRecall == true or isKeep == true) and data.isTransitus == true 
 end 
+
+local function IsCampaignRow(data)
+	if IsCyrodiilRow(data) == false then return false end 
+	return data.isCampaign == true 
+end
 
 local function AppendQuestsToTooltip(tooltip,data)
 	if data.quests == nil then return end 
@@ -183,24 +190,115 @@ local function ShowKeepTooltip(tooltip,control, offsetX, data)
 	
 end
 
-function WayshrineTooltip:init(tab,infoTooltip,keepTooltip) 
+local function AddTextWithIconToTooltip(tooltip,text,path,iconWidth,iconHeight,...)
+	AddTextToTooltip(tooltip,zo_iconTextFormat(path,iconWidth,iconHeight,text),...)
+end
 
-	local recallTimer
+local _iconWidth,_iconHeight = 28,28
+
+local function ColourTextInline(text,colour)
+	table.insert(text,"|c")
+	table.insert(text,colour)
+end
+
+local function ColourFormat(r,g,b)
+	return string.format("%02x%02x%02x",255 * r,255 * g, 255 * b)
+end
+
+local function AddPopulationToTooltip(tooltip,data)
+
+	local population = data.population
+
+	local factions = Campaign.ICONS_FACTION_POPULATION
+	local colors = Campaign.COLOURS_FACTION_POPULATION
 	
-	local function StartRecallTimer()
-		if tab:IsRecall() == false then return end
+	local text = {}
+	local path 
+	
+	local cur
+	for i,v in ipairs(population) do
 		
-		if recallTimer == nil then
-			recallTimer = Timer(function()
-				UpdateRecallAmount(infoTooltip)
-			end,500)
-		end 
-		recallTimer:Start()
+		path = factions[i]
+		
+		cur = zo_iconFormat(path,30,30)
+		
+		table.insert(text,cur)
+		
+		path = ZO_CampaignBrowser_GetPopulationIcon(v)
+		
+		cur = zo_iconTextFormat(path,_iconWidth,_iconHeight,Campaign.GetPopulationText(v))
+		
+		ColourTextInline(text,ColourFormat(colors[i]()))
+		
+		table.insert(text,cur)
+	end
+	
+	table.insert(text,"|r")
+	
+	AddTextToTooltip(tooltip,table.concat(text))
+	
+	text = {}
+	
+	if data.group > 0 then
+	
+	end
+	
+	if data.friends > 0 then
+	
+	end
+	
+	if data.guildies > 0 then
+	
 	end 
 	
-	local function StopRecallTimer()
-		if recallTimer == nil then return end
-		recallTimer:Stop()
+end
+
+local function ShowCampaignTooltip(tooltip,control,offsetX,data)
+
+	InitializeTooltip(tooltip, control, RIGHT, offsetX)
+
+	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
+	
+	AddTextToTooltip(tooltip,data.rulesetName, ZO_SELECTED_TEXT)
+	
+	local key = (data.home == true and Campaign.ICON_ID_HOME) or (data.guest == true and Campaign.ICON_ID_GUEST)
+	
+	if key ~= nil then 
+		local path = Campaign.GetIcon(key)
+		local strId = (data.home == true and SI_CAMPAIGN_BROWSER_TOOLTIP_HOME_CAMPAIGN) or SI_CAMPAIGN_BROWSER_TOOLTIP_GUEST_CAMPAIGN
+		AddTextWithIconToTooltip(tooltip,GetString(strId),path,_iconWidth,_iconHeight)
+	end
+	
+	AddDividerToTooltip(tooltip)
+		
+	AddPopulationToTooltip(tooltip,data)
+	
+	AddDividerToTooltip(tooltip)
+
+	--zo_iconTextFormat(path,iconWidth,iconHeight,text)
+end
+
+
+function WayshrineTooltip:init(tab,infoTooltip,keepTooltip) 
+
+	local _timer
+	
+	local function TimerTick()
+		UpdateRecallAmount(infoTooltip)
+	end
+	
+	local function StartTimer()
+		if tab:IsRecall() == false then return end
+		
+		if _timer == nil then
+			_timer = Timer(TimerTick,500)
+		end 
+		_timer:Start()
+	end 
+	
+	local function StopTimer()
+		if _timer == nil then return end
+		_timer:Stop()
 	end
 	
 	local function ShowCurrentTooltip(icon,data)
@@ -208,13 +306,17 @@ function WayshrineTooltip:init(tab,infoTooltip,keepTooltip)
 		
 		local isRecall,isKeep,inCyrodiil = tab:IsRecall(),tab:IsKeep(),tab:InCyrodiil()
 		
+		local offsetX = -25
+		
 		if IsKeepRow(data,isRecall,isKeep) == true then 
-			ShowKeepTooltip(keepTooltip,icon,-25,data)
+			ShowKeepTooltip(keepTooltip,icon,offsetX,data)
+		elseif IsCampaignRow(data) == true then 
+			ShowCampaignTooltip(infoTooltip,icon,offsetX,data)
 		else
-			ShowToolTip(infoTooltip, icon,data,-25,isRecall,isKeep, inCyrodiil)
+			ShowToolTip(infoTooltip, icon,data,offsetX,isRecall,isKeep, inCyrodiil)
 		end
 		
-		StartRecallTimer()
+		StartTimer()
 	end
 	
 	self.Show = function(self,...)
@@ -222,7 +324,7 @@ function WayshrineTooltip:init(tab,infoTooltip,keepTooltip)
 	end 
 	
 	self.Hide = function(self)
-		StopRecallTimer()
+		StopTimer()
 		
 		HideToolTip(infoTooltip) 
 		
