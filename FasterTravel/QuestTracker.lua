@@ -10,27 +10,23 @@ local Quest = FasterTravel.Quest
 local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
 
-local Timer = FasterTravel.Timer
+local _questIcon = {
+	size={width=27,height=27}, 
+	offset={x=-6,y=-4}
+}
 
-local GetPinTypeIconPath = WorldMap.GetPinTypeIconPath
-local GetQuestIconPath = WorldMap.GetQuestIconPath
-local ConvertPinType = WorldMap.ConvertPinType
-
-local _iconWidth = 28 
-local _iconHeight = 28 
+local _keepIcon = {
+			size={width=38,height=38}, 
+			offset={x=-10,y=-8}
+		}
 
 local function ClearRowIcons(row)
 	if row == nil then return end
 	if type(row) == "table" then
 		local data = row.data 
 		if data ~= nil  then 
-			if data.iconHidden ~= nil then 
-				 data.iconHidden = nil
-			end 
-			
-			if data.quests ~= nil then 
-				data.quests = nil
-			end
+			data.icon = nil 
+			data.quests = nil
 		end
 	end
 end
@@ -100,7 +96,7 @@ local function AddQuest(data, result ,iconWidth,iconHeight)
 		local condition = {
 							text="",
 							setAssisted = function(self,assisted)
-								local path = GetPinTypeIconPath(textures,ConvertPinType(pinType,assisted))
+								local path = GetPinTypeIconPath(textures,ConvertQuestPinType(pinType,assisted))
 								self.path = path
 								self.text = zo_iconTextFormat(path,iconWidth,iconHeight,text)
 							end
@@ -111,16 +107,27 @@ local function AddQuest(data, result ,iconWidth,iconHeight)
 	end
 end
 
-local function SetIcon(data,path,hidden)
+local function SetIcon(data,path,args)
 	if data == nil then return false end 
 	
-	hidden = hidden or (path == nil or path == "")
+	args = args or {}
 	
-	data.iconPath = path
+	local icon = data.icon
 	
-	data.iconHidden = hidden
+	if icon == nil then 
+		icon = {}
+		data.icon = icon
+	end 
+		
+	local hidden = args.hidden or (path == nil or path == "")
 	
-	return true 
+	icon.path = path
+	
+	icon.hidden = hidden
+
+	Utils.extend(args,icon)
+	
+	return true, icon
 end
 
 local function SetQuestIcon(data,closest,result)
@@ -140,25 +147,30 @@ local function SetQuestIcon(data,closest,result)
 				end
 			end
 		
-			local quest = self.quests[questIndex]
-			if quest ~= nil then 
-				self.iconPath = quest.path
-			else
-				self.iconPath = GetPinTypeIconPath(textures,ConvertPinType(pinType,false))
+			if self.icon ~= nil then 
+				local quest = self.quests[questIndex]
+				if quest ~= nil then 
+					self.icon.path = quest.path
+				else
+					self.icon.path = GetPinTypeIconPath(textures,ConvertQuestPinType(pinType,false))
+				end
 			end
 		end
 		
-		return SetIcon(data,iconPath)
+		return SetIcon(data,iconPath,_questIcon)
 	end
 	
 	return false
 
 end
 
+local function SetKeepIcon(data)
+	if data.isTransitus ~= true or data.pinType == nil then return end 
+	local iconPath = GetPinTexture(data.pinType)
+	return SetIcon(data,iconPath,_keepIcon)
+end
 
-local function UpdateLookups(closest,result,...)
-
-	result.zoneIndex = result.zoneIndex or closest.zoneIndex
+local function UpdateLookups(nodeIndex,func,...)
 
 	local count = select('#',...)
 	local set = false 
@@ -169,17 +181,13 @@ local function UpdateLookups(closest,result,...)
 	for i=1, count do 
 		lookup = select(i,...)
 		
-		row = lookup[closest.nodeIndex]
+		row = lookup[nodeIndex]
 		
 		if row ~= nil then
 		
 			data = row.data 
-			
-			AddQuest(data,result,_iconWidth,_iconHeight)
-			
-			if SetQuestIcon(data,closest,result) == true then 
-				set = true 
-			end 
+
+			set = func(data) or set
 			
 		end 
 		
@@ -249,7 +257,14 @@ local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recL
 					
 					if closest ~= nil then 
 
-						if UpdateLookups(closest,result,curLookup,zoneLookup[closest.zoneIndex],recLookup) == true then
+						result.zoneIndex = result.zoneIndex or closest.zoneIndex
+						
+						local updateFunc = function(data) 
+										AddQuest(data,result,_questIcon.size.width,_questIcon.size.height)
+										return SetQuestIcon(data,closest,result)
+									end
+						
+						if UpdateLookups(closest.nodeIndex,updateFunc,curLookup,zoneLookup[closest.zoneIndex],recLookup) == true then
 							tab:RefreshControl()
 						end
 						
@@ -262,174 +277,6 @@ local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recL
 	end
 	
 end
-
-
-local function AddTextToTooltip(tooltip,text,color)
-	color = color or ZO_TOOLTIP_DEFAULT_COLOR
-	tooltip:AddLine(text,"",color:UnpackRGB())
-end
-
-local function AddDividerToTooltip(tooltip)
-	ZO_Tooltip_AddDivider(tooltip)
-end
-
-local function AddQuestTasksToTooltip(tooltip, quest)
-
-	AddTextToTooltip(tooltip, quest.name,ZO_SELECTED_TEXT)
-	
-	local questIndex = quest.index
-	
-	local label
-	
-	for stepIndex,stepInfo in pairs(quest.steps) do 
-	
-		for conditionIndex,condition in pairs(stepInfo.conditions) do 
-			AddTextToTooltip(tooltip, condition.text)
-		end
-	end 
-end
-
-local function GetRecallCostInfo()
-	local cost = GetRecallCost()
-	local hasEnough = CURRENCY_HAS_ENOUGH
-	if cost > GetCurrentMoney() then 
-		hasEnough = CURRENCY_NOT_ENOUGH
-	end
-	return cost,hasEnough
-end
-
-local REASON_CURRENCY_SPACING = 3
-local function AddRecallToTooltip(tooltip,inCyrodiil)
-
-	if inCyrodiil == true then 
-	
-		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CANT_RECALL_AVA), ZO_ERROR_COLOR)
-		
-	else
-	
-		local _, timeLeft = GetRecallCooldown()
-		
-		if timeLeft == 0 then
-		
-			local cost,hasEnough = GetRecallCostInfo()
-		
-			tooltip:AddMoney(tooltip, cost, SI_TOOLTIP_RECALL_COST, hasEnough)
-			
-			local moneyLine = GetControl(tooltip, "SellPrice")  
-			local reasonLabel = GetControl(moneyLine, "Reason")
-			local currencyControl = GetControl(moneyLine, "Currency")
-			
-			-- fix vertical align 
-			currencyControl:ClearAnchors()
-			currencyControl:SetAnchor(TOPLEFT, reasonLabel, TOPRIGHT, REASON_CURRENCY_SPACING, 0)
-			
-		else
-		
-			local text = zo_strformat(SI_TOOLTIP_WAYSHRINE_RECALL_COOLDOWN, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
-			
-            AddTextToTooltip(tooltip,text, ZO_HIGHLIGHT_TEXT)
-		
-		end
-		
-	end 
-end
-
-local function SetRecallAmount(tooltip,amount,hasEnough)
-	local currencyControl = GetControl(GetControl(tooltip, "SellPrice"), "Currency")
-	if currencyControl ~= nil then 
-		ZO_CurrencyControl_SetSimpleCurrency(currencyControl, CURRENCY_TYPE_MONEY, amount, {showTooltips = false}, CURRENCY_DONT_SHOW_ALL, hasEnough)
-	end
-end
-
-local function SetCooldownTimeleft(tooltip,timeLeft)
-	-- TODO: Set cooldown line
-end
-
-local function UpdateRecallAmount(tooltip)
-
-	local _, timeLeft = GetRecallCooldown()
-	
-	if timeLeft == 0 then
-	
-		local cost,hasEnough = GetRecallCostInfo()
-		SetRecallAmount(tooltip,cost,hasEnough)
-	else
-		SetCooldownTimeleft(tooltip,timeLeft)
-	end
-	
-end
-
-local function SortQuestsTable(questTable)
-	table.sort(questTable,function(x,y)
-		if x.assisted == true then 
-			return true
-		elseif y.assisted == true then 
-			return false 
-		end
-		return x.index < y.index
-	end)
-end 
-
-local function CreateQuestsTable(quests)
-	
-	local questTable = {}
-	
-	for index,quest in pairs(quests) do
-		table.insert(questTable,quest)
-	end 
-	
-	return questTable
-end
-
-local function IsCyrodiilRow(data)
-	if data == nil then return false end 
-	return Location.Data.IsZoneIndexCyrodiil(data.zoneIndex)
-end
-
-local function IsKeepRow(data,isRecall,isKeep)
-	if IsCyrodiilRow(data) == false then return false end 
-	return isRecall == true or isKeep == true
-end 
-
-local function AppendQuestsToTooltip(tooltip,data)
-	if data.quests == nil then return end 
-
-	AddDividerToTooltip(tooltip)
-	
-	local first = true
-	
-	local questsTable = data.quests.table
-	
-	if questsTable == nil then 
-		questsTable = CreateQuestsTable(data.quests)
-		data.quests.table = questsTable
-	end 
-	SortQuestsTable(questsTable)
-	for i,quest in ipairs(questsTable) do 
-		if first == false then AddDividerToTooltip(tooltip) end
-		AddQuestTasksToTooltip(tooltip, quest)
-		first = false
-	end 
-end
-
-local function ShowToolTip(tooltip, control,data,offsetX,isRecall,isKeep,inCyrodiil)
-	InitializeTooltip(tooltip, control, RIGHT, offsetX)
-	
-	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
-	
-	if isRecall == true or (isKeep == true and IsCyrodiilRow(data) == false) then 
-		AddRecallToTooltip(tooltip,inCyrodiil)
-	elseif isRecall == false then 
-		AddTextToTooltip(tooltip,GetString(SI_TOOLTIP_WAYSHRINE_CLICK_TO_FAST_TRAVEL), ZO_HIGHLIGHT_TEXT)
-	end
-	
-	AppendQuestsToTooltip(tooltip,data)
-
-end
-
-local function HideToolTip(tooltip) 
-	ClearTooltip(tooltip)
-end 
 
 local function ShowQuestMenu(owner,data,func)
 	ClearMenu()
@@ -483,15 +330,13 @@ local function SetAssisted(questIndex,curLookup,recLookup,zoneLookup)
 	end 
 end
 
-local function ShowKeepTooltip(tooltip,control, offsetX, data)
-
-	-- guessed defaults for last values 
-	tooltip:SetKeep(data.nodeIndex, BGQUERY_ASSIGNED_AND_LOCAL, 1.0)
+local function RefreshKeepIcons(wayshrines,...)
 	
-	AppendQuestsToTooltip(tooltip,data)
+	for i, node in ipairs(wayshrines) do 
 	
-	tooltip:Show(control,offsetX)
+		UpdateLookups(node.nodeIndex,SetKeepIcon,...)
 	
+	end 
 end
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
@@ -509,39 +354,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	local _isDirty = true 
 	
-	local recallTimer
-	
-	local keepTooltip = WorldMap.GetKeepTooltip()
-	
-	local function StartRecallTimer()
-		if tab:IsRecall() == false then return end
-		
-		if recallTimer == nil then
-			recallTimer = Timer(function()
-				UpdateRecallAmount(InformationTooltip)
-			end,500)
-		end 
-		recallTimer:Start()
-	end 
-	
-	local function StopRecallTimer()
-		if recallTimer == nil then return end
-		recallTimer:Stop()
-	end
-	
-	local function ShowCurrentTooltip(icon,data)
-		if data == nil then return end
-		
-		local isRecall,isKeep,inCyrodiil = tab:IsRecall(),tab:IsKeep(),tab:InCyrodiil()
-		
-		if IsKeepRow(data,isRecall,isKeep) == true then 
-			ShowKeepTooltip(keepTooltip,icon,-25,data)
-		else
-			ShowToolTip(InformationTooltip, icon,data,-25,isRecall,isKeep, inCyrodiil)
-		end
-		
-		StartRecallTimer()
-	end
+	local wayshrineTooltip = FasterTravel.WayshrineTooltip(tab,InformationTooltip,WorldMap.GetKeepTooltip())
 	
 	local function GetWayshrinesData(isRecall,isKeep,inCyrodiil,loc)
 		if loc == nil then return {} end 
@@ -551,11 +364,11 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
 
 		if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then 
-			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL)
+			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL), true 
 		elseif inCyrodiil == false or locIsCyrodiil == false then 
-			return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex))
+			return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex)), false
 		else
-			return {}
+			return {} , false 
 		end 
 	
 		return wayshrines
@@ -586,9 +399,14 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		_tab:RefreshControl(lookups.categoriesTable)
 		
-		local wayshrines = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
+		local wayshrines, isTransitus = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
 		
 		RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+		
+		if isTransitus == true then 
+			RefreshKeepIcons(wayshrines, curLookup,zoneLookup[loc.zoneIndex])
+			_tab:RefreshControl()
+		end 
 
 		_refreshing = false
 	end
@@ -601,23 +419,24 @@ function QuestTracker:init(locations,locationsLookup,tab)
 
 	self.HideToolTip = function(self) 
 	
-		StopRecallTimer()
-		
-		HideToolTip(InformationTooltip) 
-		
-		keepTooltip:Hide()
+		wayshrineTooltip:Hide()
 		
 	end 
 	
 	tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter,function(base,control,icon,data) 
+	
 		base(control,icon,data)
 		
-		ShowCurrentTooltip(icon,data)
+		wayshrineTooltip:Show(icon,data)
+		
 	end)
 	
 	tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit,function(base,control,icon,data)
+	
 		base(control,icon,data)
-		self:HideToolTip()
+		
+		wayshrineTooltip:Hide()
+		
 	end)
 	
 	tab.IconMouseClicked = FasterTravel.hook(tab.IconMouseClicked,function(base,control,icon,data)
@@ -656,8 +475,8 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	
 	tab.RowMouseEnter = FasterTravel.hook(tab.RowMouseEnter,function(base,control,row,label,data)
 		base(control,row,label,data)
-
-		ShowCurrentTooltip(row.icon,data)
+		
+		wayshrineTooltip:Show(row.icon,data)
 		
 	end)
 	

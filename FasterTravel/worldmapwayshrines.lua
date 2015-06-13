@@ -41,6 +41,39 @@ function MapWayshrines:RowMouseExit(control,label,data)
 
 end
 
+local function RefreshIcon(data,control, icon)
+	local idata = data ~= nil and data.icon
+			
+	local hidden = (idata == nil or idata.hidden == nil or (idata.hidden ~= nil and idata.hidden == true))
+	
+	icon:SetHidden(hidden)
+	
+	if hidden == true then return end 
+	
+	icon:SetResizeToFitFile(false)
+	
+	icon:SetTexture(idata.path)
+	
+	if idata.size ~= nil then 
+		if idata.size.width ~= nil then 
+			icon:SetWidth(idata.size.width)
+		end
+		if idata.size.height ~= nil then 
+			icon:SetHeight(idata.size.height)
+		end 
+	end 
+	
+	-- set anchor
+	icon:ClearAnchors()
+	
+	if idata.offset ~= nil then 
+		icon:SetAnchor(TOPLEFT,control,TOPLEFT,idata.offset.x,idata.offset.y)
+	else
+		icon:SetAnchor(TOPLEFT,control,TOPLEFT,-6,-2)
+	end
+		 
+end
+
 function MapWayshrines:OnRefreshRow(control,data)
 	local icon = control.icon 
 	
@@ -54,12 +87,7 @@ function MapWayshrines:OnRefreshRow(control,data)
 		control.IconMouseDown = function(c,icon,button) self:IconMouseDown(icon,button,data) end 
 		control.IconMouseUp = function(c,icon,button) self:IconMouseUp(icon,button,data) end 
 		
-		icon:SetHidden((data == nil or data.iconHidden == nil or (data.iconHidden ~= nil and data.iconHidden == true)))
-		
-		if data.iconPath ~= nil then 
-			icon:SetResizeToFitFile(false)
-			icon:SetTexture(data.iconPath)
-		end 
+		RefreshIcon(data,control,icon)
 	end
 end
 

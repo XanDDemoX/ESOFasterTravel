@@ -127,7 +127,7 @@ local function GetQuestIconPath(quest)
 	end
 end
 
-local function ConvertPinType(pinType,assisted)
+local function ConvertQuestPinType(pinType,assisted)
 	if assisted == true then 
 		if pinType == MAP_PIN_TYPE_TRACKED_QUEST_CONDITION then 
 			return MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION
@@ -148,7 +148,19 @@ local function ConvertPinType(pinType,assisted)
 	return pinType
 end
 
-
+local function GetPinTexture(pinType)
+	if pinType == nil then return end 
+	
+	local data = ZO_MapPin.PIN_DATA
+	
+	local pinData = data[pinType]
+	
+	if pinData == nil then return end 
+	
+	local texture = pinData.texture
+	
+	return texture
+end 
 
 
 local _pinManager
@@ -209,7 +221,7 @@ w.GetKeepTooltip = GetKeepTooltip
 
 w.GetPinTypeIconPath = GetPinTypeIconPath
 w.GetQuestIconPath = GetQuestIconPath
-w.ConvertPinType = ConvertPinType
-
+w.ConvertQuestPinType = ConvertQuestPinType
+w.GetPinTexture = GetPinTexture
 
 FasterTravel.WorldMap = w 

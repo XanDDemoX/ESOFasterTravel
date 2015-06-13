@@ -24,6 +24,7 @@ Teleport.lua
 Quest.lua
 WorldMap.lua
 Timer.lua
+WayshrineTooltip.lua
 
 MapTab.lua
 MapTabWayshrines.lua

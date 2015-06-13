@@ -8,14 +8,15 @@ local function GetNodeInfo(ctx,nodeIndex)
 		
 	local keepId, accessible, normalizedX,  normalizedY = GetKeepTravelNetworkNodeInfo(nodeIndex,ctx)
 		
-	if normalizedX == 0 and normalizedY == 0 then -- if position isn't resolved try again (mainly for quest trackers benefit in theory >_<)
-		local pinType
-		pinType, normalizedX, normalizedY = GetKeepPinInfo(keepId, BGQUERY_LOCAL)
-	end
+	local pinType,nx,ny  = GetKeepPinInfo(keepId, ctx)
+	
+	if normalizedX == 0 and normalizedY == 0 then 
+		normalizedX,normalizedY = nx,ny
+	end 
 	
 	local name  = GetKeepName(keepId)
 	
-	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true}
+	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true, pinType=pinType}
 	
 	return node
 end
