@@ -1,13 +1,7 @@
 
 local Location = FasterTravel.Location
-local WorldMap = FasterTravel.WorldMap
 
 local Timer = FasterTravel.Timer
-
-local GetPinTypeIconPath = WorldMap.GetPinTypeIconPath
-local GetQuestIconPath = WorldMap.GetQuestIconPath
-local ConvertQuestPinType = WorldMap.ConvertQuestPinType
-local GetPinTexture = WorldMap.GetPinTexture
 
 local WayshrineTooltip = FasterTravel.class()
 

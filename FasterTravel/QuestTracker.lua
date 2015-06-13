@@ -10,6 +10,11 @@ local Quest = FasterTravel.Quest
 local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
 
+local GetPinTypeIconPath = WorldMap.GetPinTypeIconPath
+local GetQuestIconPath = WorldMap.GetQuestIconPath
+local ConvertQuestPinType = WorldMap.ConvertQuestPinType
+local GetPinTexture = WorldMap.GetPinTexture
+
 local _questIcon = {
 	size={width=27,height=27}, 
 	offset={x=-6,y=-4}
