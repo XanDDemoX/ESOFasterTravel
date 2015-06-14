@@ -20,8 +20,24 @@ local function GetNodeInfo(ctx,nodeIndex)
 	
 	accessible = accessible or GetKeepAccessible(keepId,ctx)
 	
-	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,alliance=alliance,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true, pinType=pinType}
+	local underAttack = GetHistoricalKeepUnderAttack(keepId, ctx, 1)
 	
+	if underAttack == true then 
+		pinType = ZO_WorldMap_GetUnderAttackPinForKeepPin(pinType)
+	end 
+	
+	local node = {	
+		nodeIndex = keepId, 
+		zoneIndex = ZONE_INDEX_CYRODIIL, 
+		name=name,
+		known=accessible,
+		alliance=alliance,
+		normalizedX=normalizedX,
+		normalizedY=normalizedY, 
+		isTransitus = true, 
+		pinType=pinType,
+		underAttack = underAttack
+		}
 	return node
 end
 

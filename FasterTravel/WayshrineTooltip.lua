@@ -251,7 +251,7 @@ local function FormatFactionText(func,...)
 	return table.concat(text)
 end
 
-local function AddPopulationToTooltip(tooltip,data)
+local function AddCampaignPopulationToTooltip(tooltip,data)
 
 	local population = data.population
 	
@@ -302,7 +302,7 @@ local function AddScoringTimeToTooltip(tooltip,times)
 	AddTextToTooltip(tooltip,text)
 end
 
-local function AddScoresToTooltip(tooltip,data)
+local function AddCampaignScoresToTooltip(tooltip,data)
 	local scores = data.scores
 
 	local times = data.times 
@@ -322,51 +322,83 @@ local function AddScoresToTooltip(tooltip,data)
 	AddScoringTimeToTooltip(tooltip,times)
 end
 
-local function AddRulesHeaderToTooltip(tooltip,data)
+local function AddCampaignRulesHeaderToTooltip(tooltip,data)
 
 	AddTextToTooltip(tooltip,data.rulesetName, ZO_SELECTED_TEXT)
 	
 end
 
+local function AddCampaignStatusToTooltip(tooltip,data)
+	
+	local id = data.nodeIndex
+	
+	if Campaign.IsPlayerQueued(id) == true then 
+		
+		local txt = Campaign.GetQueueStateText(id)
+		
+		if Utils.stringIsEmpty(txt.individual) == false then 
+			AddTextToTooltip(tooltip, txt.individual)
+		end 
+		
+		if Utils.stringIsEmpty(txt.group) == false then 
+			AddTextToTooltip(tooltip,txt.group)
+		end 
+		
+	else
+		local key = (data.home == true and Campaign.ICON_ID_HOME) or (data.guest == true and Campaign.ICON_ID_GUEST)
+	
+		if key ~= nil then 
+			local path = Campaign.GetIcon(key)
+			local strId = (data.home == true and SI_CAMPAIGN_BROWSER_TOOLTIP_HOME_CAMPAIGN) or SI_CAMPAIGN_BROWSER_TOOLTIP_GUEST_CAMPAIGN
+			AddTextWithIconToTooltip(tooltip,GetString(strId),path,_iconWidth,_iconHeight)
+		end
+	end 
+end 
+
+
 local function ShowCampaignTooltip(tooltip,control,offsetX,data)
 
 	InitializeTooltip(tooltip, control, RIGHT, offsetX)
-
+	
 	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
 	
-	AddRulesHeaderToTooltip(tooltip,data)
-
-	local key = (data.home == true and Campaign.ICON_ID_HOME) or (data.guest == true and Campaign.ICON_ID_GUEST)
+	AddCampaignRulesHeaderToTooltip(tooltip,data)
 	
-	if key ~= nil then 
-		local path = Campaign.GetIcon(key)
-		local strId = (data.home == true and SI_CAMPAIGN_BROWSER_TOOLTIP_HOME_CAMPAIGN) or SI_CAMPAIGN_BROWSER_TOOLTIP_GUEST_CAMPAIGN
-		AddTextWithIconToTooltip(tooltip,GetString(strId),path,_iconWidth,_iconHeight)
-	end
+	AddCampaignStatusToTooltip(tooltip,data)
 	
 	AddDividerToTooltip(tooltip)
 		
-	AddScoresToTooltip(tooltip,data)
+	AddCampaignScoresToTooltip(tooltip,data)
 	
 	AddDividerToTooltip(tooltip)
 		
-	AddPopulationToTooltip(tooltip,data)
-	
-
+	AddCampaignPopulationToTooltip(tooltip,data)
 end
 
+local function UpdateTooltip(tooltip,hide,show,current)
+	hide(tooltip) 
+	if current == nil then return end 
+	show(tooltip,current.icon,current.offsetX,current.data)
+end 
 
 function WayshrineTooltip:init(tab,infoTooltip,keepTooltip) 
 
 	local _timer
 	
+	local _mode = 0 
+	local _current = {}
+	
 	local function TimerTick()
-		UpdateRecallAmount(infoTooltip)
+		if _mode == 0 then 
+			UpdateRecallAmount(infoTooltip,_current)
+		elseif _mode == 1 then 
+			UpdateTooltip(infoTooltip,HideToolTip,ShowCampaignTooltip,_current)
+		elseif _mode == 2 then 
+			UpdateTooltip(keepTooltip,keepTooltip.Hide,ShowKeepTooltip,_current)
+		end
 	end
 	
 	local function StartTimer()
-		if tab:IsRecall() == false then return end
-		
 		if _timer == nil then
 			_timer = Timer(TimerTick,500)
 		end 
@@ -385,11 +417,18 @@ function WayshrineTooltip:init(tab,infoTooltip,keepTooltip)
 		
 		local offsetX = -25
 		
+		_current.data = data 
+		_current.icon = icon
+		_current.offsetX = offsetX
+		
 		if IsKeepRow(data,isRecall,isKeep) == true then 
+			_mode = 2 
 			ShowKeepTooltip(keepTooltip,icon,offsetX,data)
 		elseif IsCampaignRow(data) == true then 
+			_mode = 1 
 			ShowCampaignTooltip(infoTooltip,icon,offsetX,data)
 		else
+			_mode = 0 
 			ShowToolTip(infoTooltip, icon,data,offsetX,isRecall,isKeep, inCyrodiil)
 		end
 		

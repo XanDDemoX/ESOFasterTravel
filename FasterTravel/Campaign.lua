@@ -8,7 +8,8 @@ local ZONE_INDEX_CYRODIIL = FasterTravel.Location.Data.ZONE_INDEX_CYRODIIL
 local _campaignIcons = {
 	home = "EsoUI/Art/Campaign/campaignBrowser_homeCampaign.dds",
 	guest = "EsoUI/Art/Campaign/campaignBrowser_guestCampaign.dds",
-	joining = "EsoUI/Art/Campaign/campaignBrowser_queued.dds"
+	joining = "EsoUI/Art/Campaign/campaignBrowser_queued.dds",
+	ready = "EsoUI/Art/Campaign/campaignBrowser_ready.dds"
 }
 
 local _populationFactionIcons = {
@@ -164,6 +165,7 @@ end
 local _nextRefresh = 0 
 local _refreshTimeout = 60000
 local _dirty = true 
+
 local function SetDirty()
 	_dirty = true
 end
@@ -173,6 +175,17 @@ local function Refresh()
 end
 
 local function RefreshIfRequired()
+	
+	if _dirty == false then 
+		
+		local t = GetGameTimeMilliseconds()
+		
+		if t >= _nextRefresh then 
+			_nextRefresh = t + _refreshTimeout
+			_dirty = true
+		end 
+	end 
+
 	if _dirty == true then 
 		Refresh()
 		_dirty = false
@@ -226,7 +239,10 @@ local function GetQueueState(id,group)
 	end 
 end
 
-local function IsQueueState(id,state)
+local function IsQueueState(id,state,isGroup)
+	if isGroup ~= nil then 
+		return GetQueueState(id,isGroup) == state
+	end 
 	return GetQueueState(id,false) == state or GetQueueState(id,true) == state
 end 
 
@@ -283,7 +299,7 @@ local function EnterQueue(id,name,group)
 end
 
 local function EnterLeaveOrJoin(id,name,group,isGroup)
-	if IsPlayerQueued(id) == true then
+	if IsPlayerQueued(id,isGroup) == true then
 		
 		local state = GetQueueState(id,isGroup)
 		if state == CAMPAIGN_QUEUE_REQUEST_STATE_WAITING then 
@@ -291,7 +307,6 @@ local function EnterLeaveOrJoin(id,name,group,isGroup)
 		elseif state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then 
 			ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE_READY")
 			ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE_READY", {campaignId = id, isGroup = isGroup}, {mainTextParams = {name}})
-			--ConfirmCampaignEntry(id, isGroup, false)
 		end
 	else
 		return EnterQueue(id,name,group)
@@ -299,7 +314,65 @@ local function EnterLeaveOrJoin(id,name,group,isGroup)
 
 end
 
+local _stateTextIds ={
+	[CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_JOIN] = SI_CAMPAIGN_BROWSER_QUEUE_PENDING_JOIN,
+	[CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_LEAVE] = SI_CAMPAIGN_BROWSER_QUEUE_PENDING_LEAVE,
+	[CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_ACCEPT] = SI_CAMPAIGN_BROWSER_QUEUE_PENDING_ACCEPT,
+	
+}
 
+local function GetStateText(state,id,isGroup)
+
+	local strId
+
+	if state == CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_JOIN or state == CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_LEAVE or state == CAMPAIGN_QUEUE_REQUEST_STATE_PENDING_ACCEPT then
+	
+		strId = _stateTextIds[state]
+	
+		if strId ~= nil then 
+			return GetString(strId)
+		end 
+		
+	elseif state == CAMPAIGN_QUEUE_REQUEST_STATE_WAITING then
+	
+		local pos = GetCampaignQueuePosition(id, isGroup)
+		
+		strId = (isGroup == true and SI_CAMPAIGN_BROWSER_GROUP_QUEUED) or SI_CAMPAIGN_BROWSER_SOLO_QUEUED
+		
+		return zo_strformat(GetString(strId), pos)
+		
+	elseif state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then
+	
+		seconds = ZO_FormatTime(GetCampaignQueueRemainingConfirmationSeconds(id, isGroup), TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_TWELVE_HOUR)
+		
+		strId = (isGroup == true and SI_CAMPAIGN_BROWSER_GROUP_READY) or SI_CAMPAIGN_BROWSER_SOLO_READY
+		
+		return zo_strformat(GetString(strId), seconds)
+	end
+	
+	return ""
+end
+
+local function GetQueueStateText(id)
+	local individualState = GetQueueState(id,false)
+	local groupState = GetQueueState(id,true)
+
+	local itext = GetStateText(individualState,id,false)
+	
+	local gtext = GetStateText(groupState,id,true)
+	
+	if Utils.stringIsEmpty(itext) == false then 
+		local iprefix = GetString(SI_CAMPAIGN_BROWSER_QUEUE_SOLO)
+		itext = Utils.concatToString(iprefix,": ",itext)
+	end 
+	
+	if Utils.stringIsEmpty(gtext) == false then 
+		local gprefix = GetString(SI_CAMPAIGN_BROWSER_QUEUE_GROUP)
+		gtext = Utils.concatToString(gprefix,": ",gtext)
+	end
+	
+	return {individual=itext, group=gtext}
+end
 
 local c = Campaign
 
@@ -308,6 +381,8 @@ c.FACTION_IDS = _alliances
 c.ICON_ID_HOME = "home"
 c.ICON_ID_GUEST = "guest"
 c.ICON_ID_JOINING = "joining"
+c.ICON_ID_READY = "ready"
+
 c.ICONS_FACTION_POPULATION = _populationFactionIcons
 c.COLOURS_FACTION_POPULATION = _populationFactionColors
 
@@ -317,11 +392,14 @@ end
 
 c.GetPopulationText = GetPopulationText
 
+c.GetQueueStateText = GetQueueStateText
+
 c.GetPlayerCampaigns = GetPlayerCampaigns
 c.IsPlayerQueued = IsPlayerQueued
 c.GetQueueState = GetQueueState
 c.IsQueueState = IsQueueState
 c.EnterLeaveOrJoin =  EnterLeaveOrJoin
+
 
 c.SetDirty = SetDirty
 c.RefreshIfRequired = RefreshIfRequired

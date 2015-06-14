@@ -121,8 +121,11 @@ init(function()
 	
 	local function RefreshWayshrinesIfRequired(...)
 		if wayshrinesTab == nil then return end 
+		if wayshrinesTab:IsDirty() == true then 
+			FasterTravel.Campaign.RefreshIfRequired()
+		end 
 		RefreshLocationsIfRequired()
-		 wayshrinesTab:RefreshIfRequired(...)
+		wayshrinesTab:RefreshIfRequired(...)
 	end
 		
 	local function SetPlayersDirty()
@@ -262,7 +265,7 @@ init(function()
 		EVENT_QUEST_OPTIONAL_STEP_ADVANCED,EVENT_QUEST_COMPLETE,
 		EVENT_OBJECTIVES_UPDATED,EVENT_OBJECTIVE_COMPLETED, EVENT_KEEP_RESOURCE_UPDATE, EVENT_CAMPAIGN_HISTORY_WINDOW_CHANGED
 	)
-	
+	 
 	local function RefreshQuestsIfMapVisible()
 		SetQuestsDirty()
 		
@@ -271,8 +274,15 @@ init(function()
 		end
 	end
 	
+	addEvents(function() RefreshQuestsIfMapVisible() end, EVENT_CAMPAIGN_QUEUE_JOINED,EVENT_CAMPAIGN_QUEUE_LEFT,EVENT_CAMPAIGN_QUEUE_POSITION_CHANGED,EVENT_KEEP_UNDER_ATTACK_CHANGED)
 	
-	addEvents(function() RefreshQuestsIfMapVisible() end, EVENT_CAMPAIGN_QUEUE_JOINED,EVENT_CAMPAIGN_QUEUE_LEFT,EVENT_KEEP_UNDER_ATTACK_CHANGED)
+	addEvent(EVENT_CAMPAIGN_QUEUE_STATE_CHANGED,function(eventCode,campaignId, isGroup, state)
+		if state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then
+			RefreshQuestsIfMapVisible()
+		else
+			SetQuestsDirty()
+		end
+	end)
 	
 	addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,RefreshQuestsIfMapVisible)
 	
@@ -317,7 +327,6 @@ init(function()
 	ZO_WorldMap.SetHidden = hook(ZO_WorldMap.SetHidden,function(base,self,value)
 		base(self,value)
 		if value == false then
-			FasterTravel.Campaign.RefreshIfRequired()
 			RefreshWayshrinesIfRequired() 
 			RefreshQuestsIfRequired()
 			RefreshPlayersIfRequired()

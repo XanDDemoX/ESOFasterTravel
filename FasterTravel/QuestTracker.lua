@@ -22,14 +22,21 @@ local _questIcon = {
 }
 
 local _keepIcon = {
-			size={width=38,height=38}, 
-			offset={x=-10,y=-8}
-		}
-
+	size={width=38,height=38}, 
+	offset={x=-10,y=-8}
+}
+		
 local _campaignIcon = {
-			size={width=30,height=30}, 
-			offset={x=-6,y=-4}
-		}
+	size={width=30,height=30}, 
+	offset={x=-6,y=-4}
+}
+
+local _keepAttackIcon = {
+	size={width=30,height=30}, 
+	offset={x=-6,y=-4}
+}
+
+
 		
 local function ClearRowIcons(row)
 	if row == nil then return end
@@ -178,7 +185,13 @@ end
 local function SetKeepIcon(data)
 	if data.isTransitus ~= true or data.pinType == nil then return end 
 	local iconPath = GetPinTexture(data.pinType)
-	return SetIcon(data,iconPath,_keepIcon)
+	local icon = _keepIcon
+	
+	if data.underAttack == true then
+		icon = _keepAttackIcon
+	end 
+	
+	return SetIcon(data,iconPath,icon)
 end
 
 local function UpdateLookups(nodeIndex,func,...)
@@ -353,8 +366,16 @@ end
 local function SetCampaignIcon(data)
 	if data.isCampaign ~= true then return end 
 	
-	if Campaign.IsPlayerQueued(data.nodeIndex) == true then
-		return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_JOINING),_campaignIcon)
+	local id = data.nodeIndex
+	
+	if Campaign.IsPlayerQueued(id) == true then
+	
+		if Campaign.IsQueueState(id,CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING) == true then
+			return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_READY),_campaignIcon)
+		else
+			return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_JOINING),_campaignIcon)
+		end 
+			
 	elseif data.home == true then
 		return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_HOME),_campaignIcon)
 	elseif data.guest == true then 

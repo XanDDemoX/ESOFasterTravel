@@ -85,6 +85,12 @@ local function map(iter,func)
 	end
 end
 
+local function concatToString(...)
+	return table.concat(map({...},function(a)
+		return tostring(a)
+	end))
+end
+
 local _lang
 
 local function FormatStringLanguage(lang,str)
@@ -115,5 +121,6 @@ u.where = where
 u.extend = extend
 u.FormatStringLanguage = FormatStringLanguage
 u.FormatStringCurrentLanguage = FormatStringCurrentLanguage
+u.concatToString = concatToString
 
 FasterTravel.Utils = u
