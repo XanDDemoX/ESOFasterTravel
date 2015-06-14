@@ -1,11 +1,14 @@
 
+local Utils = FasterTravel.Utils
+
 local Campaign = {}
 
 local ZONE_INDEX_CYRODIIL = FasterTravel.Location.Data.ZONE_INDEX_CYRODIIL
 
 local _campaignIcons = {
 	home = "EsoUI/Art/Campaign/campaignBrowser_homeCampaign.dds",
-	guest = "EsoUI/Art/Campaign/campaignBrowser_guestCampaign.dds"
+	guest = "EsoUI/Art/Campaign/campaignBrowser_guestCampaign.dds",
+	joining = "EsoUI/Art/Campaign/campaignBrowser_queued.dds"
 }
 
 local _populationFactionIcons = {
@@ -19,6 +22,56 @@ function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_ALLIANCE,ALLIANCE_ALDME
 function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_ALLIANCE,ALLIANCE_EBONHEART_PACT) end ,
 function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_ALLIANCE,ALLIANCE_DAGGERFALL_COVENANT) end
 }
+
+
+
+local _alliances = {1,2,3}
+
+local function GetSelectionCampaignPopulation(index)
+	return Utils.map(_alliances,function(i)
+		return GetSelectionCampaignPopulationData(index, i)
+	end)
+end 
+
+local function GetSelectionCampaignTimesTable(index)
+	local start,finish = GetSelectionCampaignTimes(index)
+	return {start=start,finish=finish}
+end
+
+
+local function GetCampaignScores(id)
+
+	local keepScore, resourceValue, outpostValue, defensiveScrollValue, offensiveScrollValue = GetCampaignHoldingScoreValues(id)
+	local underdogLeaderAlliance = GetCampaignUnderdogLeaderAlliance(id)
+	
+	return Utils.map(_alliances,function(i)
+		
+		local score = GetCampaignAllianceScore(id, i)
+        local keeps = GetTotalCampaignHoldings(id, HOLDINGTYPE_KEEP, i)
+        local resources = GetTotalCampaignHoldings(id, HOLDINGTYPE_RESOURCE, i)
+        local outposts = GetTotalCampaignHoldings(id, HOLDINGTYPE_OUTPOST, i)
+        local defensiveScrolls = GetTotalCampaignHoldings(id, HOLDINGTYPE_DEFENSIVE_ARTIFACT, i)
+        local offensiveScrolls = GetTotalCampaignHoldings(id, HOLDINGTYPE_OFFENSIVE_ARTIFACT, i)
+        local potentialScore = GetCampaignAlliancePotentialScore(id, i)
+        local isUnderpop = IsUnderpopBonusEnabled(id, i)
+
+		return {
+            alliance = i,
+            score = score,
+            keeps = keeps,
+            resources = resources,
+            outposts = outposts,
+			offensiveScrolls = offensiveScrolls,
+			defensiveScrolls = defensiveScrolls,
+            scrolls = defensiveScrolls + offensiveScrolls,
+            potentialScore = potentialScore,
+            isUnderdog = underdogLeaderAlliance ~= 0 and underdogLeaderAlliance ~= i,
+            isUnderpop = isUnderpop,
+        }
+	
+	end)
+  
+end
 
 local function GetCampaignNodeInfo(id)
 	if id == nil or id == 0 then return nil end 
@@ -42,20 +95,24 @@ local function GetCampaignNodeInfo(id)
 			rulesetId = rulesetId,
 			rulesetType = rulesetType,
 			rulesetName = rulesetName,
-			rulesetDesc = rulesetDesc
+			rulesetDesc = rulesetDesc,
+			scores = GetCampaignScores(id)
 		}
 		
 	return node 
 end
 
+local function UpdateWithSelectionCampainScores(index,scores)
+	
+	local underdogLeaderAlliance = GetSelectionCampaignUnderdogLeaderAlliance(index)
 
-local function GetCampaignPopulation(index)
-	return {
-		GetSelectionCampaignPopulationData(i, 1),
-		GetSelectionCampaignPopulationData(i, 2),
-		GetSelectionCampaignPopulationData(i, 3)
-	}
-end 
+	return Utils.map(_alliances,function(i)
+		local s = scores[i]
+		s.score = GetSelectionCampaignAllianceScore(index,i)
+		s.isUnderdog = underdogLeaderAlliance ~= 0 and underdogLeaderAlliance ~= i
+		return s
+	end)
+end
 
 local function GetCampaignLookup()
 
@@ -73,7 +130,11 @@ local function GetCampaignLookup()
 		
 		node = GetCampaignNodeInfo(id)
 		
-		node.population = GetCampaignPopulation(i)
+		node.population = GetSelectionCampaignPopulation(i)
+		
+		node.times = GetSelectionCampaignTimesTable(i)
+		
+		UpdateWithSelectionCampainScores(i,node.scores)
 		
 		lookup[id] = node
 		
@@ -100,8 +161,26 @@ local function GetPlayerCampaignsLookup()
 	return nodes
 end
 
+local _nextRefresh = 0 
+local _refreshTimeout = 60000
+local _dirty = true 
+local function SetDirty()
+	_dirty = true
+end
+
+local function Refresh()
+	QueryCampaignSelectionData()
+end
+
+local function RefreshIfRequired()
+	if _dirty == true then 
+		Refresh()
+		_dirty = false
+	end 
+end
+
 local function GetPlayerCampaigns()
-	
+
 	local ids = {GetCurrentCampaignId(),GetGuestCampaignId()}
 	
 	local lookup = GetCampaignLookup()
@@ -130,10 +209,86 @@ local function GetPopulationText(population)
 	return GetString("SI_CAMPAIGNPOPULATIONTYPE", population)
 end
 
+local function IsPlayerQueued(id,group)
+	if group == true then 
+		return IsQueuedForCampaign(id, CAMPAIGN_QUEUE_GROUP)
+	elseif group == false then 
+		return IsQueuedForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
+	end
+	return IsQueuedForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL) or IsQueuedForCampaign(id, CAMPAIGN_QUEUE_GROUP)
+end
+
+local function GetQueueState(id,group)
+	if group == true then 
+		return GetCampaignQueueState(id, CAMPAIGN_QUEUE_GROUP)
+	else
+		return GetCampaignQueueState(id, CAMPAIGN_QUEUE_INDIVIDUAL)
+	end 
+end
+
+local function IsQueueState(id,state)
+	return GetQueueState(id,false) == state or GetQueueState(id,true) == state
+end 
+
+local function CanQueue(id,group)
+	group = group or 0 
+	
+    local canQueueIndividual = false
+    local canQueueGroup = false
+	
+    if data then
+
+		if(GetCurrentCampaignId() ~= id and DoesPlayerMeetCampaignRequirements(id)) then
+            if(GetAssignedCampaignId() == id or GetGuestCampaignId() == id or group > 0) then
+                canQueueIndividual = not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
+                if(not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_GROUP)) then
+                    if(IsUnitGrouped("player") and IsUnitGroupLeader("player")) then
+                        canQueueGroup = true
+                    end
+                end        
+            end
+        end
+    end
+    return canQueueIndividual, canQueueGroup
+	
+end
+
+local function EnterQueue(id,name,group)
+
+	local canQueueIndividual, canQueueGroup = CanQueue(id)
+	if(canQueueIndividual and canQueueGroup) then
+		ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE", {campaignId = id}, {mainTextParams = {name}})
+	elseif(canQueueIndividual) then
+		QueueForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
+	else
+		QueueForCampaign(id, CAMPAIGN_QUEUE_GROUP)
+	end
+	
+end
+
+local function EnterLeaveOrJoin(id,name,group,isGroup)
+	if IsPlayerQueued(id) == true then
+		if IsQueueState(id,CAMPAIGN_QUEUE_REQUEST_STATE_WAITING) == true then 
+			LeaveCampaignQueue(id, isGroup)
+		elseif IsQueueState(id,CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING) == true then 
+			ConfirmCampaignEntry(id, isGroup, false)
+		end
+	else
+		return EnterQueue(id,name,group)
+	end 
+	--ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE_READY")
+	--ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE_READY", {campaignId = id, isGroup = isGroup}, {mainTextParams = {data.name}})
+end
+
+
+
 local c = Campaign
+
+c.FACTION_IDS = _alliances
 
 c.ICON_ID_HOME = "home"
 c.ICON_ID_GUEST = "guest"
+c.ICON_ID_JOINING = "joining"
 c.ICONS_FACTION_POPULATION = _populationFactionIcons
 c.COLOURS_FACTION_POPULATION = _populationFactionColors
 
@@ -144,6 +299,12 @@ end
 c.GetPopulationText = GetPopulationText
 
 c.GetPlayerCampaigns = GetPlayerCampaigns
+c.IsPlayerQueued = IsPlayerQueued
+c.GetQueueState = GetQueueState
+c.IsQueueState = IsQueueState
+c.EnterLeaveOrJoin =  EnterLeaveOrJoin
 
+c.SetDirty = SetDirty
+c.RefreshIfRequired = RefreshIfRequired
 
 FasterTravel.Campaign = c 

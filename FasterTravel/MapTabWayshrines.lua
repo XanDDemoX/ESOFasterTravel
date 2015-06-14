@@ -88,10 +88,10 @@ local function AttachCampaignDataHandlers(args,data)
 	AttachRefreshHandler(args,data)
 	
 	data.clicked = function(self,control) 
-	
-		d(tostring(data.id)..": "..data.name)
-
+		local id,name,group,isGroup = data.id,data.name,data.group,data.isGroup
+		Campaign.EnterLeaveOrJoin(id,name,group,isGroup)
 	end
+	
 	return data 
 end
 

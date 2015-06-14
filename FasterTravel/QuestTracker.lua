@@ -6,6 +6,7 @@ FasterTravel.QuestTracker = QuestTracker
 local Location = FasterTravel.Location
 local Wayshrine = FasterTravel.Wayshrine
 local Transitus = FasterTravel.Transitus
+local Campaign = FasterTravel.Campaign
 local Quest = FasterTravel.Quest
 local WorldMap = FasterTravel.WorldMap
 local Utils = FasterTravel.Utils
@@ -25,6 +26,11 @@ local _keepIcon = {
 			offset={x=-10,y=-8}
 		}
 
+local _campaignIcon = {
+			size={width=30,height=30}, 
+			offset={x=-6,y=-4}
+		}
+		
 local function ClearRowIcons(row)
 	if row == nil then return end
 	if type(row) == "table" then
@@ -344,6 +350,29 @@ local function RefreshKeepIcons(wayshrines,...)
 	end 
 end
 
+local function SetCampaignIcon(data)
+	if data.isCampaign ~= true then return end 
+	
+	if Campaign.IsPlayerQueued(data.nodeIndex) == true then
+		return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_JOINING),_campaignIcon)
+	elseif data.home == true then
+		return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_HOME),_campaignIcon)
+	elseif data.guest == true then 
+		return SetIcon(data,Campaign.GetIcon(Campaign.ICON_ID_GUEST),_campaignIcon)
+	end
+
+	return false 
+end
+
+local function RefreshCampaignIcons(wayshrines,...)
+
+	for i, node in ipairs(wayshrines) do 
+	
+		UpdateLookups(node.nodeIndex,SetCampaignIcon,...)
+		
+	end 
+end
+
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 
 local addCallback = FasterTravel.addCallback
@@ -360,7 +389,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 	local _isDirty = true 
 	
 	local wayshrineTooltip = FasterTravel.WayshrineTooltip(tab,InformationTooltip,WorldMap.GetKeepTooltip())
-	
+		
 	local function GetWayshrinesData(isRecall,isKeep,inCyrodiil,loc)
 		if loc == nil then return {} end 
 		
@@ -369,11 +398,13 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
 
 		if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then 
-			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL), true 
-		elseif inCyrodiil == false or locIsCyrodiil == false then 
+			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL), 1 
+		elseif inCyrodiil == false and locIsCyrodiil == false then 
 			return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex)), false
+		elseif inCyrodiil == false and locIsCyrodiil == true then
+			return Campaign.GetPlayerCampaigns(), 2 
 		else
-			return {} , false 
+			return {}
 		end 
 	
 		return wayshrines
@@ -404,15 +435,20 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		_tab:RefreshControl(lookups.categoriesTable)
 		
-		local wayshrines, isTransitus = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
+		local wayshrines, dataType = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
 		
 		RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
 		
-		if isTransitus == true then 
-			RefreshKeepIcons(wayshrines, curLookup,zoneLookup[loc.zoneIndex])
+		if dataType ~= false then 
+		
+			if dataType == 1 then 
+				RefreshKeepIcons(wayshrines, curLookup,zoneLookup[loc.zoneIndex])
+			elseif dataType == 2 then 
+				RefreshCampaignIcons(wayshrines, curLookup,zoneLookup[loc.zoneIndex])
+			end 
+			
 			_tab:RefreshControl()
-		end 
-
+		end
 		_refreshing = false
 	end
 	

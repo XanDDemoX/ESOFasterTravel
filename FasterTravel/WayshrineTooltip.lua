@@ -1,7 +1,7 @@
 
 local Location = FasterTravel.Location
-
 local Campaign = FasterTravel.Campaign
+local Utils = FasterTravel.Utils
 
 local Timer = FasterTravel.Timer
 
@@ -205,51 +205,126 @@ local function ColourFormat(r,g,b)
 	return string.format("%02x%02x%02x",255 * r,255 * g, 255 * b)
 end
 
-local function AddPopulationToTooltip(tooltip,data)
+local function FormatTextAndIcon(path,w,h,strfmt,...)
+	local value = zo_strformat(strfmt, ...)
+	return zo_iconTextFormat(path,w,h,value)
+end
 
-	local population = data.population
+local function MapFactions(func)
 
+	local ids = Campaign.FACTION_IDS
 	local factions = Campaign.ICONS_FACTION_POPULATION
 	local colors = Campaign.COLOURS_FACTION_POPULATION
 	
-	local text = {}
 	local path 
 	
+	local w,h = _iconWidth,_iconHeight
+	
 	local cur
-	for i,v in ipairs(population) do
+	for i,id in ipairs(ids) do
 		
-		path = factions[i]
+		path = factions[id]
 		
-		cur = zo_iconFormat(path,30,30)
+		cur = zo_iconFormat(path,26,28)
 		
-		table.insert(text,cur)
-		
-		path = ZO_CampaignBrowser_GetPopulationIcon(v)
-		
-		cur = zo_iconTextFormat(path,_iconWidth,_iconHeight,Campaign.GetPopulationText(v))
-		
-		ColourTextInline(text,ColourFormat(colors[i]()))
-		
-		table.insert(text,cur)
+		func(id,cur,ColourFormat(colors[id]()))
 	end
+	
+end
+
+
+local function FormatFactionText(func,...)
+	local text = {}
+	
+	MapFactions(function(id,cur,color)
+	
+		table.insert(text,cur)
+		
+		ColourTextInline(text,color)
+		
+		Utils.copy({func(id)},text)
+	
+	end)
 	
 	table.insert(text,"|r")
 	
+	return table.concat(text)
+end
+
+local function AddPopulationToTooltip(tooltip,data)
+
+	local population = data.population
+	
+	local w,h = _iconWidth,_iconHeight
+	
+	local text = {}
+	
+	MapFactions(function(id,cur,color)
+		local p = population[id]
+		
+		local path = ZO_CampaignBrowser_GetPopulationIcon(p)
+		
+		local t = Campaign.GetPopulationText(p)
+		t = zo_iconTextFormat(path,w,h,t)
+		
+		ColourTextInline(text,color)
+		
+		table.insert(text,t)
+	end)
+	
 	AddTextToTooltip(tooltip,table.concat(text))
 	
-	text = {}
-	
-	if data.group > 0 then
-	
+	if data.group > 0 then 
+		AddTextToTooltip(tooltip,FormatTextAndIcon("EsoUI/Art/Campaign/campaignBrowser_group.dds",w,h,SI_CAMPAIGN_BROWSER_TOOLTIP_NUM_GROUP_MEMBERS,data.group))
 	end
 	
-	if data.friends > 0 then
+	AddDividerToTooltip(tooltip)
 	
-	end
+	local friends = FormatTextAndIcon("EsoUI/Art/Campaign/campaignBrowser_friends.dds",w,h,SI_CAMPAIGN_BROWSER_TOOLTIP_NUM_FRIENDS, data.friends)
+
+	local guildies = FormatTextAndIcon("EsoUI/Art/Campaign/campaignBrowser_guild.dds",w,h,SI_CAMPAIGN_BROWSER_TOOLTIP_NUM_GUILD_MEMBERS, data.guildies)
 	
-	if data.guildies > 0 then
+	AddTextToTooltip(tooltip,friends..guildies)
+end
+
+local function AddScoringTimeToTooltip(tooltip,times)
 	
-	end 
+	local t = (times.start > 0 and times.start) or (times.finish > 0 and times.finish) or nil 
+	
+	if t == nil then return end 
+	
+	t= ZO_FormatTime(t, TIME_FORMAT_STYLE_COLONS, TIME_FORMAT_PRECISION_TWELVE_HOUR)
+	
+	local fmt = (times.finish > 0 and SI_CAMPAIGN_LEADERBOARDS_CLOSES_IN_TIMER) or SI_CAMPAIGN_LEADERBOARDS_REOPENS_IN_TIMER
+	
+	local text = zo_strformat(fmt,t)
+
+	AddTextToTooltip(tooltip,text)
+end
+
+local function AddScoresToTooltip(tooltip,data)
+	local scores = data.scores
+
+	local times = data.times 
+	
+	local w,h = _iconWidth,_iconHeight
+	
+	local strScoringId = (times.start > 0 and SI_CAMPAIGN_LEADERBOARDS_SCORING_CLOSED ) or (times.finish > 0 and SI_CAMPAIGN_LEADERBOARDS_SCORING_OPEN) or SI_CAMPAIGN_OVERVIEW_CATEGORY_SCORING 
+	
+	AddTextToTooltip(tooltip,GetString(strScoringId),ZO_SELECTED_TEXT)
+	
+	AddTextToTooltip(tooltip,FormatFactionText(function(id)
+		local s = scores[id]
+		if s == nil then return "" end 
+		return string.format("%d",s.score)
+	end))
+	
+	AddScoringTimeToTooltip(tooltip,times)
+end
+
+local function AddRulesHeaderToTooltip(tooltip,data)
+
+	AddTextToTooltip(tooltip,data.rulesetName, ZO_SELECTED_TEXT)
 	
 end
 
@@ -259,8 +334,8 @@ local function ShowCampaignTooltip(tooltip,control,offsetX,data)
 
 	AddTextToTooltip(tooltip, data.name, ZO_SELECTED_TEXT)
 	
-	AddTextToTooltip(tooltip,data.rulesetName, ZO_SELECTED_TEXT)
-	
+	AddRulesHeaderToTooltip(tooltip,data)
+
 	local key = (data.home == true and Campaign.ICON_ID_HOME) or (data.guest == true and Campaign.ICON_ID_GUEST)
 	
 	if key ~= nil then 
@@ -271,11 +346,13 @@ local function ShowCampaignTooltip(tooltip,control,offsetX,data)
 	
 	AddDividerToTooltip(tooltip)
 		
-	AddPopulationToTooltip(tooltip,data)
+	AddScoresToTooltip(tooltip,data)
 	
 	AddDividerToTooltip(tooltip)
+		
+	AddPopulationToTooltip(tooltip,data)
+	
 
-	--zo_iconTextFormat(path,iconWidth,iconHeight,text)
 end
 
 

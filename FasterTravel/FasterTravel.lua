@@ -68,8 +68,6 @@ init(function()
 	local _locations
 	local _locationsLookup
 
-
-		
 	local _settings = {recent={},locationOrder = Location.Data.LocationOrder.A_Z}
 	local _settingsVersion = "7"
 	
@@ -243,7 +241,8 @@ init(function()
 		end,
 		EVENT_END_FAST_TRAVEL_INTERACTION,EVENT_FAST_TRAVEL_NETWORK_UPDATED,
 		EVENT_END_FAST_TRAVEL_KEEP_INTERACTION,EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED,
-		EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED,EVENT_CAMPAIGN_STATE_INITIALIZED
+		EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED,EVENT_CAMPAIGN_STATE_INITIALIZED,
+		EVENT_ASSIGNED_CAMPAIGN_CHANGED,EVENT_GUEST_CAMPAIGN_CHANGED,EVENT_CAMPAIGN_SELECTION_DATA_CHANGED 
 	)
 	
 	addEvents(
@@ -268,6 +267,9 @@ init(function()
 			RefreshQuestsIfRequired()
 		end
 	end
+	
+	
+	addEvents(function() RefreshQuestsIfMapVisible() end, EVENT_CAMPAIGN_QUEUE_JOINED,EVENT_CAMPAIGN_QUEUE_LEFT,EVENT_CAMPAIGN_HISTORY_WINDOW_CHANGED)
 	
 	addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,RefreshQuestsIfMapVisible)
 	
@@ -312,6 +314,7 @@ init(function()
 	ZO_WorldMap.SetHidden = hook(ZO_WorldMap.SetHidden,function(base,self,value)
 		base(self,value)
 		if value == false then
+			FasterTravel.Campaign.RefreshIfRequired()
 			RefreshWayshrinesIfRequired() 
 			RefreshQuestsIfRequired()
 			RefreshPlayersIfRequired()
@@ -329,7 +332,7 @@ init(function()
 	end 
 	
 	local function AddWorldMapFragment(strId,fragment,normal,highlight,pressed)
-	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight =highlight,normal = normal})
+	    WORLD_MAP_INFO.modeBar:Add(strId, { fragment }, {pressed = pressed,highlight = highlight,normal = normal})
 	end
 	
 	_locationsLookup = Location.Data.GetLookup()
@@ -348,7 +351,9 @@ init(function()
 	normal,highlight,pressed = GetPaths("/esoui/art/mainmenu/menubar_group_","up.dds","over.dds","down.dds")
 
 	AddWorldMapFragment(SI_MAP_INFO_MODE_PLAYERS,playersControl.fragment,normal,highlight,pressed)
-
+	
+	FasterTravel.Campaign.RefreshIfRequired()
+	
 	SetCurrentZoneMapIndexes()
 	
 	SLASH_COMMANDS["/goto"] = function(args)
