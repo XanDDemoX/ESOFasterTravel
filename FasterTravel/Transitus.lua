@@ -16,19 +16,23 @@ local function GetNodeInfo(ctx,nodeIndex)
 	
 	local name  = GetKeepName(keepId)
 	
+	local alliance =  GetKeepAlliance(keepId,ctx)
+	
 	accessible = accessible or GetKeepAccessible(keepId,ctx)
 	
-	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true, pinType=pinType}
+	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,alliance=alliance,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true, pinType=pinType}
 	
 	return node
 end
 
 local function GetNodes(ctx)
-
+	
+	ZO_WorldMap_RefreshKeeps()
+	
 	ctx = ctx or ZO_WorldMap_GetBattlegroundQueryType()
 
 	local nodes = {} 
-
+		
 	local count = GetNumKeepTravelNetworkNodes(ctx)
 	
 	local node
@@ -50,12 +54,14 @@ local function GetNodes(ctx)
 	return nodes
 end
 
-local function GetKnownNodes(nodeIndex,ctx)
+local function GetKnownNodes(nodeIndex,known,ctx)
 
 	local nodes = GetNodes(ctx)
 
+	local alliance = GetUnitAlliance("player")
+	
 	nodes = Utils.where(nodes,function(node) 
-		return node.known and (nodeIndex == nil or node.nodeIndex ~= nodeIndex) 
+		return (known == nil or node.known == known) and node.alliance == alliance and (nodeIndex == nil or node.nodeIndex ~= nodeIndex) 
 	end)
 	
 	return nodes

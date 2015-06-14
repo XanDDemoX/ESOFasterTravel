@@ -111,7 +111,7 @@ local function IsTransitusDataRequired(isKeep,nodeIndex)
 end
 
 local function GetCyrodiilWayshrinesData(args)
-	local nodes = Transitus.GetKnownNodes(args.nodeIndex)
+	local nodes = Transitus.GetKnownNodes(args.nodeIndex, args.nodeIndex ~= nil or nil)
 	
 	nodes = Utils.map(nodes,function(item) 
 		return AttachTransitusDataHandlers(args,item) 
