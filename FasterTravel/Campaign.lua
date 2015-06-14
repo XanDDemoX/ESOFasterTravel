@@ -230,25 +230,40 @@ local function IsQueueState(id,state)
 	return GetQueueState(id,false) == state or GetQueueState(id,true) == state
 end 
 
+local function IsGroupOnline()
+	local count = GetGroupSize()
+	
+	local pChar = string.lower(GetUnitName("player"))
+	
+	for i = 1, count do 
+		local unitTag = GetGroupUnitTagByIndex(i)
+		local unitName = GetUnitName(unitTag)
+
+		if unitTag ~= nil and IsUnitOnline(unitTag) == true and string.lower(unitName) ~= pChar then 
+			return true
+		end
+	end
+	
+	return false 
+end
+
 local function CanQueue(id,group)
 	group = group or 0 
 	
     local canQueueIndividual = false
     local canQueueGroup = false
 	
-    if data then
+	if(GetCurrentCampaignId() ~= id and DoesPlayerMeetCampaignRequirements(id)) then
+		if(GetAssignedCampaignId() == id or GetGuestCampaignId() == id) then
+			canQueueIndividual = not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
+			if(not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_GROUP)) then
+				if(IsUnitGrouped("player") and IsUnitGroupLeader("player") ) then
+					canQueueGroup = IsGroupOnline()
+				end
+			end        
+		end
+	end
 
-		if(GetCurrentCampaignId() ~= id and DoesPlayerMeetCampaignRequirements(id)) then
-            if(GetAssignedCampaignId() == id or GetGuestCampaignId() == id or group > 0) then
-                canQueueIndividual = not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
-                if(not IsQueuedForCampaign(id, CAMPAIGN_QUEUE_GROUP)) then
-                    if(IsUnitGrouped("player") and IsUnitGroupLeader("player")) then
-                        canQueueGroup = true
-                    end
-                end        
-            end
-        end
-    end
     return canQueueIndividual, canQueueGroup
 	
 end
@@ -256,28 +271,32 @@ end
 local function EnterQueue(id,name,group)
 
 	local canQueueIndividual, canQueueGroup = CanQueue(id)
-	if(canQueueIndividual and canQueueGroup) then
+	
+	if canQueueIndividual == true and canQueueGroup == true  then
 		ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE", {campaignId = id}, {mainTextParams = {name}})
-	elseif(canQueueIndividual) then
-		QueueForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
-	else
+	elseif canQueueGroup == true then
 		QueueForCampaign(id, CAMPAIGN_QUEUE_GROUP)
+	elseif canQueueIndividual == true then 
+		QueueForCampaign(id, CAMPAIGN_QUEUE_INDIVIDUAL)
 	end
 	
 end
 
 local function EnterLeaveOrJoin(id,name,group,isGroup)
 	if IsPlayerQueued(id) == true then
-		if IsQueueState(id,CAMPAIGN_QUEUE_REQUEST_STATE_WAITING) == true then 
+		
+		local state = GetQueueState(id,isGroup)
+		if state == CAMPAIGN_QUEUE_REQUEST_STATE_WAITING then 
 			LeaveCampaignQueue(id, isGroup)
-		elseif IsQueueState(id,CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING) == true then 
-			ConfirmCampaignEntry(id, isGroup, false)
+		elseif state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then 
+			ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE_READY")
+			ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE_READY", {campaignId = id, isGroup = isGroup}, {mainTextParams = {name}})
+			--ConfirmCampaignEntry(id, isGroup, false)
 		end
 	else
 		return EnterQueue(id,name,group)
 	end 
-	--ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE_READY")
-	--ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE_READY", {campaignId = id, isGroup = isGroup}, {mainTextParams = {data.name}})
+
 end
 
 

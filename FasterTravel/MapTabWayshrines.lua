@@ -110,8 +110,8 @@ local function IsTransitusDataRequired(isKeep,nodeIndex)
 	return (isKeep or nodeIndex == nil)
 end
 
-local function GetCyrodiilWayshrinesData(ctx,args)
-	local nodes = Transitus.GetKnownNodes(ctx,args.nodeIndex)
+local function GetCyrodiilWayshrinesData(args)
+	local nodes = Transitus.GetKnownNodes(args.nodeIndex)
 	
 	nodes = Utils.map(nodes,function(item) 
 		return AttachTransitusDataHandlers(args,item) 
@@ -143,7 +143,7 @@ local function GetZoneWayshrinesData(args)
 	-- special handling for Cyrodiil =(
 	if Location.Data.IsZoneIndexCyrodiil(zoneIndex) == true then
 		if inCyrodiil == true and IsTransitusDataRequired(isKeep,nodeIndex) == true then 
-			return GetCyrodiilWayshrinesData(BGQUERY_ASSIGNED_AND_LOCAL,args)
+			return GetCyrodiilWayshrinesData(args)
 		elseif inCyrodiil == false then 
 			return GetPlayerCampaignsData(args)
 		end

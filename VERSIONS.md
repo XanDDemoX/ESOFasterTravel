@@ -1,5 +1,8 @@
 Change Log
 =============
+* **Version 1.5.4**
+  * Added campaign display and joining outside of Cyrodiil.
+  * Added campaign tooltip for display of campaign population and status. 
 * **Version 1.5.3**
   * Added panning to keeps.
   * Performance improvements to quest tracker.

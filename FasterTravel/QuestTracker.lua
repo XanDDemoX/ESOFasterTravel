@@ -398,7 +398,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
 
 		if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then 
-			return Transitus.GetKnownNodes(BGQUERY_ASSIGNED_AND_LOCAL), 1 
+			return Transitus.GetKnownNodes(), 1 
 		elseif inCyrodiil == false and locIsCyrodiil == false then 
 			return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex)), false
 		elseif inCyrodiil == false and locIsCyrodiil == true then

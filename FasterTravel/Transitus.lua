@@ -16,6 +16,8 @@ local function GetNodeInfo(ctx,nodeIndex)
 	
 	local name  = GetKeepName(keepId)
 	
+	accessible = accessible or GetKeepAccessible(keepId,ctx)
+	
 	local node = {nodeIndex = keepId, zoneIndex = ZONE_INDEX_CYRODIIL, name=name ,known=accessible,normalizedX=normalizedX,normalizedY=normalizedY, isTransitus = true, pinType=pinType}
 	
 	return node
@@ -23,7 +25,7 @@ end
 
 local function GetNodes(ctx)
 
-	ctx = ctx or BGQUERY_UNKNOWN
+	ctx = ctx or ZO_WorldMap_GetBattlegroundQueryType()
 
 	local nodes = {} 
 
@@ -48,11 +50,15 @@ local function GetNodes(ctx)
 	return nodes
 end
 
-local function GetKnownNodes(ctx,nodeIndex)
+local function GetKnownNodes(nodeIndex,ctx)
 
 	local nodes = GetNodes(ctx)
+
+	nodes = Utils.where(nodes,function(node) 
+		return node.known and (nodeIndex == nil or node.nodeIndex ~= nodeIndex) 
+	end)
 	
-	return Utils.where(nodes,function(node) return node.known and (nodeIndex == nil or node.nodeIndex ~= nodeIndex) end)
+	return nodes
 end
 
 local t = Transitus
