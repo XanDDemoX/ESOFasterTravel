@@ -384,8 +384,6 @@ local function GetDirectionValue(direction,x,y,value)
 
 	if IsZoneIndexCyrodiil(x.zoneIndex) == true and IsZoneIndexCyrodiil(y.zoneIndex) == false then
 		return true
-	elseif IsZoneIndexCyrodiil(x.zoneIndex) == false and IsZoneIndexCyrodiil(y.zoneIndex) == true then
-		return false
 	end
 
 	if direction == LocationDirection.ASCENDING then return value 
@@ -409,9 +407,11 @@ end
 local _locationSortOrder = {
 	[LocationOrder.A_Z] = function(direction,currentFaction)
 		
-		local list = GetList()
+		local list = Utils.copy(GetList())
 		table.sort(list,function(x,y)
-			return GetDirectionValue(direction,x,y,x.name < y.name)
+			if x ~= nil and y ~= nil then 
+				return GetDirectionValue(direction,x,y,x.name < y.name)
+			end 
 		end)
 		
 		return list
@@ -419,9 +419,11 @@ local _locationSortOrder = {
 	[LocationOrder.FACTION_A_Z] = function(direction,currentFaction) 
 		local lookup = GetLookup()
 
-		return AddSharedAndWorld(GetFactionOrderedList(currentFaction, lookup, false, function(x,y) 
+		local tbl = GetFactionOrderedList(currentFaction, lookup, false, function(x,y) 
 			return GetDirectionValue(direction,x,y,x.name < y.name)
-		end),lookup)
+		end)
+		
+		return AddSharedAndWorld(tbl,lookup)
 	end, 
 	[LocationOrder.FACTION_LEVEL] = function(direction,currentFaction)
 		local lookup = GetLookup()
