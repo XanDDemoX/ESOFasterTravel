@@ -1,5 +1,7 @@
 Change Log
 =============
+* **Version 1.5.8**
+  * Fixed keep tooltip error messages when displaying quests in Cyrodiil
 * **Version 1.5.7**
   * Fixed incorrect campaignId for Home campaign.
   * Fixed faction order not updating on travel.

@@ -13,7 +13,12 @@ local function AddTextToTooltip(tooltip,text,color)
 end
 
 local function AddDividerToTooltip(tooltip)
-	ZO_Tooltip_AddDivider(tooltip)
+	local t = tooltip
+	if tooltip.AddDivider ~= nil then 
+		tooltip:AddDivider()
+	else
+		ZO_Tooltip_AddDivider(t)
+	end 
 end
 
 local function AddQuestTasksToTooltip(tooltip, quest)

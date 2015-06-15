@@ -40,37 +40,67 @@ end
 local KeepToolTip = FasterTravel.class()
 
 local LINE_SPACING = 3
-local MAX_WIDTH = 400
-local function KeepToolTipAddLine(self, text, color)
-    local line = self.linePool:AcquireObject()
-    line:SetHidden(false)
-    line:SetDimensionConstraints(0, 0, MAX_WIDTH, 0)
-    line:SetText(text)
+--local MAX_WIDTH = 500
+local BORDER = 8
 
-    local r,g,b,a = color:UnpackRGBA()
-    line:SetColor(r,g,b,a)
-
-    local spacing = self.extraSpace or LINE_SPACING
+local function KeepToolTipAddControl(self,control,width,height,spacing)
+    spacing = spacing or self.extraSpace or LINE_SPACING
     if(self.lastLine) then
-        line:SetAnchor(TOPLEFT, self.lastLine, BOTTOMLEFT, 0, spacing)
+        control:SetAnchor(TOPLEFT, self.lastLine, BOTTOMLEFT, 0, spacing)
     else
-        line:SetAnchor(TOPLEFT, GetControl(self, "Name"), BOTTOMLEFT, 0, spacing)
+        control:SetAnchor(TOPLEFT, GetControl(self, "Name"), BOTTOMLEFT, 0, spacing)
     end
 
     self.extraSpace = nil
-    self.lastLine = line
-
-    local width, height = line:GetTextDimensions()
+    self.lastLine = control
 
     if(width > self.width) then
         self.width = width
     end
 
     self.height = self.height + height + LINE_SPACING
+	
+    self:SetDimensions(self.width + BORDER * 2, self.height)
+end
+
+local function KeepToolTipAddLine(self, text, _,r,g,b)
+    local line = self.linePool:AcquireObject()
+    line:SetHidden(false)
+    line:SetDimensionConstraints(0, 0, 0, 0)
+    line:SetText(text)
+
+	line:SetColor(r,g,b)
+
+	local width, height = line:GetTextDimensions()
+	
+	KeepToolTipAddControl(self,line,width,height)
+	
+end
+
+local function KeepToolTipAddDivider(self)
+	if not self.dividerPool then
+        self.dividerPool = ZO_ControlPool:New("ZO_BaseTooltipDivider", self, "Divider")
+    end
+
+    local divider = self.dividerPool:AcquireObject()
+	KeepToolTipAddControl(self,divider,0,30,10)
+	self.extraSpace = 10
+end
+
+local function KeepToolTipHide(self)
+	if self.dividerPool then
+		self.dividerPool:ReleaseAllObjects()
+	end
+	self:Reset()
+	self:SetHidden(true)
 end
 
 function KeepToolTip:init(tooltip)
 	local _tooltip = tooltip
+	
+	self.AddDivider = function(self)
+		KeepToolTipAddDivider(_tooltip)
+	end
 	
 	self.AddLine = function(self,...)
 		KeepToolTipAddLine(_tooltip,...)
@@ -87,7 +117,7 @@ function KeepToolTip:init(tooltip)
 	end
 	
 	self.Hide = function(self)
-		_tooltip:SetHidden(true)
+		KeepToolTipHide(_tooltip)
 	end
 	
 end 

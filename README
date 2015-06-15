@@ -1,4 +1,4 @@
-ESOFasterTravel v1.5.7
+ESOFasterTravel v1.5.8
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -31,6 +31,10 @@ Slash Commands
  
 
 Recent Change Log
+
+Version 1.5.8
+
+	- Fixed keep tooltip error messages when displaying quests in Cyrodiil
 
 Version 1.5.7
 
