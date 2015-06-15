@@ -1,5 +1,9 @@
 Change Log
 =============
+* **Version 1.5.5**
+  * Added campaign queue status display on tooltips and icons.
+  * Added keep under attack status detection and display.
+  * Added of location re-ording user interface.
 * **Version 1.5.4**
   * Added campaign display and joining outside of Cyrodiil.
   * Added campaign tooltip for display of campaign population and status. 

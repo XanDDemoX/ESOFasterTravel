@@ -1,4 +1,4 @@
-ESOFasterTravel v1.5.3
+ESOFasterTravel v1.5.5
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -31,6 +31,12 @@ Slash Commands
  
 
 Recent Change Log
+
+Version 1.5.5
+
+	- Added campaign queue status display on tooltips and icons.
+	- Added keep under attack status detection and display.
+	- Added of location re-ording user interface.
 
 Version 1.5.4
 
