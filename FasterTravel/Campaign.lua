@@ -91,7 +91,7 @@ local function GetCampaignNodeInfo(id)
 			zoneIndex = ZONE_INDEX_CYRODIIL,
 			assigned = GetAssignedCampaignId() == id,
 			guest = GetGuestCampaignId() == id,
-			home = GetCurrentCampaignId() == id,
+			home = GetAssignedCampaignId() == id,
 			isCampaign = true,
 			rulesetId = rulesetId,
 			rulesetType = rulesetType,
@@ -147,9 +147,9 @@ end
 
 local function GetPlayerCampaignsLookup()
 	local nodes = {
-		
-		home = GetCurrentCampaignId(),
+		home = GetAssignedCampaignId(),
 		guest = GetGuestCampaignId(),
+		current = GetCurrentCampaignId(),
 		assigned = GetAssignedCampaignId()
 	}
 	
@@ -194,7 +194,7 @@ end
 
 local function GetPlayerCampaigns()
 
-	local ids = {GetCurrentCampaignId(),GetGuestCampaignId()}
+	local ids = {GetAssignedCampaignId(),GetGuestCampaignId()}
 	
 	local lookup = GetCampaignLookup()
 	

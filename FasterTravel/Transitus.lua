@@ -4,6 +4,10 @@ local Transitus = {}
 local Utils = FasterTravel.Utils
 local ZONE_INDEX_CYRODIIL = FasterTravel.Location.Data.ZONE_INDEX_CYRODIIL
 
+local function GetUnderAttackPinForKeepPin(pinType)
+	return ZO_WorldMap_GetUnderAttackPinForKeepPin(pinType)
+end
+
 local function GetNodeInfo(ctx,nodeIndex)
 		
 	local keepId, accessible, normalizedX,  normalizedY = GetKeepTravelNetworkNodeInfo(nodeIndex,ctx)
@@ -23,7 +27,7 @@ local function GetNodeInfo(ctx,nodeIndex)
 	local underAttack = GetHistoricalKeepUnderAttack(keepId, ctx, 1)
 	
 	if underAttack == true then 
-		pinType = ZO_WorldMap_GetUnderAttackPinForKeepPin(pinType)
+		pinType = GetUnderAttackPinForKeepPin(pinType)
 	end 
 	
 	local node = {	
