@@ -381,11 +381,11 @@ end
 
 
 local function GetDirectionValue(direction,x,y,value)
-
 	if IsZoneIndexCyrodiil(x.zoneIndex) == true and IsZoneIndexCyrodiil(y.zoneIndex) == false then
 		return true
+	elseif IsZoneIndexCyrodiil(x.zoneIndex) == false and IsZoneIndexCyrodiil(y.zoneIndex) == true then 
+		return false
 	end
-
 	if direction == LocationDirection.ASCENDING then return value 
 	elseif direction == LocationDirection.DESCENDING then return not value 
 	end 
@@ -409,9 +409,7 @@ local _locationSortOrder = {
 		
 		local list = Utils.copy(GetList())
 		table.sort(list,function(x,y)
-			if x ~= nil and y ~= nil then 
-				return GetDirectionValue(direction,x,y,x.name < y.name)
-			end 
+			return GetDirectionValue(direction,x,y,x.name < y.name)
 		end)
 		
 		return list
@@ -448,9 +446,11 @@ local function UpdateLocationOrder(locations,order,direction,...)
 	newList = func(direction,...)
 	
 	if newList == nil then return end
-	
+	for i = 1, #locations do
+		locations[i] = nil
+	end
 	for i,v in ipairs(newList) do
-		locations[i] = v 
+		locations[#locations+1] = v 
 	end 
 end
 
