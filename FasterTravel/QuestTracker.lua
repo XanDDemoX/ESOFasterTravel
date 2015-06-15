@@ -171,6 +171,9 @@ local function SetQuestIcon(data,closest,result)
 		
 			if self.icon ~= nil then 
 				local quest = self.quests[questIndex]
+				
+				if data.underAttack == true then return false end -- ensure underAttack takes precedence
+				
 				if quest ~= nil then 
 					self.icon.path = quest.path
 				else
