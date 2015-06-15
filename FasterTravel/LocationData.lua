@@ -385,7 +385,7 @@ local function GetFactionOrderedList(faction,lookup,includeShared,sortFunc)
 	local zones
 	
 	for i,alliance in ipairs(alliances) do 
-		if includeShared == false and IsFactionWorldOrShared(alliance) == true then 
+		if includeShared == false and alliance ~= ALLIANCE_ALL and IsFactionWorldOrShared(alliance) == true then 
 		else
 			zones = GetAllianceZones(alliance,lookup,sortFunc)
 			Utils.copy(zones,list)
