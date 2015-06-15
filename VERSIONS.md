@@ -1,5 +1,11 @@
 Change Log
 =============
+* **Version 2.0.0**
+  * Cyrodiil campaigns and Transitus Wayshrines support
+  * Fixed Keep names for multi-language.
+  * Switched to string ids for sort order text for localisation.
+  * Fixed Alliance level ordering descending moving Cyrodiil to the bottom of the list.
+  * Added check to ensure keeps under attack do not have their icon switched to a quest icon.
 * **Version 1.5.9**
   * Fixed quest tracker adding quests to campaign tooltips.
   * Added queue individual/group queue context resolution. 

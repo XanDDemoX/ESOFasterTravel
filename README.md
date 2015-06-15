@@ -1,11 +1,11 @@
-# ESOFasterTravel v1.5.9
+# ESOFasterTravel v2.0.0
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.6.zip)
+[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.0.zip)
 
-[Try the latest beta version (1.5.9)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
+[Try the latest beta version (2.0.0)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 
 * **Wayshrines**
   * Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map when the data is available.
@@ -31,7 +31,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%201.4.6.zip)
+1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.0.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -58,6 +58,12 @@ Usage
 
 Recent Change Log
 =============
+* **Version 2.0.0**
+  * Cyrodiil campaigns and Transitus Wayshrines support
+  * Fixed Keep names for multi-language.
+  * Switched to string ids for sort order text for localisation.
+  * Fixed Alliance level ordering descending moving Cyrodiil to the bottom of the list.
+  * Added check to ensure keeps under attack do not have their icon switched to a quest icon.
 * **Version 1.5.9**
   * Fixed quest tracker adding quests to campaign tooltips.
   * Added queue individual/group queue context resolution. 
