@@ -2,6 +2,7 @@ local Location = FasterTravel.Location
 local Utils = FasterTravel.Utils
 local Data = {}
 
+local ALLIANCE_ALL = -2147483646
 local ALLIANCE_SHARED = -2147483647
 local ALLIANCE_WORLD = -2147483648
 
@@ -13,20 +14,36 @@ local _factionZoneOrderLookup = {
 	
 	[ALLIANCE_EBONHEART_PACT]= {"bleakrock","balfoyen","stonefalls","deshaan","shadowfen","eastmarch","therift"},
 	
-	[ALLIANCE_SHARED] = {"cyrodiil"},
+	[ALLIANCE_ALL] = {"cyrodiil"},
 	
-	[ALLIANCE_WORLD] = {"coldharbor","eyevea","tamriel","mundus"}
+	[ALLIANCE_SHARED] = {"coldharbor","craglorn","eyevea"},
+	
+	[ALLIANCE_WORLD] = {"tamriel","mundus"}
 	
 }
 
 local _factionAllianceOrderLookup = {
 
-	[ALLIANCE_ALDMERI_DOMINION] = {ALLIANCE_SHARED, ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT, ALLIANCE_DAGGERFALL_COVENANT,ALLIANCE_WORLD },
+	[ALLIANCE_ALDMERI_DOMINION] = {ALLIANCE_ALL, ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT, ALLIANCE_DAGGERFALL_COVENANT,},
 	
-	[ALLIANCE_DAGGERFALL_COVENANT] = {ALLIANCE_SHARED,ALLIANCE_DAGGERFALL_COVENANT,  ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT,ALLIANCE_WORLD },
+	[ALLIANCE_DAGGERFALL_COVENANT] = {ALLIANCE_ALL,ALLIANCE_DAGGERFALL_COVENANT,  ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT,ALLIANCE_SHARED, ALLIANCE_WORLD  },
 	
-	[ALLIANCE_EBONHEART_PACT] ={ALLIANCE_SHARED,ALLIANCE_EBONHEART_PACT,  ALLIANCE_DAGGERFALL_COVENANT, ALLIANCE_ALDMERI_DOMINION,ALLIANCE_WORLD }
+	[ALLIANCE_EBONHEART_PACT] ={ALLIANCE_ALL,ALLIANCE_EBONHEART_PACT,  ALLIANCE_DAGGERFALL_COVENANT, ALLIANCE_ALDMERI_DOMINION,ALLIANCE_SHARED, ALLIANCE_WORLD  }
 
+}
+
+local _factionAllianceIcons = {
+	[ALLIANCE_ALDMERI_DOMINION]="/esoui/art/compass/ava_borderkeep_pin_aldmeri.dds",
+	
+	[ALLIANCE_DAGGERFALL_COVENANT]="/esoui/art/compass/ava_borderkeep_pin_daggerfall.dds",
+	
+	[ALLIANCE_EBONHEART_PACT]= "/esoui/art/compass/ava_borderkeep_pin_ebonheart.dds",
+	
+	[ALLIANCE_ALL] = "/esoui/art/compass/ava_3way.dds",
+	
+	[ALLIANCE_SHARED] = "/esoui/art/compass/ava_outpost_neutral.dds",
+	
+	[ALLIANCE_WORLD]= "/esoui/art/ava/ava_rankicon_palatine.dds"
 }
 
 -- generated locations list
@@ -397,8 +414,8 @@ local function AddSharedAndWorld(tbl,lookup,sortFunc)
 	
 	local newtbl = {}
 	
-	Utils.copy(shared,newtbl)
 	Utils.copy(tbl,newtbl)
+	Utils.copy(shared,newtbl)
 	Utils.copy(world,newtbl)
 	
 	return newtbl
@@ -483,6 +500,11 @@ local function GetSortDirections(order)
 	return _sortDirections[order] or _directionsAlphabetical
 end 
 
+local function GetZoneFactionIcon(loc)
+	local faction = GetZoneFaction(loc)
+	return _factionAllianceIcons[faction]
+end
+
 local d = Data
 d.ZONE_INDEX_CYRODIIL = ZONE_INDEX_CYRODIIL
 d.Initialise = Initialise
@@ -502,6 +524,8 @@ d.IsLocationOrderFaction = IsLocationOrderFaction
 
 d.GetSortOrders = GetSortOrders
 d.GetSortDirections = GetSortDirections
+
+d.GetZoneFactionIcon = GetZoneFactionIcon
 
 FasterTravel.Location.Data = d
 	

@@ -1,5 +1,7 @@
 Change Log
 =============
+* **Version 1.5.6**
+  * Added alliance/faction icons for locations
 * **Version 1.5.5**
   * Added campaign queue status display on tooltips and icons.
   * Added keep under attack status detection and display.

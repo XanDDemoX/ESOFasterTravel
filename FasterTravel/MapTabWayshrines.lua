@@ -326,10 +326,12 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 					if self:IsCategoryHidden(2) == false and curLoc.click then 
 						curLoc.click()
 					end
-				end
+				end,
+				curZoneIndex = currentZoneIndex
+				
 			}
 		}
-		
+
 		PopualteLookup(recentlookup,recent)
 		
 		PopualteLookup(currentlookup,current)

@@ -36,6 +36,10 @@ local _keepAttackIcon = {
 	offset={x=-6,y=-4}
 }
 
+local _categoryIcon = {
+	size={width=29,height=29}, 
+	offset={x=-6,y=-4}
+}
 
 		
 local function ClearRowIcons(row)
@@ -224,13 +228,26 @@ local function IsValidResult(result)
 	return result.hasPosition == true and result.insideBounds == true
 end
 
-local function RefreshCategories(categories,locations,locationsLookup,quests)
-	if categories == nil or locations == nil or locationsLookup == nil or quests == nil then return end 
+local function RefreshCategories(categories,locations,locationsLookup,quests,categoriesTable)
+	if categories == nil or locations == nil or locationsLookup == nil or quests == nil or categoriesTable == nil then return end 
 	
 	local counts ={}
 	
+	local data, path
+	
+	local zIdx
+	
+	for i,d in ipairs(categoriesTable) do
+		zIdx = d.zoneIndex or d.curZoneIndex
+		if zIdx ~= nil then 
+			path = Location.Data.GetZoneFactionIcon(locationsLookup[zIdx])
+			SetIcon(d,path,_categoryIcon)
+		end
+	end 
+
 	for i,loc in ipairs(locations) do 
-		categories[loc.zoneIndex].name = loc.name
+		data = categories[loc.zoneIndex]
+		data.name = loc.name
 	end 
 	
 	for i,quest in ipairs(quests) do 
@@ -452,7 +469,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local quests = Quest.GetQuests()
 		
-		RefreshCategories(lookups.categories,_locations,_locationsLookup,quests)
+		RefreshCategories(lookups.categories,_locations,_locationsLookup,quests,lookups.categoriesTable)
 		
 		_tab:RefreshControl(lookups.categoriesTable)
 		
