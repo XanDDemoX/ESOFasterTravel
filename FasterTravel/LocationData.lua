@@ -371,7 +371,7 @@ local function GetAllianceZones(alliance, lookup,sortFunc)
 end
 
 local function IsFactionWorldOrShared(faction)
-	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD
+	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD or faction == ALLIANCE_ALL
 end
 
 local function GetFactionOrderedList(faction,lookup,includeShared,sortFunc)
@@ -471,10 +471,6 @@ local function UpdateLocationOrder(locations,order,direction,...)
 	end 
 end
 
-local function IsLocationOrderFaction(order)
-	return order == LocationOrder.FACTION_A_Z or LocationOrder.FACTION_LEVEL
-end
-
 local _sortOrders = {
 	{id = LocationOrder.A_Z, text = "Alphabetical"},
 	{id = LocationOrder.FACTION_A_Z, text = "Alliance A-Z"},
@@ -506,8 +502,9 @@ local function GetZoneFactionIcon(loc)
 end
 
 local d = Data
+
 d.ZONE_INDEX_CYRODIIL = ZONE_INDEX_CYRODIIL
-d.Initialise = Initialise
+
 d.GetMapZoneKey = GetMapZoneKey
 d.GetList = GetList
 d.GetLookup = GetLookup
@@ -520,7 +517,6 @@ d.IsFactionWorldOrShared = IsFactionWorldOrShared
 d.LocationOrder = LocationOrder
 d.LocationDirection = LocationDirection
 d.UpdateLocationOrder = UpdateLocationOrder
-d.IsLocationOrderFaction = IsLocationOrderFaction
 
 d.GetSortOrders = GetSortOrders
 d.GetSortDirections = GetSortDirections

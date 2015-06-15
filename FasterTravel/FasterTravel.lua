@@ -163,10 +163,6 @@ init(function()
 		questTracker:RefreshIfRequired()
 	end
 	
-	local function IsLocationOrderFaction()
-		return Location.Data.IsLocationOrderFaction(_settings.locationOrder)
-	end 
-	
 	local function SetCurrentFaction(loc)
 		
 		local oldfaction = currentFaction
@@ -181,7 +177,7 @@ init(function()
 			currentFaction = faction 
 		end 
 		
-		if oldfaction ~= currentFaction and IsLocationOrderFaction() == true then
+		if oldfaction ~= currentFaction then
 			SetLocationsDirty()
 		end
 	end 
