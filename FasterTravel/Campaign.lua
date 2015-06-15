@@ -374,16 +374,6 @@ local function GetQueueStateText(id)
 	
 	local gtext = GetStateText(groupState,id,true)
 	
-	if Utils.stringIsEmpty(itext) == false then 
-		local iprefix = GetString(SI_CAMPAIGN_BROWSER_QUEUE_SOLO)
-		itext = Utils.concatToString(iprefix,": ",itext)
-	end 
-	
-	if Utils.stringIsEmpty(gtext) == false then 
-		local gprefix = GetString(SI_CAMPAIGN_BROWSER_QUEUE_GROUP)
-		gtext = Utils.concatToString(gprefix,": ",gtext)
-	end
-	
 	return {individual=itext, group=gtext}
 end
 

@@ -156,7 +156,7 @@ local function SetQuestIcon(data,closest,result)
 
 	if data == nil or closest == nil or result == nil then return false end 
 	
-	if (data.iconHidden == nil or data.iconHidden == true) or result.assisted == true then  
+	if (data.icon == nil or data.icon.hidden == true) or result.assisted == true then  
 		
 		local iconPath,pinType,textures = GetQuestIconPath(result)
 		
