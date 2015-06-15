@@ -374,9 +374,20 @@ local function IsFactionWorldOrShared(faction)
 	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD or faction == ALLIANCE_ALL
 end
 
-local function GetFactionOrderedList(faction,lookup,includeShared,sortFunc)
+local function GetFactionOrderedList(faction,lookup,args)
 
+	args = args or {}
+	
+	local zoneSortFunc = args.zoneSortFunc
+	local allianceSortFunc = args.allianceSortFunc
+	
+	local transform = args.transform
+	
 	local alliances = Utils.copy(_factionAllianceOrderLookup[faction])
+	
+	if allianceSortFunc ~= nil then 
+		table.sort(alliances,allianceSortFunc)
+	end 
 	
 	local zoneOrder
 	
@@ -385,11 +396,12 @@ local function GetFactionOrderedList(faction,lookup,includeShared,sortFunc)
 	local zones
 	
 	for i,alliance in ipairs(alliances) do 
-		if includeShared == false and alliance ~= ALLIANCE_ALL and IsFactionWorldOrShared(alliance) == true then 
-		else
-			zones = GetAllianceZones(alliance,lookup,sortFunc)
-			Utils.copy(zones,list)
+
+		zones = GetAllianceZones(alliance,lookup,zoneSortFunc)
+		if transform ~= nil then 
+			zones = transform(alliance,zones) or {}
 		end 
+		Utils.copy(zones,list)
 	end
 	
 	return list
@@ -434,22 +446,29 @@ local _locationSortOrder = {
 	[LocationOrder.FACTION_A_Z] = function(direction,currentFaction) 
 		local lookup = GetLookup()
 
-		local tbl = GetFactionOrderedList(currentFaction, lookup, false, function(x,y) 
-			return GetDirectionValue(direction,x,y,x.name < y.name)
-		end)
+		local tbl = GetFactionOrderedList(currentFaction, lookup,{ 
 		
-		return AddSharedAndWorld(tbl,lookup)
+			zoneSortFunc = function(x,y) 
+				return GetDirectionValue(direction,x,y,x.name < y.name)
+			end
+		
+		} )
+		
+		return tbl
 	end, 
 	[LocationOrder.FACTION_LEVEL] = function(direction,currentFaction)
 		local lookup = GetLookup()
 		
-		local tbl = GetFactionOrderedList(currentFaction, lookup,false)
-		
-		if direction == LocationDirection.DESCENDING then 
-			tbl = Utils.reverseTable(tbl)
-		end 
-		
-		return AddSharedAndWorld(tbl,lookup)
+		local tbl = GetFactionOrderedList(currentFaction, lookup, {
+			transform = function(alliance,zones)
+				if direction == LocationDirection.DESCENDING and IsFactionWorldOrShared(alliance) == false and alliance ~= ALLIANCE_ALL then 
+					return Utils.reverseTable(zones)
+				end 
+				return zones
+			end 
+		})
+
+		return tbl
 	end
 }
 
