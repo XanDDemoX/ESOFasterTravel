@@ -8,6 +8,8 @@ local function GetUnderAttackPinForKeepPin(pinType)
 	return ZO_WorldMap_GetUnderAttackPinForKeepPin(pinType)
 end
 
+local _keepNames = {}
+
 local function GetNodeInfo(ctx,nodeIndex)
 		
 	local keepId, accessible, normalizedX,  normalizedY = GetKeepTravelNetworkNodeInfo(nodeIndex,ctx)
@@ -18,7 +20,12 @@ local function GetNodeInfo(ctx,nodeIndex)
 		normalizedX,normalizedY = nx,ny
 	end 
 	
-	local name  = GetKeepName(keepId)
+	local name = _keepNames[keepId]
+	
+	if name == nil then 
+		name = Utils.FormatStringCurrentLanguage(GetKeepName(keepId))
+		_keepNames[keepId] = name 
+	end 
 	
 	local alliance =  GetKeepAlliance(keepId,ctx)
 	
