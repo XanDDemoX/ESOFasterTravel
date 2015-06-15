@@ -203,6 +203,7 @@ local function PopualteLookup(lookup,data)
 	
 end
 
+
 function MapTabWayshrines:init(control,locations,locationsLookup,recentList)
 	self.base.init(self,control)	
 	

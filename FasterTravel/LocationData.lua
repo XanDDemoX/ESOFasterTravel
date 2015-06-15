@@ -13,19 +13,19 @@ local _factionZoneOrderLookup = {
 	
 	[ALLIANCE_EBONHEART_PACT]= {"bleakrock","balfoyen","stonefalls","deshaan","shadowfen","eastmarch","therift"},
 	
-	[ALLIANCE_SHARED] = {"coldharbor","eyevea","cyrodiil"},
+	[ALLIANCE_SHARED] = {"cyrodiil"},
 	
-	[ALLIANCE_WORLD] = {"tamriel","mundus"}
+	[ALLIANCE_WORLD] = {"coldharbor","eyevea","tamriel","mundus"}
 	
 }
 
 local _factionAllianceOrderLookup = {
 
-	[ALLIANCE_ALDMERI_DOMINION] = {	ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT, ALLIANCE_DAGGERFALL_COVENANT,ALLIANCE_SHARED, ALLIANCE_WORLD },
+	[ALLIANCE_ALDMERI_DOMINION] = {ALLIANCE_SHARED, ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT, ALLIANCE_DAGGERFALL_COVENANT,ALLIANCE_WORLD },
 	
-	[ALLIANCE_DAGGERFALL_COVENANT] = { ALLIANCE_DAGGERFALL_COVENANT,  ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT,ALLIANCE_SHARED, ALLIANCE_WORLD },
+	[ALLIANCE_DAGGERFALL_COVENANT] = {ALLIANCE_SHARED,ALLIANCE_DAGGERFALL_COVENANT,  ALLIANCE_ALDMERI_DOMINION, ALLIANCE_EBONHEART_PACT,ALLIANCE_WORLD },
 	
-	[ALLIANCE_EBONHEART_PACT] ={ ALLIANCE_EBONHEART_PACT,  ALLIANCE_DAGGERFALL_COVENANT, ALLIANCE_ALDMERI_DOMINION,ALLIANCE_SHARED, ALLIANCE_WORLD }
+	[ALLIANCE_EBONHEART_PACT] ={ALLIANCE_SHARED,ALLIANCE_EBONHEART_PACT,  ALLIANCE_DAGGERFALL_COVENANT, ALLIANCE_ALDMERI_DOMINION,ALLIANCE_WORLD }
 
 }
 
@@ -202,6 +202,11 @@ local LocationOrder = {
 	FACTION_LEVEL = 3,
 }
 
+local LocationDirection = {
+	ASCENDING = 1,
+	DESCENDING = 2
+}
+
 local _locations
 local _locationsLookup
 local _zoneFactionLookup
@@ -338,9 +343,23 @@ local function GetZoneFaction(loc)
 	return lookup[loc]
 end 
 
-local function GetFactionOrderedList(faction,lookup,sortFunc)
 
-	local alliances = _factionAllianceOrderLookup[faction]
+local function GetAllianceZones(alliance, lookup,sortFunc)
+	local zones = _factionZoneOrderLookup[alliance]
+	zones = Utils.map(zones,function(key) return lookup[key] end)
+	if sortFunc ~= nil then 
+		table.sort(zones,sortFunc)
+	end
+	return zones
+end
+
+local function IsFactionWorldOrShared(faction)
+	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD
+end
+
+local function GetFactionOrderedList(faction,lookup,includeShared,sortFunc)
+
+	local alliances = Utils.copy(_factionAllianceOrderLookup[faction])
 	
 	local zoneOrder
 	
@@ -349,33 +368,84 @@ local function GetFactionOrderedList(faction,lookup,sortFunc)
 	local zones
 	
 	for i,alliance in ipairs(alliances) do 
-		zones = _factionZoneOrderLookup[alliance]
-		zones = Utils.map(zones,function(key) return lookup[key] end)
-		if sortFunc ~= nil then 
-			table.sort(zones,sortFunc)
-		end
-		Utils.copy(zones,list)
+		if includeShared == false and IsFactionWorldOrShared(alliance) == true then 
+		else
+			zones = GetAllianceZones(alliance,lookup,sortFunc)
+			Utils.copy(zones,list)
+		end 
 	end
 	
 	return list
 end
 
-local function IsFactionWorldOrShared(faction)
-	return faction == ALLIANCE_SHARED or faction == ALLIANCE_WORLD
+
+
+local function GetDirectionValue(direction,x,y,value)
+
+	if IsZoneIndexCyrodiil(x.zoneIndex) == true and IsZoneIndexCyrodiil(y.zoneIndex) == false then
+		return true
+	elseif IsZoneIndexCyrodiil(x.zoneIndex) == false and IsZoneIndexCyrodiil(y.zoneIndex) == true then
+		return false
+	end
+
+	if direction == LocationDirection.ASCENDING then return value 
+	elseif direction == LocationDirection.DESCENDING then return not value 
+	end 
 end
 
-local function UpdateLocationOrder(order,currentFaction, locations)
+local function AddSharedAndWorld(tbl,lookup,sortFunc)
+	local shared = GetAllianceZones(ALLIANCE_SHARED,lookup)
+	local world = GetAllianceZones(ALLIANCE_WORLD,lookup)
+	
+	local newtbl = {}
+	
+	Utils.copy(shared,newtbl)
+	Utils.copy(tbl,newtbl)
+	Utils.copy(world,newtbl)
+	
+	return newtbl
+end
+
+local _locationSortOrder = {
+	[LocationOrder.A_Z] = function(direction,currentFaction)
+		
+		local list = GetList()
+		table.sort(list,function(x,y)
+			return GetDirectionValue(direction,x,y,x.name < y.name)
+		end)
+		
+		return list
+	end,
+	[LocationOrder.FACTION_A_Z] = function(direction,currentFaction) 
+		local lookup = GetLookup()
+
+		return AddSharedAndWorld(GetFactionOrderedList(currentFaction, lookup, false, function(x,y) 
+			return GetDirectionValue(direction,x,y,x.name < y.name)
+		end),lookup)
+	end, 
+	[LocationOrder.FACTION_LEVEL] = function(direction,currentFaction)
+		local lookup = GetLookup()
+		
+		local tbl = GetFactionOrderedList(currentFaction, lookup,false)
+		
+		if direction == LocationDirection.DESCENDING then 
+			tbl = Utils.reverseTable(tbl)
+		end 
+		
+		return AddSharedAndWorld(tbl,lookup)
+	end
+}
+
+local function UpdateLocationOrder(locations,order,direction,...)
 	local newList 
 	
-	local lookup = GetLookup()
+	local func = _locationSortOrder[order] 
 	
-	if order == LocationOrder.FACTION_A_Z then 
-		newList = GetFactionOrderedList(currentFaction, lookup,function(x) return x.name < y.name end)
-	elseif order == LocationOrder.FACTION_LEVEL then 
-		newList = GetFactionOrderedList(currentFaction, lookup)
-	else
-		newList = GetList()
-	end
+	if func == nil then return end
+	
+	newList = func(direction,...)
+	
+	if newList == nil then return end
 	
 	for i,v in ipairs(newList) do
 		locations[i] = v 
@@ -385,6 +455,31 @@ end
 local function IsLocationOrderFaction(order)
 	return order == LocationOrder.FACTION_A_Z or LocationOrder.FACTION_LEVEL
 end
+
+local _sortOrders = {
+	{id = LocationOrder.A_Z, text = "Alphabetical"},
+	{id = LocationOrder.FACTION_A_Z, text = "Alliance A-Z"},
+	{id = LocationOrder.FACTION_LEVEL, text = "Alliance Level"}
+}
+
+local _directionsAlphabetical = {{id = LocationDirection.ASCENDING, text = "A-Z"},{id = LocationDirection.DESCENDING, text = "Z-A"}}
+
+local _directionsLevel = {{id = LocationDirection.ASCENDING, text = "1-v14"},{id = LocationDirection.DESCENDING, text = "v14-1"}}
+
+local _sortDirections = {
+
+	[LocationOrder.A_Z]=_directionsAlphabetical,
+	[LocationOrder.FACTION_A_Z] = _directionsAlphabetical,
+	[LocationOrder.FACTION_LEVEL] = _directionsLevel
+}
+
+local function GetSortOrders()
+	return _sortOrders
+end 
+
+local function GetSortDirections(order)
+	return _sortDirections[order] or _directionsAlphabetical
+end 
 
 local d = Data
 d.ZONE_INDEX_CYRODIIL = ZONE_INDEX_CYRODIIL
@@ -399,8 +494,12 @@ d.GetZoneFaction = GetZoneFaction
 d.GetFactionOrderedList = GetFactionOrderedList
 d.IsFactionWorldOrShared = IsFactionWorldOrShared
 d.LocationOrder = LocationOrder
+d.LocationDirection = LocationDirection
 d.UpdateLocationOrder = UpdateLocationOrder
 d.IsLocationOrderFaction = IsLocationOrderFaction
+
+d.GetSortOrders = GetSortOrders
+d.GetSortDirections = GetSortDirections
 
 FasterTravel.Location.Data = d
 	

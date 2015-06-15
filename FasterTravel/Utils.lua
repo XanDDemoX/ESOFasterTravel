@@ -91,6 +91,14 @@ local function concatToString(...)
 	end))
 end
 
+local function reverseTable(tbl)
+	local newtbl = {}
+	for i,v in ipairs(tbl) do
+		table.insert(newtbl,1,v)
+	end 
+	return newtbl
+end 
+
 local _lang
 
 local function FormatStringLanguage(lang,str)
@@ -122,5 +130,6 @@ u.extend = extend
 u.FormatStringLanguage = FormatStringLanguage
 u.FormatStringCurrentLanguage = FormatStringCurrentLanguage
 u.concatToString = concatToString
+u.reverseTable = reverseTable
 
 FasterTravel.Utils = u

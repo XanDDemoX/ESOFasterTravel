@@ -62,13 +62,14 @@ init(function()
 	local _prefix = "[FasterTravel]: "
 	
 	local Location = f.Location
+	local DropDown = f.DropDown
 	local Teleport = f.Teleport
 	local Utils = f.Utils
 	
 	local _locations
 	local _locationsLookup
 
-	local _settings = {recent={},locationOrder = Location.Data.LocationOrder.A_Z}
+	local _settings = {recent={},locationOrder = Location.Data.LocationOrder.A_Z, locationDirection = Location.Data.LocationDirection.ASCENDING}
 	local _settingsVersion = "7"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
@@ -110,7 +111,7 @@ init(function()
 	local function RefreshLocationsIfRequired()
 		if wayshrinesTab == nil then return end 
 		if locationsDirty == false or wayshrinesTab:IsDirty() == false then return end
-		Location.Data.UpdateLocationOrder(_settings.locationOrder,currentFaction,_locations)
+		Location.Data.UpdateLocationOrder(_locations,_settings.locationOrder,_settings.locationDirection,currentFaction)
 		locationsDirty = false
 	end
 	
@@ -184,6 +185,102 @@ init(function()
 	local function IsWorldMapHidden()
 		return ZO_WorldMap:IsHidden()
 	end
+	
+	local function SetLocationOrder(order)
+	
+		local oldOrder = _settings.locationOrder
+		
+		if oldOrder ~= order then 
+			_settings.locationOrder = order 
+			return true 
+		end 
+		return false 
+	end
+	
+	local function SetLocationDirection(direction)
+		local oldDirection = _settings.locationDirection
+		
+		if oldDirection ~= direction then 
+			_settings.locationDirection = direction 
+			return true 
+		end 
+		return false 
+	end
+	
+	local function SetLocationOrdering(func,...)
+		if func(...) == true then 
+			SetLocationsDirty()
+			SetWayshrinesDirty()
+			SetQuestsDirty()
+			RefreshWayshrinesIfRequired()
+			RefreshQuestsIfRequired()
+			wayshrinesTab:HideAllZoneCategories()
+		end 
+	end 
+	
+	local function RefreshDirectionDropDown(order,direction)
+		
+		local sortDirectionDropDown = wayshrineControl.sortDirectionDropDown
+		local sortDirections = Location.Data.GetSortDirections(order)
+		
+		direction = direction or _settings.locationDirection
+		
+		DropDown.Refresh(sortDirectionDropDown,sortDirections,function(control,text,data)
+			if data == nil then return end 
+			
+			local item = data.item
+			
+			if item == nil then return end 
+				
+			local id = item.id 
+			
+			if id == nil then return end 
+			
+			SetLocationOrdering(SetLocationDirection,id)
+		end,
+		function(lookup)
+			return lookup[direction]
+		end)
+		
+	end 
+	
+	local function RefreshOrderDropDown(order,direction)
+	
+		local sortOrderDropDown = wayshrineControl.sortOrderDropDown
+		local sortOrders = Location.Data.GetSortOrders()
+		
+		DropDown.Refresh(sortOrderDropDown,sortOrders,function(control,text,data)
+			if data == nil then return end 
+			
+			local item = data.item
+			
+			if item == nil then return end 
+				
+			local id = item.id 
+			
+			if id == nil then return end 
+			
+			RefreshDirectionDropDown(id)
+			
+			SetLocationOrdering(SetLocationOrder,id)
+		end,
+		function(lookup)
+			return lookup[order]
+		end)
+		
+	end 
+
+	local function RefreshWayshrineDropDowns(args)
+		args = args or {}
+		
+		local order = args.order or _settings.locationOrder 
+		local direction = args.direction or _settings.locationDirection
+
+		RefreshOrderDropDown(order)
+		
+		RefreshDirectionDropDown(order,direction)
+	end
+
 	
 	FasterTravel.Campaign.RefreshIfRequired()
 	
@@ -352,9 +449,12 @@ init(function()
 	_locations = {} 
 	
 	wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList)
+	
 	playersTab = FasterTravel.MapTabPlayers(playersControl)
 	questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)
 
+	RefreshWayshrineDropDowns()
+	
 	-- finally add the controls
 	local normal,highlight,pressed = GetPaths("/esoui/art/treeicons/achievements_indexicon_alliancewar_","up.dds","over.dds","down.dds")
 
@@ -384,6 +484,9 @@ init(function()
 			d(_prefix.."Invalid teleport target "..name)
 		end
 	end
+
+
+	
 	
 end)
 
