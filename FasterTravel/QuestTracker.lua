@@ -237,6 +237,8 @@ local function RefreshCategories(categories,locations,locationsLookup,quests,cat
 	
 	local zIdx
 	
+	SetIcon(categoriesTable[1],"/esoui/art/icons/poi/poi_wayshrine_complete.dds",_categoryIcon)
+	
 	for i,d in ipairs(categoriesTable) do
 		zIdx = d.zoneIndex or d.curZoneIndex
 		if zIdx ~= nil then 
