@@ -1,4 +1,4 @@
-ESOFasterTravel v1.5.6
+ESOFasterTravel v1.5.7
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -32,6 +32,11 @@ Slash Commands
 
 Recent Change Log
 
+Version 1.5.7
+
+	- Fixed incorrect campaignId for Home campaign.
+	- Fixed faction order not updating on travel.
+	
 Version 1.5.6
 
 	- Added alliance/faction icons for locations

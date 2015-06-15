@@ -1,5 +1,8 @@
 Change Log
 =============
+* **Version 1.5.7**
+  * Fixed incorrect campaignId for Home campaign.
+  * Fixed faction order not updating on travel.
 * **Version 1.5.6**
   * Added alliance/faction icons for locations
 * **Version 1.5.5**
