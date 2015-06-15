@@ -83,6 +83,8 @@ init(function()
 	local playersTab
 	local questTracker
 	
+	local currentWayshrineArgs
+	
 	local recentTable = Utils.map(_settings.recent,function(v) return {name=v.name,nodeIndex=v.nodeIndex} end)
 	
 	local recentList = f.RecentList(recentTable,"nodeIndex",5)
@@ -125,8 +127,20 @@ init(function()
 		if wayshrinesTab:IsDirty() == true then 
 			FasterTravel.Campaign.RefreshIfRequired()
 		end 
+		
 		RefreshLocationsIfRequired()
-		wayshrinesTab:RefreshIfRequired(...)
+		
+		local count = select('#',...)
+		
+		if count == 0 and currentWayshrineArgs ~= nil then 
+			wayshrinesTab:RefreshIfRequired(unpack(currentWayshrineArgs))
+		else
+			if count > 0 then 
+				currentWayshrineArgs = {...}
+			end 
+			wayshrinesTab:RefreshIfRequired(...)
+		end 
+		
 	end
 		
 	local function SetPlayersDirty()
@@ -281,13 +295,14 @@ init(function()
 		RefreshDirectionDropDown(order,direction)
 	end
 
-	
+	-- refresh to init campaigns
 	FasterTravel.Campaign.RefreshIfRequired()
 	
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
 		
 		local func = function()
 			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex())
+			currentWayshrineArgs = nil
 			SetWayshrinesDirty()
 			SetQuestsDirty()
 		end 
@@ -336,15 +351,24 @@ init(function()
 		end
 	end)
 	
+	addEvents(function()
+			currentWayshrineArgs = nil
+			SetWayshrinesDirty()
+			SetQuestsDirty()
+		end,
+		EVENT_END_FAST_TRAVEL_INTERACTION,
+		EVENT_END_FAST_TRAVEL_KEEP_INTERACTION)
+		
 	addEvents(
 		function()
 			SetWayshrinesDirty()
 			SetQuestsDirty()
 		end,
-		EVENT_END_FAST_TRAVEL_INTERACTION,EVENT_FAST_TRAVEL_NETWORK_UPDATED,
-		EVENT_END_FAST_TRAVEL_KEEP_INTERACTION,EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED,
-		EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED,EVENT_CAMPAIGN_STATE_INITIALIZED,
-		EVENT_ASSIGNED_CAMPAIGN_CHANGED,EVENT_GUEST_CAMPAIGN_CHANGED,EVENT_CAMPAIGN_SELECTION_DATA_CHANGED ,
+		EVENT_FAST_TRAVEL_NETWORK_UPDATED,
+		EVENT_FAST_TRAVEL_KEEP_NETWORK_UPDATED,
+		EVENT_FAST_TRAVEL_KEEP_NETWORK_LINK_CHANGED,
+		EVENT_CAMPAIGN_STATE_INITIALIZED,EVENT_CAMPAIGN_SELECTION_DATA_CHANGED,
+		EVENT_CURRENT_CAMPAIGN_CHANGED,EVENT_ASSIGNED_CAMPAIGN_CHANGED,EVENT_PREFERRED_CAMPAIGN_CHANGED,EVENT_GUEST_CAMPAIGN_CHANGED,
 		EVENT_KEEPS_INITIALIZED,EVENT_KEEP_ALLIANCE_OWNER_CHANGED,EVENT_KEEP_UNDER_ATTACK_CHANGED
 	)
 	
