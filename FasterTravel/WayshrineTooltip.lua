@@ -14,8 +14,8 @@ end
 
 local function AddDividerToTooltip(tooltip)
 	local t = tooltip
-	if tooltip.AddDivider ~= nil then 
-		tooltip:AddDivider()
+	if tooltip.AddNewDivider ~= nil then 
+		tooltip:AddNewDivider()
 	else
 		ZO_Tooltip_AddDivider(t)
 	end 

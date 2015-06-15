@@ -1,5 +1,10 @@
 Change Log
 =============
+* **Version 1.5.9**
+  * Fixed quest tracker adding quests to campaign tooltips.
+  * Added queue individual/group queue context resolution. 
+  * Fixed quest dividers not appearing on infotoolip
+  * Fixed potential error message from nil coordinates.
 * **Version 1.5.8**
   * Fixed keep tooltip error messages when displaying quests in Cyrodiil
 * **Version 1.5.7**

@@ -98,7 +98,7 @@ end
 function KeepToolTip:init(tooltip)
 	local _tooltip = tooltip
 	
-	self.AddDivider = function(self)
+	self.AddNewDivider = function(self)
 		KeepToolTipAddDivider(_tooltip)
 	end
 	

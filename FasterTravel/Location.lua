@@ -2,6 +2,7 @@
 local Location = FasterTravel.Location or {}
 
 local function DistanceSquared(x1,y1,x2,y2)
+	if x1 == nil or y1 == nil or x2 == nil or y2 == nil then return 0 end 
 	local dx,dy = (x2-x1),(y2-y1)
 	return (dx * dx)+(dy * dy)
 end

@@ -289,6 +289,7 @@ local function EnterQueue(id,name,group)
 	local canQueueIndividual, canQueueGroup = CanQueue(id)
 	
 	if canQueueIndividual == true and canQueueGroup == true  then
+		ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE")
 		ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE", {campaignId = id}, {mainTextParams = {name}})
 	elseif canQueueGroup == true then
 		QueueForCampaign(id, CAMPAIGN_QUEUE_GROUP)
@@ -298,13 +299,25 @@ local function EnterQueue(id,name,group)
 	
 end
 
+local function LeaveQueue(id,isGroup)
+	if isGroup == nil or isGroup == false then 
+		LeaveCampaignQueue(id, false)
+	end
+	if isGroup == nil or isGroup == true then 
+		LeaveCampaignQueue(id, true)
+	end 
+end
+
 local function EnterLeaveOrJoin(id,name,group,isGroup)
+	
 	if IsPlayerQueued(id,isGroup) == true then
 		
 		local state = GetQueueState(id,isGroup)
 		if state == CAMPAIGN_QUEUE_REQUEST_STATE_WAITING then 
-			LeaveCampaignQueue(id, isGroup)
+			LeaveQueue(id,isGroup)
 		elseif state == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING then 
+			-- need to know isGroup
+			isGroup = isGroup or (IsPlayerQueued(id,true) and GetQueueState(id,true) == CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING)
 			ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE_READY")
 			ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE_READY", {campaignId = id, isGroup = isGroup}, {mainTextParams = {name}})
 		end

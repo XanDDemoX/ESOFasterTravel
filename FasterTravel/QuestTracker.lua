@@ -477,7 +477,9 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local wayshrines, dataType = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
 		
-		RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+		if dataType ~= 2 then -- don't refresh quests for campaigns 
+			RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+		end
 		
 		if dataType ~= false then 
 		
