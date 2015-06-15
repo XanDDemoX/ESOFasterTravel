@@ -3,6 +3,8 @@ By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
+Now supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
+
 Wayshrines
 Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map (when it is possible to obtain the data ).
 Displays quest objective tooltips when the mouse is over quest icons.

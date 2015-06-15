@@ -14,7 +14,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   * Fast travel to or recall a wayshrine in the current zone
   * Fast travel to or recall a wayshrine in another
   * All fast travels and recalls use the appropriate standard confirmation dialog.
-  * Now supports Transitus Wayshrines in Cyrodiil!
+  * Now supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
 * **Players**
   * Teleport to players in your group
   * Teleport to players on your friends list
