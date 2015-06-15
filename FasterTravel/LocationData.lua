@@ -491,9 +491,9 @@ local function UpdateLocationOrder(locations,order,direction,...)
 end
 
 local _sortOrders = {
-	{id = LocationOrder.A_Z, text = "Alphabetical"},
-	{id = LocationOrder.FACTION_A_Z, text = "Alliance A-Z"},
-	{id = LocationOrder.FACTION_LEVEL, text = "Alliance Level"}
+	{id = LocationOrder.A_Z, text = GetString(SI_CHAT_CHANNEL_NAME_ZONE)},
+	{id = LocationOrder.FACTION_A_Z, text = GetString(SI_CAMPAIGNLEADERBOARDTYPE2)},
+	{id = LocationOrder.FACTION_LEVEL, text = GetString(SI_FRIENDS_LIST_PANEL_TOOLTIP_LEVEL)}
 }
 
 local _directionsAlphabetical = {{id = LocationDirection.ASCENDING, text = "A-Z"},{id = LocationDirection.DESCENDING, text = "Z-A"}}
