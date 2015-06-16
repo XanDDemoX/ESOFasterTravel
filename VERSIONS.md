@@ -1,5 +1,10 @@
 Change Log
 =============
+* **Version 2.0.1**
+  * Fixed intermittent display of incorrect focussed quest icon
+  * Removed prefix from Cyrodiil queue status displays. 
+  * Fixed potential error message when clearing icons on world map open.
+  *	Fixed AD faction order table in LocationData.
 * **Version 2.0.0**
   * Cyrodiil campaigns and Transitus Wayshrines support
   * Fixed Keep names for multi-language.

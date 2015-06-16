@@ -60,14 +60,22 @@ local function ClearNodeIndexIcons(nodeIndex,lookups)
 end 
 
 local function ClearIcons(lookup,...)
+	if lookup == nil then return end  -- no args :/
+	
 	local count = select('#',...)
+	
 	local lookups = count > 0 and {...}
+	
 	for nodeIndex,row in pairs(lookup) do
+	
 		ClearRowIcons(row)
+		
 		if lookups ~= nil then 
 			ClearNodeIndexIcons(nodeIndex,lookups)
 		end
+		
 	end
+	
 end
 
 local function AddQuest(data, result ,iconWidth,iconHeight)
@@ -240,8 +248,10 @@ local function RefreshCategories(categories,locations,locationsLookup,quests,cat
 	
 	local zIdx
 	
+	-- recent icon 
 	SetIcon(categoriesTable[1],"/esoui/art/icons/poi/poi_wayshrine_complete.dds",_categoryIcon)
 	
+	-- set icons
 	for i,d in ipairs(categoriesTable) do
 		zIdx = d.zoneIndex or d.curZoneIndex
 		if zIdx ~= nil then 
@@ -250,19 +260,28 @@ local function RefreshCategories(categories,locations,locationsLookup,quests,cat
 		end
 	end 
 
+	-- reset names
 	for i,loc in ipairs(locations) do 
 		data = categories[loc.zoneIndex]
-		data.name = loc.name
+		if data ~= nil then 
+			data.name = loc.name
+		end
 	end 
 	
+	-- count quests
 	for i,quest in ipairs(quests) do 
 		counts[quest.zoneIndex] = (counts[quest.zoneIndex] or 0) + 1
 	end 
 	
+	-- append counts
+	local c,l
 	for zoneIndex,count in pairs(counts) do
-		local c = categories[zoneIndex] 
+		c = categories[zoneIndex] 
 		if c ~= nil then 
-			c.name = table.concat({locationsLookup[zoneIndex].name," (",tostring(count),")"})
+			l = locationsLookup[zoneIndex]
+			if l ~= nil then -- really shouldn't ever be nil
+				c.name = table.concat({l.name," (",tostring(count),")"})
+			end 
 		end
 	end
 	
@@ -276,7 +295,11 @@ local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLook
 		ClearIcons(curLookup,recLookup)
 	end
 	
-	ClearIcons(zoneLookup[loc.zoneIndex],recLookup)
+	local lookup = zoneLookup[loc.zoneIndex]
+	
+	if lookup == nil then return end 
+	
+	ClearIcons(lookup,recLookup)
 end
 
 local function IsQuestValidForZone(quest,loc)
