@@ -211,40 +211,140 @@ local function TeleportToPlayer(playerName)
 	return true,playerName
 end
 
-local function TeleportToZone(zoneName)
+local function GetTeleportIterator(zoneName)
 
 	local lowerZoneName = string.lower(zoneName)
 	
-	local locTable = GetGroupInfo()
+	local locTables = { 
+		Utils.where(GetGroupInfo(),function(v) return string.lower(v.zoneName) == lowerZoneName end),
+		Utils.where(GetFriendsInfo(),function(v) return string.lower(v.zoneName) == lowerZoneName end),
+		GetZonesGuildLookup()[lowerZoneName] or {}
+	}
 	
-	for i,v in ipairs(locTable) do 
-		if string.lower(v.zoneName) == lowerZoneName then
-			TeleportToPlayer(v.name)
-			return true,zoneName
-		end
-	end
+	local tbl = 0
+	local tblcount = #locTables
+	local players
+	
+	local cur = 0
+	local count = 0
+	return function()
 
-	locTable = GetFriendsInfo()
-	
-	for i,v in ipairs(locTable) do 
-		if string.lower(v.zoneName) == lowerZoneName then
-			TeleportToPlayer(v.name)
-			return true,zoneName
-		end
-	end
-	
-	locTable = GetZonesGuildLookup()[lowerZoneName]
-	
-	if locTable ~= nil then
-		local count = #locTable
-		if count > 0 then
-			TeleportToPlayer(locTable[math.random(1,count)].name)
-			return true,zoneName
-		end
-	end
+		while tbl <= tblcount do 
+			if players ~= nil and cur < count then 
+				cur = cur + 1
+				local player = players[cur]
 
-	return false, zoneName
-end
+				if player ~= nil then 
+					return player 
+				end 
+			end
+			
+			if  cur >= count then 
+				tbl = tbl + 1 
+				players = locTables[tbl]
+				if players == nil then break end 
+				cur = 0
+				count = #players
+			end 
+		end 
+		
+		return nil
+	end 
+end 
+
+local ZoneTeleporter = FasterTravel.class()
+
+function ZoneTeleporter:init()
+
+	local _teleportIter
+	local _teleportCallback
+	
+	local _result
+	local _errorTime = 350
+	local _successTime = _errorTime * 5
+	
+	local function Reset()
+		_teleportIter = nil
+		_teleportCallback = nil 
+		_result = nil 
+	end 
+
+	local function TeleportResult(result)
+		if result == nil then return end 
+		
+		local callback = _teleportCallback
+		
+		if callback ~= nil then 
+			callback(result)
+		end 
+	end 
+
+	local function TryNextPlayer(reason)
+		if _teleportIter ~= nil then 
+					
+			local player = _teleportIter()
+			
+			if player ~= nil then
+				local r = { reason="attempt", player = _player, expiry = GetGameTimeMilliseconds() + _errorTime }
+				_result = r
+				
+				TeleportToPlayer(player.name)
+
+				return true
+			else
+				TeleportResult(_result)
+				Reset()
+			end 
+		end 
+		return false
+	end 
+	
+	local _waiting = false
+	
+	local function DelayedNext(delay)
+		if _waiting == true then return false end 
+		
+		_waiting = true 
+
+		zo_callLater(function()
+		
+			_waiting = false
+			
+			TryNextPlayer() 
+			
+		end,delay)
+		
+		return true 
+	end
+	
+	ZO_Alert = FasterTravel.hook(ZO_Alert, function(base,alert,sound,message,...)
+		local t = GetGameTimeMilliseconds()
+		local r = _result
+		if alert ~= 0 or r == nil then -- try next player and suppress on error or call base 
+			
+		elseif r ~= nil then
+			if t <= r.expiry then 
+				r.success = false
+				r.reason = message
+			end
+			TeleportResult(_result)
+			DelayedNext(_errorTime)
+		end 
+		base(alert,sound,message,...)
+	end)
+	
+	FasterTravel.addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
+		Reset()
+	end)
+
+	self.TeleportToZone =  function(self, zoneName,callback)
+		_teleportIter = GetTeleportIterator(zoneName)
+		_teleportCallback = callback
+		return TryNextPlayer(), zoneName
+	end 
+end 
+
+local _zoneTeleporter = ZoneTeleporter()
 
 local t = Teleport
 t.GetGuildPlayers = GetGuildPlayers
@@ -255,7 +355,7 @@ t.IsPlayerReallyInGroup = IsPlayerReallyInGroup
 t.IsPlayerInGuild = IsPlayerInGuild
 t.IsPlayerTeleportable = IsPlayerTeleportable
 t.TeleportToPlayer = TeleportToPlayer
-t.TeleportToZone = TeleportToZone
+t.TeleportToZone = function(zoneName) return _zoneTeleporter:TeleportToZone(zoneName) end 
 
 
 FasterTravel.Teleport = t

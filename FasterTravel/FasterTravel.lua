@@ -293,9 +293,9 @@ init(function()
 
 	-- refresh to init campaigns
 	FasterTravel.Campaign.RefreshIfRequired()
-	
+
 	addEvent(EVENT_PLAYER_ACTIVATED,function(eventCode)
-		
+				
 		local func = function()
 			SetCurrentZoneMapIndexes(GetCurrentMapZoneIndex())
 			currentWayshrineArgs = nil
