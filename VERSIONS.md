@@ -1,5 +1,8 @@
 Change Log
 =============
+* **Version 2.0.2**
+  * Added Craglorn Trial wayshrine support.
+  * Added teleport error detection and attempt next player upon failure when teleporting by zone name.
 * **Version 2.0.1**
   * Fixed intermittent display of incorrect focussed quest icon
   * Removed prefix from Cyrodiil queue status displays. 

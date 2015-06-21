@@ -4,8 +4,22 @@ FasterTravel = {}
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 local CALLBACK_ID_ON_QUEST_TRACKER_TRACKING_STATE_CHANGED = "QuestTrackerTrackingStateChanged"
 
+local _events = {}
+
+local function GetUniqueEventId(id)
+	local count = _events[id] or 0 
+	count = count + 1
+	_events[id] = count
+	return count 
+end 
+
+local function GetEventName(id)
+	return table.concat({"FasterTravel_",tostring(id),"_",tostring(GetUniqueEventId(id))})
+end 
+
 local function addEvent(id,func)
-	EVENT_MANAGER:RegisterForEvent("FasterTravel_"..tostring(id),id,func)
+	local name = GetEventName(id)
+	EVENT_MANAGER:RegisterForEvent(name,id,func)
 end
 
 local function addEvents(func,...)
@@ -302,7 +316,9 @@ init(function()
 			SetWayshrinesDirty()
 			SetQuestsDirty()
 		end 
+		
 		local idx = GetCurrentMapIndex()
+		
 		-- handle the map changing from Tamriel 
 		if idx == nil or idx == 1 then 
 			local onChange
@@ -505,9 +521,6 @@ init(function()
 		end
 	end
 
-
-	
-	
 end)
 
 

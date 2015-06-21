@@ -1,4 +1,4 @@
-ESOFasterTravel v2.0.1
+ESOFasterTravel v2.0.2
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -30,106 +30,20 @@ Slash Commands
 /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
 /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc)
 
- 
 
 Recent Change Log
+
+Version 2.0.2
+
+	-  Added Craglorn Trial wayshrine support.
+	-  Added teleport error detection and attempt next player upon failure when teleporting by zone name.
 
 Version 2.0.1
 
 	- Fixed intermittent display of incorrect focussed quest icon
 	- Removed prefix from Cyrodiil queue status displays. 
 	- Fixed potential error message when clearing icons on world map open.
-	
-Version 2.0.0
-	- Cyrodiil campaigns and Transitus Wayshrines support
-	- Fixed Keep names for multi-language.
-	- Switched to string ids for sort order text for localisation.
-	- Fixed Alliance level ordering descending moving Cyrodiil to the bottom of the list.
-	- Added check to ensure keeps under attack do not have their icon switched to a quest icon.
-
-Version 1.5.9
-
-	- Fixed quest tracker adding quests to campaign tooltips.
-	- Added queue individual/group queue context resolution. 
-	- Fixed quest dividers not appearing on infotoolip
-	- Fixed potential error message from nil coordinates.
-	
-Version 1.5.8
-
-	- Fixed keep tooltip error messages when displaying quests in Cyrodiil
-
-Version 1.5.7
-
-	- Fixed incorrect campaignId for Home campaign.
-	- Fixed faction order not updating on travel.
-	
-Version 1.5.6
-
-	- Added alliance/faction icons for locations
-	
-Version 1.5.5
-
-	- Added campaign queue status display on tooltips and icons.
-	- Added keep under attack status detection and display.
-	- Added of location re-ording user interface.
-
-Version 1.5.4
-
-	- Added campaign display and joining outside of Cyrodiil.
-	- Added campaign tooltip for display of campaign population and status. 
-	- Fixed Keeps not displaying before visiting a Transitus shrine
-
-Version 1.5.3
-
-	- Added panning to keeps.
-	- Performance improvements to quest tracker.
-	- Fixed wayshrines / quests not being invalidated on campaign state initialised.
-	- Implemented quest display for Keep tooltips.
-	- Fixed Cyrodiil detection preventing display of keeps on initial entry.
-	- Fixed Cyrodiil detection in quest tracker
-
-Version 1.5.2
-
-	- Added zone ordering support.
-	- Fixed recall confirmation not message being displayed outside of Cyrodiil preventing recall.
-	- Fixed quest selection context menu not being hidden on world map hide.
-	- Fixed error message attempting to teleport within a group where player is the leader and all other players are offline.
-
-Version 1.5.1
-
-	- Added display keep tooltip instead of wayshrine tooltip on mouse over keep rows 
-	- Added recall cooldown time display 
-	
-Version 1.5.0 
-
-	- Added "Fast Travel Here" text. 
-	- Fixed incorrect display of Cyrodiil wayshrines whilst player is not in Cyrodiil
-	- Fixed Transitus shrines not being displayed under the "Cyrodiil" heading whilst the player is in Cyrodiil
-
-Version 1.4.9
-
-	- Added Transitus shrine support in Cyrodiil 
-	- Fixed tooltip display within Cyrodiil not displaying recall disallowed. 
-	- Fixed confirmation travel confirmation message being displayed when recall / travel disallowed.
-	
-Version 1.4.8
-
-	- Fixed Main Quest and Crafting quest markers not appearing.
-	- Added pan map to wayshrine on click
-
-Version 1.4.7
-
-	- Added teleport to unit tag (group1 ,group2 group3 etc) via /goto slash command 
-
-Version 1.4.6
-
-	- Fixed error message on attempting to focus quests from recent list.
-
-Version 1.4.5
-
-	- Fixed multiple tracked quest icons being displayed when the tracked quest has been changed
-	- Fixed setting map to quest objectives potentially changing the current map inside a delve / city.
-	- Fixed ordering of quest objectives potentially not updating when the tracked quest has been changed.
+	- Fixed AD faction order table in LocationData.
 
 	
 DISCLAIMER

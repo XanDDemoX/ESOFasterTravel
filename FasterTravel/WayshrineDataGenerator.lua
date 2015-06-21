@@ -1,4 +1,6 @@
 
+local Utils = FasterTravel.Utils
+
 local function CreateNodesLookup(nodes,...)
 	local count = select('#',...)
 	local lookup ={}
@@ -13,28 +15,46 @@ end
 
 local function UpdateLookup(lookup)
 
-	-- corrections where names differ ={
-	-- likely needs entries for other languages
-	lookup["baandari post wayshrine"] = lookup["baandari tradepost wayshrine"]
-	lookup["bloodtoil valley wayshrine"] = lookup["bloodtoil wayshrine"]
-	lookup["wilding vale wayshrine"] = lookup["wilding run wayshrine"]
+	-- corrections where names differ ={ - for english client only 
 	
-	lookup["camp tamrith wayshrine"] = lookup["tamrith camp wayshrine"]
+	-- poi name | fast travel node name
+		
+	-- general world wayshrines
 	
-	lookup["seaside sanctuary wayshrine"] = lookup["seaside sanctuary"]
-	lookup["seaside sanctuary"].name = "Seaside Sanctuary Wayshrine" -- renamed for consistency
+	local keys = {
 	
-	lookup["north morrowind gate wayshrine"] = lookup["north morrowind wayshrine"]
-	lookup["south morrowind gate wayshrine"] = lookup["south morrowind wayshrine"]
+		-- general world wayshrines
+		
+		"baandari post wayshrine","baandari tradepost wayshrine",
+		"bloodtoil valley wayshrine","bloodtoil wayshrine",
+		"wilding vale wayshrine","wilding run wayshrine",
+		"camp tamrith wayshrine","tamrith camp wayshrine",
+		"seaside sanctuary wayshrine","seaside sanctuary",
+		"eyevea wayshrine","eyevea",
+		
+		-- cyrodiil 
+		"north morrowind gate wayshrine","north morrowind wayshrine",
+		"south morrowind gate wayshrine","south morrowind wayshrine",
+		"western elsweyr gate wayshrine","western elsweyr wayshrine",
+		"eastern elsweyr gate wayshrine","eastern elsweyr wayshrine",
+		"north highrock gate wayshrine","northern high rock wayshrine",
+		"south highrock gate wayshrine","southern high rock wayshrine",
+		
+		-- trials
+		"trial: aetherian archive","aetherian archive wayshrine",
+		"trial: hel ra citadel", "hel ra citadel wayshrine",
+		"trial: sanctum ophidia","sanctum ophidia wayshrine",
+	}
 	
-	lookup["western elsweyr gate wayshrine"] = lookup["western elsweyr wayshrine"]
-	lookup["eastern elsweyr gate wayshrine"] = lookup["eastern elsweyr wayshrine"]
-	
-	lookup["north highrock gate wayshrine"] = lookup["northern high rock wayshrine"]
-	lookup["south highrock gate wayshrine"] = lookup["southern high rock wayshrine"]
-	
-	lookup["eyevea wayshrine"] = lookup["eyevea"]
-	
+	local poiKey,nodeKey 
+	for i = 1, #keys-1, 2 do
+
+		poiKey,nodeKey = keys[i],keys[i+1]
+		
+		lookup[poiKey] = lookup[nodeKey]
+		
+	end
+		
 	-- correction to handle multiple harboridges
 	local harborage = lookup["the harborage"]
 	if harborage ~= nil and harborage.nodes ~= nil then 
@@ -131,27 +151,17 @@ local function GetNodesByZoneIndex(zoneIndex)
 	
 	return function()
 		
-		local isWayshrine = false 
-		
-		while i < count and isWayshrine == false do
+		while i < count do
 			i = i + 1
-			isWayshrine = IsPOIWayshrine(zoneIndex,i) or IsPOIGroupDungeon(zoneIndex,i)
-			
-			if isWayshrine == true then
-			
-				name = GetPOIInfo(zoneIndex, i)
 
-				item = GetItemFromLookup(lookup,name,zoneIndex)
-				
-				if item ~= nil then 
-					item.poiIndex = i 
-					item.zoneIndex = zoneIndex
-					return item
-				else
-					-- if not in lookup then skip
-					isWayshrine = false
-				end
-				
+			name = GetPOIInfo(zoneIndex, i)
+
+			item = GetItemFromLookup(lookup,name,zoneIndex)
+			
+			if item ~= nil then 
+				item.poiIndex = i 
+				item.zoneIndex = zoneIndex
+				return item
 			end
 			
 		end
@@ -178,7 +188,7 @@ local function Generate(locations)
 	for zoneIndex,nodes in pairs(lookup) do 
 		newLookup[zoneIndex]={}
 		for i,node in ipairs(nodes) do
-			table.insert(newLookup[zoneIndex],{nodeIndex = node.nodeIndex, pIndex = node.poiIndex})
+			table.insert(newLookup[zoneIndex],{nodeIndex = node.nodeIndex, poiIndex = node.poiIndex})
 		end 
 	end 
 	return newLookup

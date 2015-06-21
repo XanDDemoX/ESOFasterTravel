@@ -1,5 +1,16 @@
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 
+local Utils = FasterTravel.Utils
+
+local function AddManualLocations(locations)
+
+	local loc = {
+		["zoneIndex"] = 100,
+		["tile"] = "art/maps/guildmaps/eyevea_base_0.dds"
+	}
+
+	table.insert(locations,loc)
+end 
 
 local function GetLocations(callback)
     local locations = {}
@@ -7,9 +18,11 @@ local function GetLocations(callback)
     for i = 1, GetNumMaps() do
         local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
 		if Utils.stringIsEmpty(mapName) == false then
-			table.insert(locations,{ name = mapName, mapIndex = i, zoneIndex=zoneId })
+			table.insert(locations,{mapIndex = i, zoneIndex=zoneId})
 		end
     end
+	
+	AddManualLocations(locations)
 	
 	local curIndex
 	local curZoneIndex
@@ -21,7 +34,7 @@ local function GetLocations(callback)
 
 	local done = false 
 	local complete = false 
-	-- hack to get location zoneIndexes by changing the map and using GetCurrentMapZoneIndex() (eugh >_<)
+
 	return function()
 		
 		if complete == true then 
@@ -36,9 +49,6 @@ local function GetLocations(callback)
 		end
 		
 		if cur == 0 then
-			WORLD_MAP_QUESTS.QuestHeader_OnClicked = function() end -- prevent mouse use on map locations whilst this is happening.
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown = function() end 
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp = function() end
 			
 			curIndex = GetCurrentMapIndex()
 			curZoneIndex = GetCurrentMapZoneIndex()
@@ -53,22 +63,21 @@ local function GetLocations(callback)
 		local item = locations[cur]
 		
 		local path = GetMapTileTexture()
-		
-		item.tile = path
+	
+		item.tile = item.tile or path
 		
 		if cur >= count then
 			done = true 
 			
 			ZO_WorldMap_SetMapByIndex(curIndex)
 			
-			WORLD_MAP_QUESTS.QuestHeader_OnClicked = mouseClickQuest -- restore mouse use
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown = mouseDownLoc
-			WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp = mouseUpLoc
-			
 		elseif cur > 0 and cur < count then 
 			cur = cur + 1
-			ZO_WorldMap_SetMapByIndex(locations[cur].mapIndex)
+
+			ZO_WorldMap_SetMapByIndex(locations[cur].mapIndex or -1)
 		end
+		 
+		
 	end
 	
 end
@@ -76,11 +85,16 @@ end
 
 local function Generate(callback)
 	local locationFunc  
-	-- hack for zoneIndexes
-	locationFunc = Location.GetLocations(function(...)   
-		removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
+	-- hack for zone keys
+	locationFunc = GetLocations(function(...)   
+		FasterTravel.removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
 		callback(...)
 	end)
 
-	addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
+	FasterTravel.addCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
+	ZO_WorldMap_SetMapByIndex(nil)
 end
+
+FasterTravel.LocationDataGenerator = {
+	Generate = Generate
+}

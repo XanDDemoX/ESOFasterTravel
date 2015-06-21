@@ -317,19 +317,26 @@ function ZoneTeleporter:init()
 		return true 
 	end
 	
+	local function UpdateResult(result,t,message)
+		local r = result
+		if t <= r.expiry then 
+			r.success = false
+			r.reason = message
+		end
+	end
+	
 	ZO_Alert = FasterTravel.hook(ZO_Alert, function(base,alert,sound,message,...)
-		local t = GetGameTimeMilliseconds()
+		
 		local r = _result
 		if alert ~= 0 or r == nil then -- try next player and suppress on error or call base 
 			
-		elseif r ~= nil then
-			if t <= r.expiry then 
-				r.success = false
-				r.reason = message
-			end
+		elseif alert == 0 and r ~= nil then
+			local t = GetGameTimeMilliseconds()
+			UpdateResult(r,t,message)
 			TeleportResult(_result)
 			DelayedNext(_errorTime)
 		end 
+
 		base(alert,sound,message,...)
 	end)
 	

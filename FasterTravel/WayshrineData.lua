@@ -14,1194 +14,1214 @@ local _zoneNodeLookup = {
 	{
 		[1] = 
 		{
-			["poiIndex"] = 45,
 			["nodeIndex"] = 217,
+			["poiIndex"] = 45,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 46,
 			["nodeIndex"] = 219,
+			["poiIndex"] = 46,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 47,
 			["nodeIndex"] = 218,
+			["poiIndex"] = 47,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 50,
 			["nodeIndex"] = 220,
+			["poiIndex"] = 50,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 62,
-			["nodeIndex"] = 229,
+			["nodeIndex"] = 230,
+			["poiIndex"] = 60,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 63,
-			["nodeIndex"] = 225,
+			["nodeIndex"] = 231,
+			["poiIndex"] = 61,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 64,
-			["nodeIndex"] = 226,
+			["nodeIndex"] = 229,
+			["poiIndex"] = 62,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 65,
-			["nodeIndex"] = 227,
+			["nodeIndex"] = 225,
+			["poiIndex"] = 63,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 86,
-			["nodeIndex"] = 233,
+			["nodeIndex"] = 226,
+			["poiIndex"] = 64,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 87,
-			["nodeIndex"] = 234,
+			["nodeIndex"] = 227,
+			["poiIndex"] = 65,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 88,
+			["nodeIndex"] = 232,
+			["poiIndex"] = 85,
+		},
+		[12] = 
+		{
+			["nodeIndex"] = 233,
+			["poiIndex"] = 86,
+		},
+		[13] = 
+		{
+			["nodeIndex"] = 234,
+			["poiIndex"] = 87,
+		},
+		[14] = 
+		{
 			["nodeIndex"] = 235,
+			["poiIndex"] = 88,
 		},
 	},
 	[2] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 1,
+			["poiIndex"] = 26,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 2,
+			["poiIndex"] = 27,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 3,
+			["poiIndex"] = 28,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 4,
+			["poiIndex"] = 29,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 5,
+			["poiIndex"] = 30,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 6,
+			["poiIndex"] = 31,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 32,
 			["nodeIndex"] = 7,
+			["poiIndex"] = 32,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 33,
 			["nodeIndex"] = 8,
+			["poiIndex"] = 33,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 34,
 			["nodeIndex"] = 20,
+			["poiIndex"] = 34,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 35,
 			["nodeIndex"] = 62,
+			["poiIndex"] = 35,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 36,
 			["nodeIndex"] = 64,
+			["poiIndex"] = 36,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 42,
 			["nodeIndex"] = 193,
+			["poiIndex"] = 42,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 46,
 			["nodeIndex"] = 210,
+			["poiIndex"] = 46,
 		},
 		[14] = 
 		{
-			["poiIndex"] = 63,
 			["nodeIndex"] = 216,
+			["poiIndex"] = 63,
 		},
 	},
 	[100] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 1,
 			["nodeIndex"] = 215,
+			["poiIndex"] = 1,
 		},
 	},
 	[5] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 17,
 			["nodeIndex"] = 190,
+			["poiIndex"] = 17,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 18,
 			["nodeIndex"] = 9,
+			["poiIndex"] = 18,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 19,
 			["nodeIndex"] = 10,
+			["poiIndex"] = 19,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 11,
+			["poiIndex"] = 20,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 12,
+			["poiIndex"] = 22,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 13,
+			["poiIndex"] = 23,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 82,
+			["poiIndex"] = 24,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 83,
+			["poiIndex"] = 25,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 84,
+			["poiIndex"] = 26,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 55,
+			["poiIndex"] = 27,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 37,
 			["nodeIndex"] = 86,
+			["poiIndex"] = 37,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 208,
+			["poiIndex"] = 41,
 		},
 	},
 	[38] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 52,
 			["nodeIndex"] = 170,
+			["poiIndex"] = 52,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 53,
 			["nodeIndex"] = 199,
+			["poiIndex"] = 53,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 54,
 			["nodeIndex"] = 200,
+			["poiIndex"] = 54,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 55,
 			["nodeIndex"] = 201,
+			["poiIndex"] = 55,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 56,
 			["nodeIndex"] = 202,
+			["poiIndex"] = 56,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 57,
 			["nodeIndex"] = 203,
+			["poiIndex"] = 57,
 		},
 	},
 	[295] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 5,
 			["nodeIndex"] = 141,
+			["poiIndex"] = 5,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 6,
 			["nodeIndex"] = 142,
+			["poiIndex"] = 6,
 		},
 	},
 	[9] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 65,
+			["poiIndex"] = 20,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 66,
+			["poiIndex"] = 21,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 41,
+			["poiIndex"] = 22,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 67,
+			["poiIndex"] = 23,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 68,
+			["poiIndex"] = 24,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 71,
+			["poiIndex"] = 25,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 72,
+			["poiIndex"] = 26,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 73,
+			["poiIndex"] = 27,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 74,
+			["poiIndex"] = 28,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 75,
+			["poiIndex"] = 29,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 76,
+			["poiIndex"] = 30,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 77,
+			["poiIndex"] = 31,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 34,
 			["nodeIndex"] = 98,
+			["poiIndex"] = 34,
 		},
 		[14] = 
 		{
-			["poiIndex"] = 39,
 			["nodeIndex"] = 69,
+			["poiIndex"] = 39,
 		},
 		[15] = 
 		{
-			["poiIndex"] = 40,
 			["nodeIndex"] = 108,
+			["poiIndex"] = 40,
 		},
 		[16] = 
 		{
-			["poiIndex"] = 46,
 			["nodeIndex"] = 212,
+			["poiIndex"] = 46,
 		},
 	},
 	[11] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 198,
+			["poiIndex"] = 21,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 24,
+			["poiIndex"] = 22,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 25,
+			["poiIndex"] = 23,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 26,
+			["poiIndex"] = 24,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 27,
+			["poiIndex"] = 25,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 28,
+			["poiIndex"] = 26,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 29,
+			["poiIndex"] = 27,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 30,
+			["poiIndex"] = 28,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 32,
+			["poiIndex"] = 29,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 79,
+			["poiIndex"] = 30,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 80,
+			["poiIndex"] = 31,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 32,
 			["nodeIndex"] = 81,
+			["poiIndex"] = 32,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 43,
 			["nodeIndex"] = 205,
+			["poiIndex"] = 43,
 		},
 	},
 	[12] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 2,
 			["nodeIndex"] = 101,
+			["poiIndex"] = 2,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 3,
 			["nodeIndex"] = 99,
+			["poiIndex"] = 3,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 4,
 			["nodeIndex"] = 102,
+			["poiIndex"] = 4,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 5,
 			["nodeIndex"] = 100,
+			["poiIndex"] = 5,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 6,
 			["nodeIndex"] = 104,
+			["poiIndex"] = 6,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 7,
 			["nodeIndex"] = 105,
+			["poiIndex"] = 7,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 8,
 			["nodeIndex"] = 106,
+			["poiIndex"] = 8,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 9,
 			["nodeIndex"] = 103,
+			["poiIndex"] = 9,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 10,
 			["nodeIndex"] = 107,
+			["poiIndex"] = 10,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 188,
+			["poiIndex"] = 41,
 		},
 	},
 	[110] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 3,
 			["nodeIndex"] = 172,
+			["poiIndex"] = 3,
 		},
 	},
 	[111] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 2,
 			["nodeIndex"] = 173,
+			["poiIndex"] = 2,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 3,
 			["nodeIndex"] = 125,
+			["poiIndex"] = 3,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 4,
 			["nodeIndex"] = 126,
+			["poiIndex"] = 4,
 		},
 	},
 	[16] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 14,
 			["nodeIndex"] = 87,
+			["poiIndex"] = 14,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 15,
 			["nodeIndex"] = 88,
+			["poiIndex"] = 15,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 16,
 			["nodeIndex"] = 89,
+			["poiIndex"] = 16,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 17,
 			["nodeIndex"] = 90,
+			["poiIndex"] = 17,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 18,
 			["nodeIndex"] = 91,
+			["poiIndex"] = 18,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 19,
 			["nodeIndex"] = 92,
+			["poiIndex"] = 19,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 93,
+			["poiIndex"] = 20,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 94,
+			["poiIndex"] = 21,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 95,
+			["poiIndex"] = 22,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 96,
+			["poiIndex"] = 23,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 97,
+			["poiIndex"] = 24,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 195,
+			["poiIndex"] = 41,
 		},
 	},
 	[17] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 14,
 			["nodeIndex"] = 109,
+			["poiIndex"] = 14,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 15,
 			["nodeIndex"] = 110,
+			["poiIndex"] = 15,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 16,
 			["nodeIndex"] = 111,
+			["poiIndex"] = 16,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 17,
 			["nodeIndex"] = 112,
+			["poiIndex"] = 17,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 113,
+			["poiIndex"] = 23,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 114,
+			["poiIndex"] = 24,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 115,
+			["poiIndex"] = 25,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 116,
+			["poiIndex"] = 26,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 117,
+			["poiIndex"] = 27,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 118,
+			["poiIndex"] = 28,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 119,
+			["poiIndex"] = 29,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 120,
+			["poiIndex"] = 30,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 42,
 			["nodeIndex"] = 187,
+			["poiIndex"] = 42,
 		},
 	},
 	[18] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 17,
 			["nodeIndex"] = 42,
+			["poiIndex"] = 17,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 18,
 			["nodeIndex"] = 43,
+			["poiIndex"] = 18,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 19,
 			["nodeIndex"] = 44,
+			["poiIndex"] = 19,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 45,
+			["poiIndex"] = 20,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 46,
+			["poiIndex"] = 21,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 57,
+			["poiIndex"] = 29,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 58,
+			["poiIndex"] = 30,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 59,
+			["poiIndex"] = 31,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 32,
 			["nodeIndex"] = 137,
+			["poiIndex"] = 32,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 34,
 			["nodeIndex"] = 60,
+			["poiIndex"] = 34,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 35,
 			["nodeIndex"] = 61,
+			["poiIndex"] = 35,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 42,
 			["nodeIndex"] = 196,
+			["poiIndex"] = 42,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 43,
 			["nodeIndex"] = 155,
+			["poiIndex"] = 43,
 		},
 	},
 	[19] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 17,
-			["nodeIndex"] = 147,
+			["nodeIndex"] = 150,
+			["poiIndex"] = 21,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 18,
-			["nodeIndex"] = 143,
+			["nodeIndex"] = 147,
+			["poiIndex"] = 17,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 19,
-			["nodeIndex"] = 148,
+			["nodeIndex"] = 143,
+			["poiIndex"] = 18,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 20,
-			["nodeIndex"] = 149,
+			["nodeIndex"] = 148,
+			["poiIndex"] = 19,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 21,
-			["nodeIndex"] = 150,
+			["nodeIndex"] = 149,
+			["poiIndex"] = 20,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 22,
-			["nodeIndex"] = 151,
+			["nodeIndex"] = 150,
+			["poiIndex"] = 21,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 23,
-			["nodeIndex"] = 152,
+			["nodeIndex"] = 151,
+			["poiIndex"] = 22,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 24,
-			["nodeIndex"] = 153,
+			["nodeIndex"] = 152,
+			["poiIndex"] = 23,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 25,
-			["nodeIndex"] = 154,
+			["nodeIndex"] = 153,
+			["poiIndex"] = 24,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 39,
+			["nodeIndex"] = 154,
+			["poiIndex"] = 25,
+		},
+		[11] = 
+		{
 			["nodeIndex"] = 197,
+			["poiIndex"] = 39,
 		},
 	},
 	[180] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 185,
+			["poiIndex"] = 29,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 144,
+			["poiIndex"] = 30,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 156,
+			["poiIndex"] = 31,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 32,
 			["nodeIndex"] = 157,
+			["poiIndex"] = 32,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 34,
 			["nodeIndex"] = 158,
+			["poiIndex"] = 34,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 35,
 			["nodeIndex"] = 159,
+			["poiIndex"] = 35,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 36,
 			["nodeIndex"] = 160,
+			["poiIndex"] = 36,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 37,
 			["nodeIndex"] = 161,
+			["poiIndex"] = 37,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 38,
 			["nodeIndex"] = 162,
+			["poiIndex"] = 38,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 39,
 			["nodeIndex"] = 163,
+			["poiIndex"] = 39,
 		},
 	},
 	[181] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 8,
 			["nodeIndex"] = 191,
+			["poiIndex"] = 8,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 15,
 			["nodeIndex"] = 214,
+			["poiIndex"] = 15,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 16,
 			["nodeIndex"] = 164,
+			["poiIndex"] = 16,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 17,
 			["nodeIndex"] = 21,
+			["poiIndex"] = 17,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 18,
 			["nodeIndex"] = 165,
+			["poiIndex"] = 18,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 19,
 			["nodeIndex"] = 166,
+			["poiIndex"] = 19,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 167,
+			["poiIndex"] = 20,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 168,
+			["poiIndex"] = 21,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 169,
+			["poiIndex"] = 22,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 40,
 			["nodeIndex"] = 207,
+			["poiIndex"] = 40,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 213,
+			["poiIndex"] = 41,
 		},
 	},
 	[15] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 19,
 			["nodeIndex"] = 33,
+			["poiIndex"] = 19,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 34,
+			["poiIndex"] = 20,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 35,
+			["poiIndex"] = 21,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 36,
+			["poiIndex"] = 22,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 37,
+			["poiIndex"] = 23,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 38,
+			["poiIndex"] = 24,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 39,
+			["poiIndex"] = 25,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 40,
+			["poiIndex"] = 26,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 63,
+			["poiIndex"] = 27,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 36,
 			["nodeIndex"] = 186,
+			["poiIndex"] = 36,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 40,
 			["nodeIndex"] = 204,
+			["poiIndex"] = 40,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 206,
+			["poiIndex"] = 41,
 		},
 	},
 	[294] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 3,
 			["nodeIndex"] = 181,
+			["poiIndex"] = 3,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 4,
 			["nodeIndex"] = 182,
+			["poiIndex"] = 4,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 5,
 			["nodeIndex"] = 183,
+			["poiIndex"] = 5,
 		},
 	},
 	[155] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 5,
 			["nodeIndex"] = 128,
+			["poiIndex"] = 5,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 6,
 			["nodeIndex"] = 129,
+			["poiIndex"] = 6,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 7,
 			["nodeIndex"] = 130,
+			["poiIndex"] = 7,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 8,
 			["nodeIndex"] = 131,
+			["poiIndex"] = 8,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 9,
 			["nodeIndex"] = 132,
+			["poiIndex"] = 9,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 10,
 			["nodeIndex"] = 133,
+			["poiIndex"] = 10,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 11,
 			["nodeIndex"] = 134,
+			["poiIndex"] = 11,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 12,
 			["nodeIndex"] = 135,
+			["poiIndex"] = 12,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 13,
 			["nodeIndex"] = 136,
+			["poiIndex"] = 13,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 14,
 			["nodeIndex"] = 139,
+			["poiIndex"] = 14,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 15,
 			["nodeIndex"] = 140,
+			["poiIndex"] = 15,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 145,
+			["poiIndex"] = 27,
 		},
 		[13] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 146,
+			["poiIndex"] = 29,
 		},
 		[14] = 
 		{
-			["poiIndex"] = 39,
 			["nodeIndex"] = 184,
+			["poiIndex"] = 39,
 		},
 	},
 	[179] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 177,
+			["poiIndex"] = 20,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 178,
+			["poiIndex"] = 23,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 174,
+			["poiIndex"] = 24,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 175,
+			["poiIndex"] = 25,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 176,
+			["poiIndex"] = 26,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 121,
+			["poiIndex"] = 27,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 122,
+			["poiIndex"] = 28,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 29,
 			["nodeIndex"] = 123,
+			["poiIndex"] = 29,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 124,
+			["poiIndex"] = 30,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 33,
 			["nodeIndex"] = 127,
+			["poiIndex"] = 33,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 41,
 			["nodeIndex"] = 194,
+			["poiIndex"] = 41,
 		},
 		[12] = 
 		{
-			["poiIndex"] = 42,
 			["nodeIndex"] = 211,
+			["poiIndex"] = 42,
 		},
 	},
 	[20] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 47,
+			["poiIndex"] = 20,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 21,
 			["nodeIndex"] = 48,
+			["poiIndex"] = 21,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 49,
+			["poiIndex"] = 22,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 171,
+			["poiIndex"] = 23,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 50,
+			["poiIndex"] = 24,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 51,
+			["poiIndex"] = 26,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 52,
+			["poiIndex"] = 27,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 53,
+			["poiIndex"] = 28,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 30,
 			["nodeIndex"] = 78,
+			["poiIndex"] = 30,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 31,
 			["nodeIndex"] = 85,
+			["poiIndex"] = 31,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 39,
 			["nodeIndex"] = 192,
+			["poiIndex"] = 39,
 		},
 	},
 	[4] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 20,
 			["nodeIndex"] = 189,
+			["poiIndex"] = 20,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 22,
 			["nodeIndex"] = 14,
+			["poiIndex"] = 22,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 23,
 			["nodeIndex"] = 15,
+			["poiIndex"] = 23,
 		},
 		[4] = 
 		{
-			["poiIndex"] = 24,
 			["nodeIndex"] = 16,
+			["poiIndex"] = 24,
 		},
 		[5] = 
 		{
-			["poiIndex"] = 25,
 			["nodeIndex"] = 22,
+			["poiIndex"] = 25,
 		},
 		[6] = 
 		{
-			["poiIndex"] = 26,
 			["nodeIndex"] = 23,
+			["poiIndex"] = 26,
 		},
 		[7] = 
 		{
-			["poiIndex"] = 27,
 			["nodeIndex"] = 18,
+			["poiIndex"] = 27,
 		},
 		[8] = 
 		{
-			["poiIndex"] = 28,
 			["nodeIndex"] = 19,
+			["poiIndex"] = 28,
 		},
 		[9] = 
 		{
-			["poiIndex"] = 35,
 			["nodeIndex"] = 31,
+			["poiIndex"] = 35,
 		},
 		[10] = 
 		{
-			["poiIndex"] = 42,
 			["nodeIndex"] = 56,
+			["poiIndex"] = 42,
 		},
 		[11] = 
 		{
-			["poiIndex"] = 43,
 			["nodeIndex"] = 17,
+			["poiIndex"] = 43,
 		},
 	},
 	[293] = 
 	{
 		[1] = 
 		{
-			["poiIndex"] = 4,
 			["nodeIndex"] = 138,
+			["poiIndex"] = 4,
 		},
 		[2] = 
 		{
-			["poiIndex"] = 6,
 			["nodeIndex"] = 179,
+			["poiIndex"] = 6,
 		},
 		[3] = 
 		{
-			["poiIndex"] = 7,
 			["nodeIndex"] = 180,
+			["poiIndex"] = 7,
 		},
-	}
+	},
 }
 -- cache for formatted wayshrine names
 local _nodeNameCache = {}

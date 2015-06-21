@@ -1,9 +1,9 @@
-# ESOFasterTravel v2.0.1
+# ESOFasterTravel v2.0.2
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.1.zip)
+[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.2.zip)
 <!---
 [Try the latest beta version (2.0.0)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 -->
@@ -32,7 +32,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.1.zip)
+1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.2.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -59,6 +59,9 @@ Usage
 
 Recent Change Log
 =============
+* **Version 2.0.2**
+  * Added Craglorn Trial wayshrine support.
+  * Added teleport error detection and attempt next player upon failure when teleporting by zone name.
 * **Version 2.0.1**
   * Fixed intermittent display of incorrect focussed quest icon
   * Removed prefix from Cyrodiil queue status displays. 
