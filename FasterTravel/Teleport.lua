@@ -211,6 +211,32 @@ local function TeleportToPlayer(playerName)
 	return true,playerName
 end
 
+local function IsPartialMatch(lowerZoneName,lowerKey)
+	return false 
+end
+
+local function GetClosestGuildLookup(lowerZoneName)
+
+	local lookups = GetZonesGuildLookup()
+
+	local lookup = lookups[lowerZoneName]
+	
+	if lookup == nil then 
+		for k,v in pairs(lookups) do
+			if IsPartialMatch(lowerZoneName,k) == true then 
+				lookup = v
+				break
+			end 
+		end
+	end 
+	
+	if lookup == nil then
+		return {}
+	end
+	
+	return lookup
+end
+
 local function GetTeleportIterator(zoneName)
 
 	local lowerZoneName = string.lower(zoneName)
@@ -218,7 +244,7 @@ local function GetTeleportIterator(zoneName)
 	local locTables = { 
 		Utils.where(GetGroupInfo(),function(v) return string.lower(v.zoneName) == lowerZoneName end),
 		Utils.where(GetFriendsInfo(),function(v) return string.lower(v.zoneName) == lowerZoneName end),
-		GetZonesGuildLookup()[lowerZoneName] or {}
+		GetClosestGuildLookup(lowerZoneName) or {}
 	}
 	
 	local tbl = 0

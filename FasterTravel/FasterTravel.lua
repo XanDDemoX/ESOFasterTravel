@@ -83,7 +83,7 @@ init(function()
 	local _locations
 	local _locationsLookup
 
-	local _settings = {recent={},locationOrder = Location.Data.LocationOrder.A_Z, locationDirection = Location.Data.LocationDirection.ASCENDING}
+	local _settings = {recent={},favourites={},locationOrder = Location.Data.LocationOrder.A_Z, locationDirection = Location.Data.LocationDirection.ASCENDING}
 	local _settingsVersion = "7"
 	
 	_settings = ZO_SavedVars:New("FasterTravel_SavedVariables", _settingsVersion, "", _settings, nil)
@@ -101,7 +101,11 @@ init(function()
 	
 	local recentTable = Utils.map(_settings.recent,function(v) return {name=v.name,nodeIndex=v.nodeIndex} end)
 	
-	local recentList = f.RecentList(recentTable,"nodeIndex",5)
+	local favouritesTable = Utils.map(_settings.favourites,function(v) return {name=v.name,nodeIndex=v.nodeIndex} end)
+	
+	local recentList = f.List(recentTable,"nodeIndex",5)
+	
+	local favouritesList = f.List(favouritesTable,"nodeIndex",15)
 	
 	local currentFaction
 	local locationsDirty = true
@@ -109,15 +113,37 @@ init(function()
 	local function GetZoneLocation(...)
 		return Location.Data.GetZoneLocation(_locationsLookup,...)
 	end
+	
+	local function UpdateSavedVarTable(tbl,list,func)
+		local i = 0
+		for v in list:items() do
+			i = i + 1
+			tbl[i] = func(v) 
+		end
+	end
+	
+	local function UpdateFavouritesSavedVar()
+		local favourites = {}
+		
+		UpdateSavedVarTable(favourites,favouritesList,function(v) return {nodeIndex=v.nodeIndex}  end)
+		
+		_settings.favourites = favourites
+	end 
+	
+	local function UpdateRecentSavedVar()
+		local recent = {}
+		
+		UpdateSavedVarTable(recent,recentList,function(v) return {nodeIndex=v.nodeIndex}  end)
+		
+		_settings.recent = recent
+	end
+	
+
 		
 	local function PushRecent(nodeIndex)
 		recentList:push("nodeIndex",{nodeIndex=nodeIndex})
-		_settings.recent = {}
-		local i = 0
-		for v in recentList:items() do
-			i = i + 1
-			_settings.recent[i] = {nodeIndex=v.nodeIndex}
-		end
+		
+		UpdateRecentSavedVar()
 	end
 
 	local function SetLocationsDirty()
@@ -304,7 +330,30 @@ init(function()
 		
 		RefreshDirectionDropDown(order,direction)
 	end
-
+	
+	local function AddFavourite(nodeIndex)
+		favouritesList:add("nodeIndex",{nodeIndex=nodeIndex})
+		
+		SetQuestsDirty()
+		SetWayshrinesDirty()		
+		
+		UpdateFavouritesSavedVar()
+		
+		RefreshWayshrinesIfRequired()
+		RefreshQuestsIfRequired()
+	end 
+	
+	local function RemoveFavourite(nodeIndex)
+		favouritesList:remove("nodeIndex",{nodeIndex=nodeIndex})
+		
+		SetQuestsDirty()
+		SetWayshrinesDirty()		
+		
+		UpdateFavouritesSavedVar()
+		
+		RefreshWayshrinesIfRequired()
+		RefreshQuestsIfRequired()
+	end
 	-- refresh to init campaigns
 	FasterTravel.Campaign.RefreshIfRequired()
 
@@ -484,7 +533,7 @@ init(function()
 	
 	_locations = {} 
 	
-	wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList)
+	wayshrinesTab = FasterTravel.MapTabWayshrines(wayshrineControl,_locations,_locationsLookup,recentList,{list = favouritesList, add= AddFavourite, remove=RemoveFavourite})
 	
 	playersTab = FasterTravel.MapTabPlayers(playersControl)
 	questTracker = FasterTravel.QuestTracker(_locations,_locationsLookup,wayshrinesTab)

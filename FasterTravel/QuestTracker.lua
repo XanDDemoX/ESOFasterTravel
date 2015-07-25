@@ -250,7 +250,8 @@ local function RefreshCategories(categories,locations,locationsLookup,quests,cat
 	
 	-- recent icon 
 	SetIcon(categoriesTable[1],"/esoui/art/icons/poi/poi_wayshrine_complete.dds",_categoryIcon)
-	
+	-- favourites icon 
+	SetIcon(categoriesTable[2],"/esoui/art/icons/poi/poi_wayshrine_complete.dds",_categoryIcon)
 	-- set icons
 	for i,d in ipairs(categoriesTable) do
 		zIdx = d.zoneIndex or d.curZoneIndex
@@ -287,19 +288,19 @@ local function RefreshCategories(categories,locations,locationsLookup,quests,cat
 	
 end
 
-local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup)
+local function ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup,faveLookup)
 
 	if currentZoneIndex == nil or loc == nil or curLookup == nil or zoneLookup == nil then return end 
 
 	if loc.zoneIndex == currentZoneIndex then
-		ClearIcons(curLookup,recLookup)
+		ClearIcons(curLookup,recLookup,faveLookup)
 	end
 	
 	local lookup = zoneLookup[loc.zoneIndex]
 	
 	if lookup == nil then return end 
 	
-	ClearIcons(lookup,recLookup)
+	ClearIcons(lookup,recLookup,faveLookup)
 end
 
 local function IsQuestValidForZone(quest,loc)
@@ -307,7 +308,7 @@ local function IsQuestValidForZone(quest,loc)
  return zoneIndex == loc.zoneIndex or (questType == QUEST_TYPE_MAIN_STORY or questType == QUEST_TYPE_CRAFTING)
 end
 
-local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recLookup,faveLookup)
 
 	if loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 	
@@ -333,7 +334,7 @@ local function RefreshQuests(loc,tab,curLookup,zoneLookup,quests,wayshrines,recL
 										return SetQuestIcon(data,closest,result)
 									end
 						
-						if UpdateLookups(closest.nodeIndex,updateFunc,curLookup,zoneLookup[closest.zoneIndex],recLookup) == true then
+						if UpdateLookups(closest.nodeIndex,updateFunc,curLookup,zoneLookup[closest.zoneIndex],recLookup,faveLookup) == true then
 							tab:RefreshControl()
 						end
 						
@@ -489,11 +490,11 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		
 		local loc = Location.Data.GetZoneLocation(_locationsLookup)
 			
-		local curLookup,zoneLookup,recLookup = lookups.current,lookups.zone,lookups.recent
+		local curLookup,zoneLookup,recLookup,faveLookup = lookups.current,lookups.zone,lookups.recent,lookups.favourites
 		
 		self:HideToolTip()
 		
-		ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup)
+		ClearQuestIcons(currentZoneIndex,loc,curLookup,zoneLookup,recLookup,faveLookup)
 		
 		local quests = Quest.GetQuests()
 		
@@ -504,7 +505,7 @@ function QuestTracker:init(locations,locationsLookup,tab)
 		local wayshrines, dataType = GetWayshrinesData(_tab:IsRecall(),_tab:IsKeep(),_tab:InCyrodiil(),loc)
 		
 		if dataType ~= 2 then -- don't refresh quests for campaigns 
-			RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup)
+			RefreshQuests(loc,_tab,curLookup,zoneLookup,quests,wayshrines,recLookup,faveLookup)
 		end
 		
 		if dataType ~= false then 
