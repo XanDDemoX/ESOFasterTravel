@@ -551,10 +551,37 @@ init(function()
 	
 	SetCurrentZoneMapIndexes()
 	
+	-- scenes which don't hide themselves on EndInteration.
+	local _interactionScenes = {"smithing"}
+	local function EndCurrentInteraction()
+		
+		local interaction = GetInteractionType()
+	
+		if interaction == nil then return end 
+		
+		local provisionSceneName = ZO_Provisioner_GetVisibleSceneName()
+		
+		if provisionScene ~= nil then 
+			SCENE_MANAGER:Hide(provisionScene)
+		else
+			for i,sceneName in ipairs(_interactionScenes) do 
+				if SCENE_MANAGER:IsShowing(sceneName) then 
+					SCENE_MANAGER:Hide(sceneName)
+				end
+			end 
+		end 
+		
+		EndInteraction(interaction)
+		
+	end 
+	
 	SLASH_COMMANDS["/goto"] = function(args)
 		if Utils.stringIsEmpty(args) == true then return end
 		
 		args = Utils.stringTrim(args)
+		
+		-- fix for teleport bug during interactions
+		EndCurrentInteraction()
 		
 		local result,name
 		if Teleport.IsPlayerTeleportable(args) == true then
