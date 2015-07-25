@@ -1,9 +1,9 @@
-# ESOFasterTravel v2.0.2
+# ESOFasterTravel v2.0.3
 An addon for The Elder Scrolls Online which improves the usability of in game travel and teleporting between zones, wayshrines, friends, group and guild members by extending the default world map information/navigation control.
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
-[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.2.zip)
+[Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.3.zip)
 <!---
 [Try the latest beta version (2.0.0)](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel-latest-beta.zip)
 -->
@@ -13,16 +13,17 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   * Displays quest objective tooltips when the mouse is over quest icons.
   * Fast travel to or recall a recently used wayshrine
   * Fast travel to or recall a wayshrine in the current zone
-  * Fast travel to or recall a wayshrine in another
+  * Fast travel to or recall a wayshrine in another zone
   * All fast travels and recalls use the appropriate standard confirmation dialog.
   * Now supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
+  * New Favourites Category!
 * **Players**
   * Teleport to players in your group
   * Teleport to players on your friends list
   * Teleport to zones using players on your friends list, in your group or guild
   * Teleport to players in your any of your guilds
   
-  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image08-cropped.jpg "Wayshrines Tab")
+  ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image16-cropped.jpg "Wayshrines Tab")
 
   ![Image of Faster Travel's wayshrines tab](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/images/image12-cropped.jpg "Wayshrines Tab")
   
@@ -32,7 +33,7 @@ FasterTravel adds two new tabs to the default world map information/navigation c
   
 Installation
 =============
-1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.2.zip)
+1. [Download the latest stable version](https://raw.githubusercontent.com/XanDDemoX/ESOFasterTravel/master/zips/Faster%20Travel%202.0.3.zip)
 2. Extract or copy the "FasterTravel" folder into your addons folder:
 
 "Documents\Elder Scrolls Online\live\Addons"
@@ -49,6 +50,7 @@ For example:
 Usage
 =============
 * Use a wayshrine or open the world map.
+* Right Click in Wayshrines Menu to Add or Remove Favourites.
 
 * Slash commands
   * /goto zoneName - attempts to teleport to a zone via a player.
@@ -59,6 +61,9 @@ Usage
 
 Recent Change Log
 =============
+* ** Version 2.0.3**
+  * Added favourites category and right click menu.
+  * Added partial Zone Name matching for /goto command
 * **Version 2.0.2**
   * Added Craglorn Trial wayshrine support.
   * Added teleport error detection and attempt next player upon failure when teleporting by zone name.

@@ -1,7 +1,9 @@
-ESOFasterTravel v2.0.2
+ESOFasterTravel v2.0.3
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
+
+New Favourite Wayshrines Category!
 
 Now supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
 
@@ -23,8 +25,10 @@ Usage
 
 Use a wayshrine or open the world map.
 
+Right Click in Wayshrines Menu to Add or Remove Favourites.
+
 Slash Commands
-/goto zoneName - attempts to teleport to a zone via a player.
+/goto zoneName - attempts to teleport to a zone via a player. (zoneName can be partial)
 /goto @PlayerName - attempts to teleport to a player.
 /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
 /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
@@ -32,6 +36,10 @@ Slash Commands
 
 
 Recent Change Log
+Version 2.0.3
+	
+	- Added favourites category and right click menu.
+	- Added partial Zone Name matching for /goto command
 
 Version 2.0.2
 

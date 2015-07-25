@@ -212,7 +212,12 @@ local function TeleportToPlayer(playerName)
 end
 
 local function IsPartialMatch(lowerZoneName,lowerKey)
-	return false 
+		
+	local strippedKey = lowerKey:gsub('%W','')
+-- matches without punctuation
+	if lowerZoneName == strippedKey then return true end
+--  key starts with string
+	return string.sub(strippedKey,1,string.len(lowerZoneName))==lowerZoneName
 end
 
 local function GetClosestGuildLookup(lowerZoneName)
@@ -222,8 +227,9 @@ local function GetClosestGuildLookup(lowerZoneName)
 	local lookup = lookups[lowerZoneName]
 	
 	if lookup == nil then 
+		local strippedZoneName = lowerZoneName:gsub('%W','')
 		for k,v in pairs(lookups) do
-			if IsPartialMatch(lowerZoneName,k) == true then 
+			if IsPartialMatch(strippedZoneName,k) == true then 
 				lookup = v
 				break
 			end 
