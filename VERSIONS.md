@@ -1,5 +1,8 @@
 Change Log
 =============
+* ** Version 2.0.3**
+  * Added favourites category and right click menu.
+  * Added partial Zone Name matching for /goto command
 * **Version 2.0.2**
   * Added Craglorn Trial wayshrine support.
   * Added teleport error detection and attempt next player upon failure when teleporting by zone name.
