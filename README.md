@@ -61,9 +61,9 @@ Usage
 
 Recent Change Log
 =============
-* ** Version 2.0.4**
+* **Version 2.0.4**
   * Fixed teleport during interaction fall through map bug. 
-* ** Version 2.0.3**
+* **Version 2.0.3**
   * Added favourites category and right click menu.
   * Added partial Zone Name matching for /goto command
 * **Version 2.0.2**
