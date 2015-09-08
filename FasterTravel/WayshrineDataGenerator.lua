@@ -59,7 +59,7 @@ local function UpdateLookup(lookup)
 	local harborage = lookup["the harborage"]
 	if harborage ~= nil and harborage.nodes ~= nil then 
 		-- not convinced order can be relied on >_<
-		harborage.nodes = CreateNodesLookup(harborage.nodes,2,179,9)
+		harborage.nodes = CreateNodesLookup(harborage.nodes,2,178,9)
 	end
 	
 	return lookup

@@ -53,7 +53,7 @@ Usage
 * Right Click in Wayshrines Menu to Add or Remove Favourites.
 
 * Slash commands
-  * /goto zoneName - attempts to teleport to a zone via a player.
+  * /goto zoneName - attempts to teleport to a zone via a player. (zoneName can be partial)
   * /goto @PlayerName - attempts to teleport to a player.
   * /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
   * /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
@@ -61,6 +61,8 @@ Usage
 
 Recent Change Log
 =============
+* **Version 2.0.5**
+  * Updated for API 100012 - Thanks Garkin!
 * **Version 2.0.4**
   * Fixed teleport during interaction fall through map bug. 
 * **Version 2.0.3**

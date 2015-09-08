@@ -74,37 +74,37 @@ local _locationsList = {
 	},
 	[5] = 
 	{
-		["zoneIndex"] = 18,
+		["zoneIndex"] = 17,
 		["mapIndex"] = 5,
 		["tile"] = "art/maps/alikr/alikr_base_0.dds",
 	},
 	[6] = 
 	{
-		["zoneIndex"] = 15,
+		["zoneIndex"] = 14,
 		["mapIndex"] = 6,
 		["tile"] = "art/maps/bangkorai/bangkorai_base_0.dds",
 	},
 	[7] = 
 	{
-		["zoneIndex"] = 181,
+		["zoneIndex"] = 180,
 		["mapIndex"] = 7,
 		["tile"] = "art/maps/grahtwood/grahtwood_base_0.dds",
 	},
 	[8] = 
 	{
-		["zoneIndex"] = 12,
+		["zoneIndex"] = 11,
 		["mapIndex"] = 8,
 		["tile"] = "art/maps/malabaltor/malabaltor_base_0.dds",
 	},
 	[9] = 
 	{
-		["zoneIndex"] = 20,
+		["zoneIndex"] = 19,
 		["mapIndex"] = 9,
 		["tile"] = "art/maps/shadowfen/shadowfen_base_0.dds",
 	},
 	[10] = 
 	{
-		["zoneIndex"] = 11,
+		["zoneIndex"] = 10,
 		["mapIndex"] = 10,
 		["tile"] = "art/maps/deshaan/deshaan_base_0.dds",
 	},
@@ -116,73 +116,73 @@ local _locationsList = {
 	},
 	[12] = 
 	{
-		["zoneIndex"] = 17,
+		["zoneIndex"] = 16,
 		["mapIndex"] = 12,
 		["tile"] = "art/maps/therift/therift_base_0.dds",
 	},
 	[13] = 
 	{
-		["zoneIndex"] = 16,
+		["zoneIndex"] = 15,
 		["mapIndex"] = 13,
 		["tile"] = "art/maps/eastmarch/eastmarch_base_0.dds",
 	},
 	[14] = 
 	{
-		["zoneIndex"] = 38,
+		["zoneIndex"] = 37,
 		["mapIndex"] = 14,
 		["tile"] = "art/maps/cyrodiil/ava_whole_0.dds",
 	},
 	[15] = 
 	{
-		["zoneIndex"] = 179,
+		["zoneIndex"] = 178,
 		["mapIndex"] = 15,
 		["tile"] = "art/maps/auridon/auridon_base_0.dds",
 	},
 	[16] = 
 	{
-		["zoneIndex"] = 19,
+		["zoneIndex"] = 18,
 		["mapIndex"] = 16,
 		["tile"] = "art/maps/greenshade/greenshade_base_0.dds",
 	},
 	[17] = 
 	{
-		["zoneIndex"] = 180,
+		["zoneIndex"] = 179,
 		["mapIndex"] = 17,
 		["tile"] = "art/maps/reapersmarch/reapersmarch_base_0.dds",
 	},
 	[18] = 
 	{
-		["zoneIndex"] = 111,
+		["zoneIndex"] = 110,
 		["mapIndex"] = 18,
 		["tile"] = "art/maps/stonefalls/balfoyen_base_0.dds",
 	},
 	[19] = 
 	{
-		["zoneIndex"] = 293,
+		["zoneIndex"] = 292,
 		["mapIndex"] = 19,
 		["tile"] = "art/maps/Glenumbra/strosmkai_base_0.dds",
 	},
 	[20] = 
 	{
-		["zoneIndex"] = 294,
+		["zoneIndex"] = 293,
 		["mapIndex"] = 20,
 		["tile"] = "art/maps/Glenumbra/betnihk_base_0.dds",
 	},
 	[21] = 
 	{
-		["zoneIndex"] = 295,
+		["zoneIndex"] = 294,
 		["mapIndex"] = 21,
 		["tile"] = "art/maps/auridon/khenarthisroost_base_0.dds",
 	},
 	[22] = 
 	{
-		["zoneIndex"] = 110,
+		["zoneIndex"] = 109,
 		["mapIndex"] = 22,
 		["tile"] = "art/maps/stonefalls/bleakrock_base_0.dds",
 	},
 	[23] = 
 	{
-		["zoneIndex"] = 155,
+		["zoneIndex"] = 154,
 		["mapIndex"] = 23,
 		["tile"] = "art/maps/coldharbor/coldharbour_base_0.dds",
 	},
@@ -200,7 +200,7 @@ local _locationsList = {
 	},
 	[26] =
 	{ -- manually added
-		["zoneIndex"] = 100,
+		["zoneIndex"] = 99,
 		["tile"] = "art/maps/guildmaps/eyevea_base_0.dds",
 		["click"] = function()        
 			zo_callLater(function() 
@@ -211,7 +211,7 @@ local _locationsList = {
 	}
 }
 
-local ZONE_INDEX_CYRODIIL = 38
+local ZONE_INDEX_CYRODIIL = 37
 
 local LocationOrder = {
 	A_Z = 1,

@@ -74,8 +74,8 @@ local function AddRecallToTooltip(tooltip,inCyrodiil)
 		else
 		
 			local text = zo_strformat(SI_TOOLTIP_WAYSHRINE_RECALL_COOLDOWN, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
-			
-            AddTextToTooltip(tooltip,text, ZO_HIGHLIGHT_TEXT)
+
+			AddTextToTooltip(tooltip,text, ZO_HIGHLIGHT_TEXT)
 		
 		end
 		
@@ -85,7 +85,7 @@ end
 local function SetRecallAmount(tooltip,amount,hasEnough)
 	local currencyControl = GetControl(GetControl(tooltip, "SellPrice"), "Currency")
 	if currencyControl ~= nil then 
-		ZO_CurrencyControl_SetSimpleCurrency(currencyControl, CURRENCY_TYPE_MONEY, amount, {showTooltips = false}, CURRENCY_DONT_SHOW_ALL, hasEnough)
+		ZO_CurrencyControl_SetSimpleCurrency(currencyControl, CURT_MONEY, amount, {showTooltips = false}, CURRENCY_DONT_SHOW_ALL, hasEnough)
 	end
 end
 

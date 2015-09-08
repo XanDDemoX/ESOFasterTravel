@@ -1,5 +1,7 @@
 Change Log
 =============
+* **Version 2.0.5**
+  * Updated for API 100012 - Thanks Garkin!
 * ** Version 2.0.4**
   * Fixed teleport during interaction fall through map bug. 
 * ** Version 2.0.3**

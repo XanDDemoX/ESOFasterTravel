@@ -156,7 +156,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 63,
 		},
 	},
-	[100] = 
+	[99] = 
 	{
 		[1] = 
 		{
@@ -227,7 +227,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 41,
 		},
 	},
-	[38] = 
+	[37] = 
 	{
 		[1] = 
 		{
@@ -260,7 +260,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 57,
 		},
 	},
-	[295] = 
+	[294] = 
 	{
 		[1] = 
 		{
@@ -356,7 +356,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 46,
 		},
 	},
-	[11] = 
+	[10] = 
 	{
 		[1] = 
 		{
@@ -424,7 +424,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 43,
 		},
 	},
-	[12] = 
+	[11] = 
 	{
 		[1] = 
 		{
@@ -477,7 +477,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 41,
 		},
 	},
-	[110] = 
+	[109] = 
 	{
 		[1] = 
 		{
@@ -485,7 +485,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 3,
 		},
 	},
-	[111] = 
+	[110] = 
 	{
 		[1] = 
 		{
@@ -503,7 +503,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 4,
 		},
 	},
-	[16] = 
+	[15] = 
 	{
 		[1] = 
 		{
@@ -566,7 +566,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 41,
 		},
 	},
-	[17] = 
+	[16] = 
 	{
 		[1] = 
 		{
@@ -634,7 +634,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 42,
 		},
 	},
-	[18] = 
+	[17] = 
 	{
 		[1] = 
 		{
@@ -702,7 +702,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 43,
 		},
 	},
-	[19] = 
+	[18] = 
 	{
 		[1] = 
 		{
@@ -760,7 +760,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 39,
 		},
 	},
-	[180] = 
+	[179] = 
 	{
 		[1] = 
 		{
@@ -813,7 +813,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 39,
 		},
 	},
-	[181] = 
+	[180] = 
 	{
 		[1] = 
 		{
@@ -871,7 +871,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 41,
 		},
 	},
-	[15] = 
+	[14] = 
 	{
 		[1] = 
 		{
@@ -934,7 +934,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 41,
 		},
 	},
-	[294] = 
+	[293] = 
 	{
 		[1] = 
 		{
@@ -952,7 +952,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 5,
 		},
 	},
-	[155] = 
+	[154] = 
 	{
 		[1] = 
 		{
@@ -1025,7 +1025,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 39,
 		},
 	},
-	[179] = 
+	[178] = 
 	{
 		[1] = 
 		{
@@ -1088,7 +1088,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 42,
 		},
 	},
-	[20] = 
+	[19] = 
 	{
 		[1] = 
 		{
@@ -1204,7 +1204,7 @@ local _zoneNodeLookup = {
 			["poiIndex"] = 43,
 		},
 	},
-	[293] = 
+	[292] = 
 	{
 		[1] = 
 		{

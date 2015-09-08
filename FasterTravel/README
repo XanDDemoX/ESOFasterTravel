@@ -1,4 +1,4 @@
-ESOFasterTravel v2.0.3
+ESOFasterTravel v2.0.5
 By XanDDemoX
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
@@ -37,12 +37,16 @@ Slash Commands
 
 Recent Change Log
 
+Version 2.0.5
+	
+	- Updated for API 100012 - Thanks Garkin!
+
 Version 2.0.4
 	
 	- Fixed teleport during interaction fall through map bug. 
-	
+
 Version 2.0.3
-	
+
 	- Added favourites category and right click menu.
 	- Added partial Zone Name matching for /goto command
 
@@ -58,6 +62,6 @@ Version 2.0.1
 	- Fixed potential error message when clearing icons on world map open.
 	- Fixed AD faction order table in LocationData.
 
-	
+
 DISCLAIMER
 THIS ADDON IS NOT CREATED BY, ENDORSED, MAINTAINED OR SUPPORTED BY ZENIMAX OR ANY OF ITS AFFLIATES.

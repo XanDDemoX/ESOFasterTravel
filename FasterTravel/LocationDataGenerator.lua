@@ -5,7 +5,7 @@ local Utils = FasterTravel.Utils
 local function AddManualLocations(locations)
 
 	local loc = {
-		["zoneIndex"] = 100,
+		["zoneIndex"] = 99,
 		["tile"] = "art/maps/guildmaps/eyevea_base_0.dds"
 	}
 
@@ -13,17 +13,17 @@ local function AddManualLocations(locations)
 end 
 
 local function GetLocations(callback)
-    local locations = {}
-	
-    for i = 1, GetNumMaps() do
-        local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
+	local locations = {}
+
+	for i = 1, GetNumMaps() do
+		local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
 		if Utils.stringIsEmpty(mapName) == false then
 			table.insert(locations,{mapIndex = i, zoneIndex=zoneId})
 		end
-    end
-	
+	end
+
 	AddManualLocations(locations)
-	
+
 	local curIndex
 	local curZoneIndex
 	local curZoneKey
@@ -36,7 +36,7 @@ local function GetLocations(callback)
 	local complete = false 
 
 	return function()
-		
+
 		if complete == true then 
 			return 
 		end
