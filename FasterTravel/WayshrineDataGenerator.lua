@@ -195,5 +195,7 @@ local function Generate(locations)
 end 
 
 FasterTravel.WayshrineDataGenerator = {
-	Generate = Generate
+	Generate = Generate,
+	GetNodesZoneLookup = GetNodesZoneLookup,
+	GetNodesByZoneIndex = GetNodesByZoneIndex,
 }

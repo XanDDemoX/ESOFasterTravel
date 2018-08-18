@@ -1,5 +1,7 @@
-ESOFasterTravel v2.0.5
+ESOFasterTravel v2.1.2
 By XanDDemoX
+Last updated by Valandil, 2018-08-17
+Last updated by @SimonIllyan, 2018-06-28
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 
@@ -37,6 +39,16 @@ Slash Commands
 
 Recent Change Log
 
+Version 2.1.1, 2.1.2 (by Valandil 2018-08-17)
+
+        - Updated for API 100024
+
+Version 2.1.0 (by @SimonIllyan, 2018-06-28)
+
+	- Updated for API 100023
+	- Added locations from chapters and DLCs - Vvardenfell, Summerset, Clockwork City, etc.
+	- Fixed a bug causing F5 (previev house) to fail, thanks to WfD.
+	
 Version 2.0.5
 	
 	- Updated for API 100012 - Thanks Garkin!

@@ -16,7 +16,9 @@ local _factionZoneOrderLookup = {
 	
 	[ALLIANCE_ALL] = {"cyrodiil"},
 	
-	[ALLIANCE_SHARED] = {"coldharbor","craglorn","eyevea"},
+	[ALLIANCE_SHARED] = {	"coldharbor", "craglorn", "eyevea", 
+							"artaeum", "clockwork", "summerset", "vvardenfell", 
+							"hewsbane", "goldcoast", "wrothgar"},
 	
 	[ALLIANCE_WORLD] = {"tamriel","mundus"}
 	
@@ -48,157 +50,39 @@ local _factionAllianceIcons = {
 
 -- generated locations list
 local _locationsList = {
-	[1] = 
-	{
-		["zoneIndex"] = -2147483648,
-		["mapIndex"] = 1,
-		["tile"] = "art/maps/tamriel/tamriel_0.dds",
-	},
-	[2] = 
-	{
-		["zoneIndex"] = 2,
-		["mapIndex"] = 2,
-		["tile"] = "art/maps/glenumbra/glenumbra_base_0.dds",
-	},
-	[3] = 
-	{
-		["zoneIndex"] = 5,
-		["mapIndex"] = 3,
-		["tile"] = "art/maps/rivenspire/rivenspire_base_0.dds",
-	},
-	[4] = 
-	{
-		["zoneIndex"] = 4,
-		["mapIndex"] = 4,
-		["tile"] = "art/maps/stormhaven/stormhaven_base_0.dds",
-	},
-	[5] = 
-	{
-		["zoneIndex"] = 17,
-		["mapIndex"] = 5,
-		["tile"] = "art/maps/alikr/alikr_base_0.dds",
-	},
-	[6] = 
-	{
-		["zoneIndex"] = 14,
-		["mapIndex"] = 6,
-		["tile"] = "art/maps/bangkorai/bangkorai_base_0.dds",
-	},
-	[7] = 
-	{
-		["zoneIndex"] = 180,
-		["mapIndex"] = 7,
-		["tile"] = "art/maps/grahtwood/grahtwood_base_0.dds",
-	},
-	[8] = 
-	{
-		["zoneIndex"] = 11,
-		["mapIndex"] = 8,
-		["tile"] = "art/maps/malabaltor/malabaltor_base_0.dds",
-	},
-	[9] = 
-	{
-		["zoneIndex"] = 19,
-		["mapIndex"] = 9,
-		["tile"] = "art/maps/shadowfen/shadowfen_base_0.dds",
-	},
-	[10] = 
-	{
-		["zoneIndex"] = 10,
-		["mapIndex"] = 10,
-		["tile"] = "art/maps/deshaan/deshaan_base_0.dds",
-	},
-	[11] = 
-	{
-		["zoneIndex"] = 9,
-		["mapIndex"] = 11,
-		["tile"] = "art/maps/stonefalls/stonefalls_base_0.dds",
-	},
-	[12] = 
-	{
-		["zoneIndex"] = 16,
-		["mapIndex"] = 12,
-		["tile"] = "art/maps/therift/therift_base_0.dds",
-	},
-	[13] = 
-	{
-		["zoneIndex"] = 15,
-		["mapIndex"] = 13,
-		["tile"] = "art/maps/eastmarch/eastmarch_base_0.dds",
-	},
-	[14] = 
-	{
-		["zoneIndex"] = 37,
-		["mapIndex"] = 14,
-		["tile"] = "art/maps/cyrodiil/ava_whole_0.dds",
-	},
-	[15] = 
-	{
-		["zoneIndex"] = 178,
-		["mapIndex"] = 15,
-		["tile"] = "art/maps/auridon/auridon_base_0.dds",
-	},
-	[16] = 
-	{
-		["zoneIndex"] = 18,
-		["mapIndex"] = 16,
-		["tile"] = "art/maps/greenshade/greenshade_base_0.dds",
-	},
-	[17] = 
-	{
-		["zoneIndex"] = 179,
-		["mapIndex"] = 17,
-		["tile"] = "art/maps/reapersmarch/reapersmarch_base_0.dds",
-	},
-	[18] = 
-	{
-		["zoneIndex"] = 110,
-		["mapIndex"] = 18,
-		["tile"] = "art/maps/stonefalls/balfoyen_base_0.dds",
-	},
-	[19] = 
-	{
-		["zoneIndex"] = 292,
-		["mapIndex"] = 19,
-		["tile"] = "art/maps/Glenumbra/strosmkai_base_0.dds",
-	},
-	[20] = 
-	{
-		["zoneIndex"] = 293,
-		["mapIndex"] = 20,
-		["tile"] = "art/maps/Glenumbra/betnihk_base_0.dds",
-	},
-	[21] = 
-	{
-		["zoneIndex"] = 294,
-		["mapIndex"] = 21,
-		["tile"] = "art/maps/auridon/khenarthisroost_base_0.dds",
-	},
-	[22] = 
-	{
-		["zoneIndex"] = 109,
-		["mapIndex"] = 22,
-		["tile"] = "art/maps/stonefalls/bleakrock_base_0.dds",
-	},
-	[23] = 
-	{
-		["zoneIndex"] = 154,
-		["mapIndex"] = 23,
-		["tile"] = "art/maps/coldharbor/coldharbour_base_0.dds",
-	},
-	[24] = 
-	{
-		["zoneIndex"] = -2147483648,
-		["mapIndex"] = 24,
-		["tile"] = "art/maps/tamriel/mundus_base_0.dds",
-	},
-	[25] = 
-	{
-		["zoneIndex"] = 353,
-		["mapIndex"] = 25,
-		["tile"] = "art/maps/craglorn/craglorn_base_0.dds",
-	},
-	[26] =
+	{["name"] = "Tamriel",			["subzone"] = "tamriel",		["zone"] = "tamriel",			["key"] = "tamriel/tamriel",			["zoneIndex"] = -2147483648,	["mapIndex"] = 1,	["tile"] = "art/maps/tamriel/tamriel_0.dds",				},
+	{["name"] = "Glenumbra",		["subzone"] = "glenumbra",		["zone"] = "glenumbra",			["key"] = "glenumbra/glenumbra",		["zoneIndex"] = 2,				["mapIndex"] = 2,	["tile"] = "art/maps/glenumbra/glenumbra_base_0.dds",		},
+	{["name"] = "Rivenspire",		["subzone"] = "rivenspire",		["zone"] = "rivenspire",		["key"] = "rivenspire/rivenspire",		["zoneIndex"] = 5,				["mapIndex"] = 3,	["tile"] = "art/maps/rivenspire/rivenspire_base_0.dds",		},
+	{["name"] = "Stormhaven",		["subzone"] = "stormhaven",		["zone"] = "stormhaven",		["key"] = "stormhaven/stormhaven",		["zoneIndex"] = 4,				["mapIndex"] = 4,	["tile"] = "art/maps/stormhaven/stormhaven_base_0.dds",		},
+	{["name"] = "Alik'r Desert",	["subzone"] = "alikr",			["zone"] = "alikr",				["key"] = "alikr/alikr",				["zoneIndex"] = 17,				["mapIndex"] = 5,	["tile"] = "art/maps/alikr/alikr_base_0.dds",				},
+	{["name"] = "Bangkorai",		["subzone"] = "bangkorai",		["zone"] = "bangkorai",			["key"] = "bangkorai/bangkorai",		["zoneIndex"] = 14,				["mapIndex"] = 6,	["tile"] = "art/maps/bangkorai/bangkorai_base_0.dds",		},
+	{["name"] = "Grahtwood",		["subzone"] = "grahtwood",		["zone"] = "grahtwood",			["key"] = "grahtwood/grahtwood",		["zoneIndex"] = 180,			["mapIndex"] = 7,	["tile"] = "art/maps/grahtwood/grahtwood_base_0.dds",		},
+	{["name"] = "Malabal Tor",		["subzone"] = "malabaltor",		["zone"] = "malabaltor",		["key"] = "malabaltor/malabaltor",		["zoneIndex"] = 11,				["mapIndex"] = 8,	["tile"] = "art/maps/malabaltor/malabaltor_base_0.dds",		},
+	{["name"] = "Shadowfen",		["subzone"] = "shadowfen",		["zone"] = "shadowfen",			["key"] = "shadowfen/shadowfen",		["zoneIndex"] = 19,				["mapIndex"] = 9,	["tile"] = "art/maps/shadowfen/shadowfen_base_0.dds",		},
+	{["name"] = "Deshaan",			["subzone"] = "deshaan",		["zone"] = "deshaan",			["key"] = "deshaan/deshaan",			["zoneIndex"] = 10,				["mapIndex"] = 10,	["tile"] = "art/maps/deshaan/deshaan_base_0.dds",			},
+	{["name"] = "Stonefalls",		["subzone"] = "stonefalls",		["zone"] = "stonefalls",		["key"] = "stonefalls/stonefalls",		["zoneIndex"] = 9,				["mapIndex"] = 11,	["tile"] = "art/maps/stonefalls/stonefalls_base_0.dds",		},
+	{["name"] = "The Rift",			["subzone"] = "therift",		["zone"] = "therift",			["key"] = "therift/therift",			["zoneIndex"] = 16,				["mapIndex"] = 12,	["tile"] = "art/maps/therift/therift_base_0.dds",			},
+	{["name"] = "Eastmarch",		["subzone"] = "eastmarch",		["zone"] = "eastmarch",			["key"] = "eastmarch/eastmarch",		["zoneIndex"] = 15,				["mapIndex"] = 13,	["tile"] = "art/maps/eastmarch/eastmarch_base_0.dds",		},
+	{["name"] = "Cyrodiil",			["subzone"] = "ava",			["zone"] = "cyrodiil",			["key"] = "cyrodiil/ava",				["zoneIndex"] = 37,				["mapIndex"] = 14,	["tile"] = "art/maps/cyrodiil/ava_whole_0.dds",				},
+	{["name"] = "Auridon",			["subzone"] = "auridon",		["zone"] = "auridon",			["key"] = "auridon/auridon",			["zoneIndex"] = 178,			["mapIndex"] = 15,	["tile"] = "art/maps/auridon/auridon_base_0.dds",			},
+	{["name"] = "Greenshade",		["subzone"] = "greenshade",		["zone"] = "greenshade",		["key"] = "greenshade/greenshade",		["zoneIndex"] = 18,				["mapIndex"] = 16,	["tile"] = "art/maps/greenshade/greenshade_base_0.dds",		},
+	{["name"] = "Reaper's March",	["subzone"] = "reapersmarch",	["zone"] = "reapersmarch",		["key"] = "reapersmarch/reapersmarch",	["zoneIndex"] = 179,			["mapIndex"] = 17,	["tile"] = "art/maps/reapersmarch/reapersmarch_base_0.dds",	},
+	{["name"] = "Bal Foyen",		["subzone"] = "balfoyen",		["zone"] = "stonefalls",		["key"] = "stonefalls/balfoyen",		["zoneIndex"] = 110,			["mapIndex"] = 18,	["tile"] = "art/maps/stonefalls/balfoyen_base_0.dds",		},
+	{["name"] = "Stros M'Kai",		["subzone"] = "strosmkai",		["zone"] = "glenumbra",			["key"] = "glenumbra/strosmkai",		["zoneIndex"] = 298,			["mapIndex"] = 19,	["tile"] = "art/maps/Glenumbra/strosmkai_base_0.dds",		},
+	{["name"] = "Betnikh",			["subzone"] = "betnihk",		["zone"] = "glenumbra",			["key"] = "glenumbra/betnihk",			["zoneIndex"] = 299,			["mapIndex"] = 20,	["tile"] = "art/maps/Glenumbra/betnihk_base_0.dds",			},
+	{["name"] = "Khenarthi's Roost",["subzone"] = "khenarthisroost",["zone"] = "auridon",			["key"] = "auridon/khenarthisroost",	["zoneIndex"] = 300,			["mapIndex"] = 21,	["tile"] = "art/maps/auridon/khenarthisroost_base_0.dds",	},
+	{["name"] = "Bleakrock Isle",	["subzone"] = "bleakrock",		["zone"] = "stonefalls",		["key"] = "stonefalls/bleakrock",		["zoneIndex"] = 109,			["mapIndex"] = 22,	["tile"] = "art/maps/stonefalls/bleakrock_base_0.dds",		},
+	{["name"] = "Coldharbour",		["subzone"] = "coldharbour",	["zone"] = "coldharbor",		["key"] = "coldharbor/coldharbour",		["zoneIndex"] = 154,			["mapIndex"] = 23,	["tile"] = "art/maps/coldharbor/coldharbour_base_0.dds",	},
+	{["name"] = "The Aurbis",		["subzone"] = "mundus",			["zone"] = "tamriel",			["key"] = "tamriel/mundus",				["zoneIndex"] = -2147483648,	["mapIndex"] = 24,	["tile"] = "art/maps/tamriel/mundus_base_0.dds",			},
+	{["name"] = "Craglorn",			["subzone"] = "craglorn",		["zone"] = "craglorn",			["key"] = "craglorn/craglorn",			["zoneIndex"] = 525,			["mapIndex"] = 25,	["tile"] = "art/maps/craglorn/craglorn_base_0.dds",			},
+	{["name"] = "Imperial City",	["subzone"] = "imperialcity",	["zone"] = "cyrodiil",			["key"] = "cyrodiil/imperialcity",		["zoneIndex"] = 340,			["mapIndex"] = 26,	["tile"] = "art/maps/cyrodiil/imperialcity_base_0.dds",		},
+	{["name"] = "Wrothgar",			["subzone"] = "wrothgar",		["zone"] = "wrothgar",			["key"] = "wrothgar/wrothgar",			["zoneIndex"] = 373,			["mapIndex"] = 27,	["tile"] = "art/maps/wrothgar/wrothgar_base_0.dds",			},
+	{["name"] = "Hew's Bane",		["subzone"] = "hewsbane",		["zone"] = "thievesguild",		["key"] = "thievesguild/hewsbane",		["zoneIndex"] = 467,			["mapIndex"] = 28,	["tile"] = "art/maps/thievesguild/hewsbane_base_0.dds",		},
+	{["name"] = "Gold Coast",		["subzone"] = "goldcoast",		["zone"] = "darkbrotherhood",	["key"] = "darkbrotherhood/goldcoast",	["zoneIndex"] = 473,			["mapIndex"] = 29,	["tile"] = "art/maps/darkbrotherhood/goldcoast_base_0.dds",	},
+	{["name"] = "Vvardenfell",		["subzone"] = "vvardenfell",	["zone"] = "vvardenfell",		["key"] = "vvardenfell/vvardenfell",	["zoneIndex"] = 492,			["mapIndex"] = 30,	["tile"] = "art/maps/vvardenfell/vvardenfell_base_0.dds",	},
+	{["name"] = "Clockwork City",	["subzone"] = "clockwork",		["zone"] = "clockwork",			["key"] = "clockwork/clockwork",		["zoneIndex"] = 614,			["mapIndex"] = 31,	["tile"] = "art/maps/clockwork/clockwork_base_0.dds",		},
+	{["name"] = "Summerset",		["subzone"] = "summerset",		["zone"] = "summerset",			["key"] = "summerset/summerset",		["zoneIndex"] = 641,			["mapIndex"] = 32,	["tile"] = "art/maps/summerset/summerset_base_0.dds",		},
+	{["name"] = "Artaeum",			["subzone"] = "artaeum",		["zone"] = "summerset",			["key"] = "summerset/artaeum",			["zoneIndex"] = 657,			["mapIndex"] = 33,	["tile"] = "art/maps/summerset/artaeum_base_0.dds",			},
 	{ -- manually added
 		["zoneIndex"] = 99,
 		["tile"] = "art/maps/guildmaps/eyevea_base_0.dds",
