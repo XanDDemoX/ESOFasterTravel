@@ -18,7 +18,7 @@ local function GetLocations(callback)
 	for i = 1, GetNumMaps() do
 		local mapName, mapType, mapContentType, zoneId = GetMapInfo(i)
 		if Utils.stringIsEmpty(mapName) == false then
-			table.insert(locations,{mapIndex = i, zoneIndex=zoneId})
+			table.insert(locations,{mapIndex = i, zoneIndex=zoneId + 1 })
 		end
 	end
 
@@ -96,5 +96,6 @@ local function Generate(callback)
 end
 
 FasterTravel.LocationDataGenerator = {
-	Generate = Generate
+	Generate = Generate,
+	GetLocations = GetLocations,
 }

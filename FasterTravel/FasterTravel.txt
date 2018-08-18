@@ -1,10 +1,9 @@
-## Title: Faster Travel v2.0.5
-## Author: XanDDemoX
-## Version 2.0.5
+## Title: Faster Travel v2.1.2
+## Author: XanDDemoX (Updated by Valandil, @SimonIllyan)
+## Version 2.1.2
 
-## APIVersion: 100012
+## APIVersion: 100024
 ## SavedVariables: FasterTravel_SavedVariables
-
 
 FasterTravel.lua
 
@@ -39,3 +38,6 @@ worldmapwayshrines.lua
 
 worldmapplayers.xml
 worldmapplayers.lua
+
+WayshrineDataGenerator.lua
+
