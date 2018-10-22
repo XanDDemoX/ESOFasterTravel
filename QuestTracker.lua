@@ -44,17 +44,17 @@ local _categoryIcon = {
 local function ClearRowIcons(row)
     if row == nil then return end
     if type(row) == "table" then
-        local data = row.data
-        if data ~= nil then
-            data.icon = nil
-            data.quests = nil
-        end
+	local data = row.data
+	if data ~= nil then
+	    data.icon = nil
+	    data.quests = nil
+	end
     end
 end
 
 local function ClearNodeIndexIcons(nodeIndex, lookups)
     for i, lookup in ipairs(lookups) do
-        ClearRowIcons(lookup[nodeIndex])
+	ClearRowIcons(lookup[nodeIndex])
     end
 end
 
@@ -67,11 +67,11 @@ local function ClearIcons(lookup, ...)
 
     for nodeIndex, row in pairs(lookup) do
 
-        ClearRowIcons(row)
+	ClearRowIcons(row)
 
-        if lookups ~= nil then
-            ClearNodeIndexIcons(nodeIndex, lookups)
-        end
+	if lookups ~= nil then
+	    ClearNodeIndexIcons(nodeIndex, lookups)
+	end
     end
 end
 
@@ -80,67 +80,65 @@ local function AddQuest(data, result, iconWidth, iconHeight)
     local questIndex, stepIndex, conditionIndex, assisted, zoneIndex = result.questIndex, result.stepIndex, result.conditionIndex, result.assisted, result.zoneIndex
 
     if data.quests == nil then
-        data.quests = {}
+	data.quests = {}
     end
 
     local questInfo = data.quests[questIndex]
 
     if questInfo == nil then
-        local name = GetJournalQuestInfo(questIndex)
-        name = Utils.FormatStringCurrentLanguage(name)
-        questInfo = {
-            index = questIndex,
-            steps = {},
-            name = name,
-            assisted = assisted,
-            zoneIndex = zoneIndex,
-            setAssisted = function(self, value)
-                self.path = nil
-                self.assisted = value
-                for stepIndex, step in pairs(self.steps) do
-                    for conditionIndex, condition in pairs(step.conditions) do
-                        condition:setAssisted(value)
-                        if self.path == nil then
-                            self.path = condition.path
-                        end
-                    end
-                end
-            end
-        }
-        data.quests[questIndex] = questInfo
+	local name = GetJournalQuestInfo(questIndex)
+	name = Utils.FormatStringCurrentLanguage(name)
+	questInfo = {
+	    index = questIndex,
+	    steps = {},
+	    name = name,
+	    assisted = assisted,
+	    zoneIndex = zoneIndex,
+	    setAssisted = function(self, value)
+		self.path = nil
+		self.assisted = value
+		for stepIndex, step in pairs(self.steps) do
+		    for conditionIndex, condition in pairs(step.conditions) do
+			condition:setAssisted(value)
+			if self.path == nil then
+			    self.path = condition.path
+			end
+		    end
+		end
+	    end
+	}
+	data.quests[questIndex] = questInfo
     end
 
     local stepInfo = questInfo.steps[stepIndex]
 
     if stepInfo == nil then
-        stepInfo = { index = stepIndex, conditions = {} }
-        questInfo.steps[stepIndex] = stepInfo
+	stepInfo = { index = stepIndex, conditions = {} }
+	questInfo.steps[stepIndex] = stepInfo
     end
 
     if stepInfo.conditions[conditionIndex] == nil then
 
-        local text = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
-        if text then
-            -- Safe add of condition info to avoid npe issue for quests without condition info.
-            local iconPath, pinType, textures = GetQuestIconPath(result)
+	local text = GetJournalQuestConditionInfo(questIndex, stepIndex, conditionIndex)
+	if text then
+	    -- Safe add of condition info to avoid npe issue for quests without condition info.
+	    local iconPath, pinType, textures = GetQuestIconPath(result)
 
-            local condition = {
-                text = "",
-                setAssisted = function(self, assisted)
-                    local path = GetPinTypeIconPath(textures, ConvertQuestPinType(pinType, assisted))
-                    self.path = path -- sometimes nil
-                    if path then
-                        self.text = zo_iconTextFormat(path, iconWidth, iconHeight, text)
-                    else
-                        d(string.format("WARN: Icon path empty for quest pin type [%d] and assisted [%s] with text:\n%s",
-                            pinType, (assisted and "true" or "false"), text))
-                        self.text = "[i] " .. text
-                    end
-                end
-            }
-            condition:setAssisted(result.assisted)
-            stepInfo.conditions[conditionIndex] = condition
-        end
+	    local condition = {
+		text = "",
+		setAssisted = function(self, assisted)
+		    local path = GetPinTypeIconPath(textures, ConvertQuestPinType(pinType, assisted))
+		    if path == nil then
+			-- d(string.format("WARN: Icon path empty for quest pin type [%d] and assisted [%s] with text:\n%s", pinType, tostring(assisted), text))
+						path = GetPinTypeIconPath(textures, MAP_PIN_TYPE_ASSISTED_QUEST_CONDITION)
+					end
+					self.path = path
+		    self.text = zo_iconTextFormat(path, iconWidth, iconHeight, text)
+		end
+	    }
+	    condition:setAssisted(result.assisted)
+	    stepInfo.conditions[conditionIndex] = condition
+	end
     end
 end
 
@@ -152,8 +150,8 @@ local function SetIcon(data, path, args)
     local icon = data.icon
 
     if icon == nil then
-        icon = {}
-        data.icon = icon
+	icon = {}
+	data.icon = icon
     end
 
     local hidden = args.hidden or (path == nil or path == "")
@@ -173,31 +171,31 @@ local function SetQuestIcon(data, closest, result)
 
     if (data.icon == nil or data.icon.hidden == true) or result.assisted == true then
 
-        local iconPath, pinType, textures = GetQuestIconPath(result)
+	local iconPath, pinType, textures = GetQuestIconPath(result)
 
-        data.setAssisted = data.setAssisted or function(self, questIndex)
-            if self.quests == nil then return end
+	data.setAssisted = data.setAssisted or function(self, questIndex)
+	    if self.quests == nil then return end
 
-            for idx, q in pairs(self.quests) do
-                if q.setAssisted ~= nil then
-                    q:setAssisted(idx == questIndex)
-                end
-            end
+	    for idx, q in pairs(self.quests) do
+		if q.setAssisted ~= nil then
+		    q:setAssisted(idx == questIndex)
+		end
+	    end
 
-            if self.icon ~= nil then
-                local quest = self.quests[questIndex]
+	    if self.icon ~= nil then
+		local quest = self.quests[questIndex]
 
-                if data.underAttack == true then return false end -- ensure underAttack takes precedence
+		if data.underAttack == true then return false end -- ensure underAttack takes precedence
 
-                if quest ~= nil then
-                    self.icon.path = quest.path
-                else
-                    self.icon.path = GetPinTypeIconPath(textures, ConvertQuestPinType(pinType, false))
-                end
-            end
-        end
+		if quest ~= nil then
+		    self.icon.path = quest.path
+		else
+		    self.icon.path = GetPinTypeIconPath(textures, ConvertQuestPinType(pinType, false))
+		end
+	    end
+	end
 
-        return SetIcon(data, iconPath, _questIcon)
+	return SetIcon(data, iconPath, _questIcon)
     end
 
     return false
@@ -209,7 +207,7 @@ local function SetKeepIcon(data)
     local icon = _keepIcon
 
     if data.underAttack == true then
-        icon = _keepAttackIcon
+	icon = _keepAttackIcon
     end
 
     return SetIcon(data, iconPath, icon)
@@ -224,16 +222,16 @@ local function UpdateLookups(nodeIndex, func, ...)
     local row, data
 
     for i = 1, count do
-        lookup = select(i, ...)
+	lookup = select(i, ...)
 
-        row = lookup[nodeIndex]
+	row = lookup[nodeIndex]
 
-        if row ~= nil then
+	if row ~= nil then
 
-            data = row.data
+	    data = row.data
 
-            set = func(data) or set
-        end
+	    set = func(data) or set
+	end
     end
     return set
 end
@@ -244,7 +242,7 @@ local function IsValidResult(result)
 end
 
 local function RefreshCategories(categories, locations, locationsLookup, quests, categoriesTable)
-    if categories == nil or locations == nil or locationsLookup == nil or quests == nil or categoriesTable == nil then return end
+	if categories == nil or locations == nil or locationsLookup == nil or quests == nil or categoriesTable == nil then return end
 
     local counts = {}
 
@@ -256,38 +254,39 @@ local function RefreshCategories(categories, locations, locationsLookup, quests,
     SetIcon(categoriesTable[1], "/esoui/art/icons/poi/poi_wayshrine_complete.dds", _categoryIcon)
     -- favourites icon
     SetIcon(categoriesTable[2], "/esoui/art/icons/poi/poi_wayshrine_complete.dds", _categoryIcon)
-    -- set icons
-    for i, d in ipairs(categoriesTable) do
-        zIdx = d.zoneIndex or d.curZoneIndex
-        if zIdx ~= nil then
-            path = Location.Data.GetZoneFactionIcon(locationsLookup[zIdx])
-            SetIcon(d, path, _categoryIcon)
-        end
+
+	-- set icons
+    for i, entry in pairs(categoriesTable) do
+	zIdx = entry.zoneIndex or entry.curZoneIndex
+	if zIdx ~= nil then
+	    path = Location.Data.GetZoneFactionIcon(locationsLookup[zIdx])
+	    SetIcon(entry, path, _categoryIcon)
+	end
     end
 
     -- reset names
-    for i, loc in ipairs(locations) do
-        data = categories[loc.zoneIndex]
-        if data ~= nil then
-            data.name = loc.name
-        end
+    for i, loc in pairs(locations) do
+	data = categories[loc.zoneIndex]
+	if data ~= nil then
+	    data.name = loc.name
+	end
     end
 
     -- count quests
-    for i, quest in ipairs(quests) do
-        counts[quest.zoneIndex] = (counts[quest.zoneIndex] or 0) + 1
+    for i, quest in pairs(quests) do
+	counts[quest.zoneIndex] = (counts[quest.zoneIndex] or 0) + 1
     end
 
     -- append counts
     local c, l
     for zoneIndex, count in pairs(counts) do
-        c = categories[zoneIndex]
-        if c ~= nil then
-            l = locationsLookup[zoneIndex]
-            if l ~= nil then -- really shouldn't ever be nil
-            c.name = table.concat({ l.name, " (", tostring(count), ")" })
-            end
-        end
+	c = categories[zoneIndex]
+	if c ~= nil then
+	    l = locationsLookup[zoneIndex]
+	    if l ~= nil then -- really shouldn't ever be nil
+	    c.name = table.concat({ l.name, " (", tostring(count), ")" })
+	    end
+	end
     end
 end
 
@@ -296,7 +295,7 @@ local function ClearQuestIcons(currentZoneIndex, loc, curLookup, zoneLookup, rec
     if currentZoneIndex == nil or loc == nil or curLookup == nil or zoneLookup == nil then return end
 
     if loc.zoneIndex == currentZoneIndex then
-        ClearIcons(curLookup, recLookup, faveLookup)
+	ClearIcons(curLookup, recLookup, faveLookup)
     end
 
     local lookup = zoneLookup[loc.zoneIndex]
@@ -316,34 +315,34 @@ local function RefreshQuests(loc, tab, curLookup, zoneLookup, quests, wayshrines
     if loc == nil or tab == nil or curLookup == nil or zoneLookup == nil or quests == nil or wayshrines == nil then return end
 
     for i, quest in ipairs(quests) do
-        -- always request where zoneIndex is nil
-        if IsQuestValidForZone(quest, loc, zoneLookup) == true then
-            Quest.GetQuestLocations(quest.index, function(result)
+	-- always request where zoneIndex is nil
+	if IsQuestValidForZone(quest, loc, zoneLookup) == true then
+	    Quest.GetQuestLocations(quest.index, function(result)
 
-                if IsValidResult(result) == true then
+		if IsValidResult(result) == true then
 
-                    local closest
+		    local closest
 
-                    if result.insideCurrentMapWorld == true then
-                        closest = Location.GetClosestLocation(result.normalizedX, result.normalizedY, wayshrines)
-                    end
+		    if result.insideCurrentMapWorld == true then
+			closest = Location.GetClosestLocation(result.normalizedX, result.normalizedY, wayshrines)
+		    end
 
-                    if closest ~= nil then
+		    if closest ~= nil then
 
-                        result.zoneIndex = result.zoneIndex or closest.zoneIndex
+			result.zoneIndex = result.zoneIndex or closest.zoneIndex
 
-                        local updateFunc = function(data)
-                            AddQuest(data, result, _questIcon.size.width, _questIcon.size.height)
-                            return SetQuestIcon(data, closest, result)
-                        end
+			local updateFunc = function(data)
+			    AddQuest(data, result, _questIcon.size.width, _questIcon.size.height)
+			    return SetQuestIcon(data, closest, result)
+			end
 
-                        if UpdateLookups(closest.nodeIndex, updateFunc, curLookup, zoneLookup[closest.zoneIndex], recLookup, faveLookup) == true then
-                            tab:RefreshControl()
-                        end
-                    end
-                end
-            end)
-        end
+			if UpdateLookups(closest.nodeIndex, updateFunc, curLookup, zoneLookup[closest.zoneIndex], recLookup, faveLookup) == true then
+			    tab:RefreshControl()
+			end
+		    end
+		end
+	    end)
+	end
     end
 end
 
@@ -360,31 +359,31 @@ local function ShowQuestMenu(owner, data, func)
     local count = #quests
 
     if count == 1 then
-        func(quests[1])
+	func(quests[1])
     elseif count > 1 then
 
-        for i, quest in ipairs(quests) do
-            name = quest.name
+	for i, quest in ipairs(quests) do
+	    name = quest.name
 
-            if quest.assisted == false then
-                AddMenuItem(name, function()
-                    func(quest)
-                    ClearMenu()
-                end)
-            end
-        end
+	    if quest.assisted == false then
+		AddMenuItem(name, function()
+		    func(quest)
+		    ClearMenu()
+		end)
+	    end
+	end
 
-        ShowMenu(owner)
+	ShowMenu(owner)
     end
 end
 
 local function SetAssistedInLookup(questIndex, lookup)
     for k, row in pairs(lookup) do
-        if type(row) == "table" then
-            if row.data ~= nil and row.data.setAssisted ~= nil then
-                row.data:setAssisted(questIndex)
-            end
-        end
+	if type(row) == "table" then
+	    if row.data ~= nil and row.data.setAssisted ~= nil then
+		row.data:setAssisted(questIndex)
+	    end
+	end
     end
 end
 
@@ -393,9 +392,9 @@ local function SetAssisted(questIndex, curLookup, recLookup, zoneLookup)
     SetAssistedInLookup(questIndex, curLookup)
     SetAssistedInLookup(questIndex, recLookup)
     if zoneLookup ~= nil then
-        for zoneIndex, lookup in pairs(zoneLookup) do
-            SetAssistedInLookup(questIndex, lookup)
-        end
+	for zoneIndex, lookup in pairs(zoneLookup) do
+	    SetAssistedInLookup(questIndex, lookup)
+	end
     end
 end
 
@@ -403,7 +402,7 @@ local function RefreshKeepIcons(wayshrines, ...)
 
     for i, node in ipairs(wayshrines) do
 
-        UpdateLookups(node.nodeIndex, SetKeepIcon, ...)
+	UpdateLookups(node.nodeIndex, SetKeepIcon, ...)
     end
 end
 
@@ -414,16 +413,16 @@ local function SetCampaignIcon(data)
 
     if Campaign.IsPlayerQueued(id) == true then
 
-        if Campaign.IsQueueState(id, CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING) == true then
-            return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_READY), _campaignIcon)
-        else
-            return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_JOINING), _campaignIcon)
-        end
+	if Campaign.IsQueueState(id, CAMPAIGN_QUEUE_REQUEST_STATE_CONFIRMING) == true then
+	    return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_READY), _campaignIcon)
+	else
+	    return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_JOINING), _campaignIcon)
+	end
 
     elseif data.home == true then
-        return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_HOME), _campaignIcon)
+	return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_HOME), _campaignIcon)
     elseif data.guest == true then
-        return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_GUEST), _campaignIcon)
+	return SetIcon(data, Campaign.GetIcon(Campaign.ICON_ID_GUEST), _campaignIcon)
     end
 
     return false
@@ -433,7 +432,7 @@ local function RefreshCampaignIcons(wayshrines, ...)
 
     for i, node in ipairs(wayshrines) do
 
-        UpdateLookups(node.nodeIndex, SetCampaignIcon, ...)
+	UpdateLookups(node.nodeIndex, SetCampaignIcon, ...)
     end
 end
 
@@ -455,160 +454,160 @@ function QuestTracker:init(locations, locationsLookup, tab)
     local wayshrineTooltip = FasterTravel.WayshrineTooltip(tab, InformationTooltip, WorldMap.GetKeepTooltip())
 
     local function GetWayshrinesData(isRecall, isKeep, inCyrodiil, loc)
-        if loc == nil then return {} end
+	if loc == nil then return {} end
 
-        local zoneIndex = loc.zoneIndex
+	local zoneIndex = loc.zoneIndex
 
-        local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
+	local locIsCyrodiil = Location.Data.IsCyrodiil(loc)
 
-        if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then
-            return Transitus.GetKnownNodes(), 1
-        elseif inCyrodiil == false and locIsCyrodiil == false then
-            return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex)), false
-        elseif inCyrodiil == false and locIsCyrodiil == true then
-            return Campaign.GetPlayerCampaigns(), 2
-        else
-            return {}
-        end
+	if inCyrodiil == true and (isRecall == true or isKeep == true) and locIsCyrodiil == true then
+	    return Transitus.GetKnownNodes(), 1
+	elseif inCyrodiil == false and locIsCyrodiil == false then
+	    return Utils.toTable(Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex)), false
+	elseif inCyrodiil == false and locIsCyrodiil == true then
+	    return Campaign.GetPlayerCampaigns(), 2
+	else
+	    return {}
+	end
 
-        return wayshrines
+	return wayshrines
     end
 
     self.SetDirty = function(self)
-        _isDirty = true
+	_isDirty = true
     end
 
     self.Refresh = function(self)
-        if _refreshing == true then return end
+	if _refreshing == true then return end
 
-        local lookups = _tab:GetRowLookups()
+	local lookups = _tab:GetRowLookups()
 
-        local currentZoneIndex = _tab:GetCurrentZoneMapIndexes()
+	local currentZoneIndex = _tab:GetCurrentZoneMapIndexes()
 
-        local loc = Location.Data.GetZoneLocation(_locationsLookup)
+	local loc = Location.Data.GetZoneLocation(_locationsLookup)
 
-        local curLookup, zoneLookup, recLookup, faveLookup = lookups.current, lookups.zone, lookups.recent, lookups.favourites
+	local curLookup, zoneLookup, recLookup, faveLookup = lookups.current, lookups.zone, lookups.recent, lookups.favourites
 
-        self:HideToolTip()
+	self:HideToolTip()
 
-        ClearQuestIcons(currentZoneIndex, loc, curLookup, zoneLookup, recLookup, faveLookup)
+	ClearQuestIcons(currentZoneIndex, loc, curLookup, zoneLookup, recLookup, faveLookup)
 
-        local quests = Quest.GetQuests()
+	local quests = Quest.GetQuests()
 
-        RefreshCategories(lookups.categories, _locations, _locationsLookup, quests, lookups.categoriesTable)
+	RefreshCategories(lookups.categories, _locations, _locationsLookup, quests, lookups.categoriesTable)
 
-        _tab:RefreshControl(lookups.categoriesTable)
+	_tab:RefreshControl(lookups.categoriesTable)
 
-        local wayshrines, dataType = GetWayshrinesData(_tab:IsRecall(), _tab:IsKeep(), _tab:InCyrodiil(), loc)
+	local wayshrines, dataType = GetWayshrinesData(_tab:IsRecall(), _tab:IsKeep(), _tab:InCyrodiil(), loc)
 
-        if dataType ~= 2 then -- don't refresh quests for campaigns
-        RefreshQuests(loc, _tab, curLookup, zoneLookup, quests, wayshrines, recLookup, faveLookup)
-        end
+	if dataType ~= 2 then -- don't refresh quests for campaigns
+	RefreshQuests(loc, _tab, curLookup, zoneLookup, quests, wayshrines, recLookup, faveLookup)
+	end
 
-        if dataType ~= false then
+	if dataType ~= false then
 
-            if dataType == 1 then
-                RefreshKeepIcons(wayshrines, curLookup, zoneLookup[loc.zoneIndex])
-            elseif dataType == 2 then
-                RefreshCampaignIcons(wayshrines, curLookup, zoneLookup[loc.zoneIndex])
-            end
+	    if dataType == 1 then
+		RefreshKeepIcons(wayshrines, curLookup, zoneLookup[loc.zoneIndex])
+	    elseif dataType == 2 then
+		RefreshCampaignIcons(wayshrines, curLookup, zoneLookup[loc.zoneIndex])
+	    end
 
-            _tab:RefreshControl()
-        end
-        _refreshing = false
+	    _tab:RefreshControl()
+	end
+	_refreshing = false
     end
 
     self.RefreshIfRequired = function(self, ...)
-        if _refreshing == true or _isDirty == false then return end
-        self:Refresh(...)
-        _isDirty = false
+	if _refreshing == true or _isDirty == false then return end
+	self:Refresh(...)
+	_isDirty = false
     end
 
     self.HideToolTip = function(self)
 
-        wayshrineTooltip:Hide()
+	wayshrineTooltip:Hide()
     end
 
     tab.IconMouseEnter = FasterTravel.hook(tab.IconMouseEnter, function(base, control, icon, data)
 
-        base(control, icon, data)
+	base(control, icon, data)
 
-        wayshrineTooltip:Show(icon, data)
+	wayshrineTooltip:Show(icon, data)
     end)
 
     tab.IconMouseExit = FasterTravel.hook(tab.IconMouseExit, function(base, control, icon, data)
 
-        base(control, icon, data)
+	base(control, icon, data)
 
-        wayshrineTooltip:Hide()
+	wayshrineTooltip:Hide()
     end)
 
     tab.IconMouseClicked = FasterTravel.hook(tab.IconMouseClicked, function(base, control, icon, data)
-        base(control, icon, data)
-        ShowQuestMenu(control, data, function(quest)
+	base(control, icon, data)
+	ShowQuestMenu(control, data, function(quest)
 
-            local loc = _locationsLookup[data.zoneIndex]
+	    local loc = _locationsLookup[data.zoneIndex]
 
-            if loc == nil then
-                loc = _locationsLookup[quest.zoneIndex]
-            end
+	    if loc == nil then
+		loc = _locationsLookup[quest.zoneIndex]
+	    end
 
-            local mapIndex = loc.mapIndex
+	    local mapIndex = loc.mapIndex
 
-            local questIndex = quest.index
-            local lookups = _tab:GetRowLookups()
+	    local questIndex = quest.index
+	    local lookups = _tab:GetRowLookups()
 
-            local curLookup, zoneLookup, recLookup = lookups.current, lookups.zone, lookups.recent
+	    local curLookup, zoneLookup, recLookup = lookups.current, lookups.zone, lookups.recent
 
-            _refreshing = true
+	    _refreshing = true
 
-            SetAssisted(questIndex, curLookup, recLookup, zoneLookup)
+	    SetAssisted(questIndex, curLookup, recLookup, zoneLookup)
 
-            data:setAssisted(questIndex)
+	    data:setAssisted(questIndex)
 
-            _tab:RefreshControl()
+	    _tab:RefreshControl()
 
-            _refreshing = false
+	    _refreshing = false
 
-            if mapIndex ~= GetCurrentMapIndex() then
-                ZO_WorldMap_SetMapByIndex(mapIndex)
-            end
-        end)
+	    if mapIndex ~= GetCurrentMapIndex() then
+		ZO_WorldMap_SetMapByIndex(mapIndex)
+	    end
+	end)
     end)
 
     tab.RowMouseEnter = FasterTravel.hook(tab.RowMouseEnter, function(base, control, row, label, data)
-        base(control, row, label, data)
+	base(control, row, label, data)
 
-        wayshrineTooltip:Show(row.icon, data)
+	wayshrineTooltip:Show(row.icon, data)
     end)
 
     tab.RowMouseExit = FasterTravel.hook(tab.RowMouseExit, function(base, control, row, label, data)
-        base(control, row, label, data)
+	base(control, row, label, data)
 
-        self:HideToolTip()
+	self:HideToolTip()
     end)
 
     tab.RowMouseClicked = FasterTravel.hook(tab.RowMouseClicked, function(base, control, row, data)
-        base(control, row, data)
+	base(control, row, data)
 
-        local nodeIndex = data.nodeIndex
-        local isTransitus = data.isTransitus
-        if nodeIndex == nil then return end
+	local nodeIndex = data.nodeIndex
+	local isTransitus = data.isTransitus
+	if nodeIndex == nil then return end
 
-        local loc = _locationsLookup[data.zoneIndex]
+	local loc = _locationsLookup[data.zoneIndex]
 
-        if loc ~= nil then
-            WorldMap.PanToPoint(loc.mapIndex, function()
-                local x, y
-                if isTransitus == true then
-                    local pinType
-                    pinType, x, y = GetKeepPinInfo(nodeIndex, BGQUERY_LOCAL)
-                else
-                    local known, name
-                    known, name, x, y = Wayshrine.Data.GetNodeInfo(nodeIndex)
-                end
-                return x, y
-            end)
-        end
+	if loc ~= nil then
+	    WorldMap.PanToPoint(loc.mapIndex, function()
+		local x, y
+		if isTransitus == true then
+		    local pinType
+		    pinType, x, y = GetKeepPinInfo(nodeIndex, BGQUERY_LOCAL)
+		else
+		    local known, name
+		    known, name, x, y = Wayshrine.Data.GetNodeInfo(nodeIndex)
+		end
+		return x, y
+	    end)
+	end
     end)
 end

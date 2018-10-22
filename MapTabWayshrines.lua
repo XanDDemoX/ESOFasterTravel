@@ -12,36 +12,36 @@ local Utils = FasterTravel.Utils
 local function ShowWayshrineConfirm(data,isRecall)
 
 	local nodeIndex,name,refresh,clicked = data.nodeIndex,data.name,data.refresh,data.clicked
-	
+
 	ZO_Dialogs_ReleaseDialog("FAST_TRAVEL_CONFIRM")
 	ZO_Dialogs_ReleaseDialog("RECALL_CONFIRM")
-	
+
 	name = name or select(2, Wayshrine.Data.GetNodeInfo(nodeIndex)) -- just in case
-	
+
 	local id = (isRecall == true and "RECALL_CONFIRM") or "FAST_TRAVEL_CONFIRM"
-	
-	if isRecall == true then 
+
+	if isRecall == true then
 		local _, timeLeft = GetRecallCooldown()
 		if timeLeft ~= 0 then
 			local text = zo_strformat(SI_FAST_TRAVEL_RECALL_COOLDOWN, name, ZO_FormatTimeMilliseconds(timeLeft, TIME_FORMAT_STYLE_DESCRIPTIVE, TIME_FORMAT_PRECISION_SECONDS))
 		    ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, text)
 			return
 		end
-	end 
-	
+	end
+
 	ZO_Dialogs_ShowPlatformDialog(id, {nodeIndex = nodeIndex}, {mainTextParams = {name}})
-	
+
 end
 
 
 local function ShowWayshrineMenu(owner,data,favourites)
 	ClearMenu()
-	
-	if data == nil or favourites == nil then return end 
-	
+
+	if data == nil or favourites == nil then return end
+
 	local nodeIndex = data.nodeIndex
-	
-	if favourites.list:contains(nodeIndex) then 
+
+	if favourites.list:contains(nodeIndex) then
 		AddMenuItem("Remove Favourite", function()
 			favourites.remove(nodeIndex)
 			ClearMenu()
@@ -51,20 +51,21 @@ local function ShowWayshrineMenu(owner,data,favourites)
 			favourites.add(nodeIndex)
 			ClearMenu()
 		end)
-	end 
-	
+	end
+
 	ShowMenu(owner)
 end
 
 local function ShowTransitusConfirm(data,isRecall)
-	if isRecall == true then return end
-	TravelToKeep(data.nodeIndex)
+	if not isRecall then
+		TravelToKeep(data.nodeIndex)
+	end
 end
 
 local function AttachRefreshHandler(args,data)
 	local refresh = args.refresh
-	data.refresh = function(self,control) 
-		control.label:SetText(self.name) 
+	data.refresh = function(self,control)
+		control.label:SetText(self.name)
 		if refresh then
 			refresh(self,control)
 		end
@@ -76,58 +77,58 @@ local function AttachWayshrineDataHandlers(args, data)
 	AttachRefreshHandler(args,data)
 
 	local clicked = args.clicked
-	
+
 	local isRecall = args.nodeIndex == nil
 	local isKeep = args.isKeep
 	local inCyrodiil = args.inCyrodiil
-	
-	data.clicked = function(self,control,button) 
+
+	data.clicked = function(self,control,button)
 		if inCyrodiil == true and (isRecall == true or isKeep == true) then return end
-		if button == 1 then 
-			ShowWayshrineConfirm(self,isRecall) 
-		elseif button == 2 then 
+		if button == 1 then
+			ShowWayshrineConfirm(self,isRecall)
+		elseif button == 2 then
 			ShowWayshrineMenu(control,self,args.favourites)
 		end
 	end
-	
+
 	return data
 end
 
 local function AttachTransitusDataHandlers(args,data)
-	
+
 	AttachRefreshHandler(args,data)
-	
+
 	local clicked = args.clicked
 
-	data.clicked = function(self,control,button) 
+	data.clicked = function(self,control,button)
 		if button ~= 1 then return end
-		ShowTransitusConfirm(self,args.nodeIndex == nil) 
+		ShowTransitusConfirm(self,args.nodeIndex == nil)
 
 	end
-	
+
 	return data
-end 
+end
 
 local function AttachCampaignDataHandlers(args,data)
 	AttachRefreshHandler(args,data)
-	
-	data.clicked = function(self,control,button) 
+
+	data.clicked = function(self,control,button)
 		if button ~= 1 then return end
 		local id,name,group = data.id,data.name,data.group
 		Campaign.EnterLeaveOrJoin(id,name,group)
 	end
-	
-	return data 
+
+	return data
 end
 
 local function AddRowToLookup(self,control,lookup)
 	local nidx = self.nodeIndex
 	local lk = lookup[nidx]
-	if lk == nil then 
+	if lk == nil then
 		lookup[nidx] = {control=control,data=self}
 	else
 		lk.control = control
-		lk.data = self 
+		lk.data = self
 	end
 end
 
@@ -137,9 +138,9 @@ end
 
 local function GetCyrodiilWayshrinesData(args)
 	local nodes = Transitus.GetKnownNodes(args.nodeIndex, args.nodeIndex ~= nil or nil)
-	
-	nodes = Utils.map(nodes,function(item) 
-		return AttachTransitusDataHandlers(args,item) 
+
+	nodes = Utils.map(nodes,function(item)
+		return AttachTransitusDataHandlers(args,item)
 	end)
 
 	return nodes
@@ -147,62 +148,60 @@ end
 
 local function GetPlayerCampaignsData(args)
 	-- TODO: return player campaigns
-	
+
 	local nodes = Campaign.GetPlayerCampaigns()
-	
+
 	nodes = Utils.map(nodes,function(item)
 		return AttachCampaignDataHandlers(args,item)
 	end)
-	
+
 	return nodes
-end 
+end
 
 local function GetZoneWayshrinesData(args)
 
 	local zoneIndex = args.zoneIndex
 	local nodeIndex = args.nodeIndex
 	local isKeep = args.isKeep
-	
-	local inCyrodiil = args.inCyrodiil 
-	
+
+	local inCyrodiil = args.inCyrodiil
+
 	-- special handling for Cyrodiil =(
 	if Location.Data.IsZoneIndexCyrodiil(zoneIndex) == true then
-		if inCyrodiil == true and IsTransitusDataRequired(isKeep,nodeIndex) == true then 
+		if inCyrodiil == true and IsTransitusDataRequired(isKeep,nodeIndex) == true then
 			return GetCyrodiilWayshrinesData(args)
-		elseif inCyrodiil == false then 
+		elseif inCyrodiil == false then
 			return GetPlayerCampaignsData(args)
 		end
 	end
-	
+
 	local iter = Wayshrine.GetKnownWayshrinesByZoneIndex(zoneIndex,nodeIndex)
-			
-	iter = Utils.map(iter,function(item) 
-		return AttachWayshrineDataHandlers(args,item) 
+
+	iter = Utils.map(iter,function(item)
+		return AttachWayshrineDataHandlers(args,item)
 	end)
-	
+
 	local data = Utils.toTable(iter)
-	
+
 	table.sort(data,function(x,y) return x.name < y.name end)
-	
+
 	return data
 end
 
 local function GetListWayshrinesData(list,args)
-	if list == nil then return {} end 
-	
+	if list == nil then return {} end
+
 	local nodeIndex = args.nodeIndex
 
-	local iter =  Utils.where(list:items(), function(v) return (nodeIndex == nil or v.nodeIndex ~= nodeIndex) end)
-	
-	iter = Utils.map(iter,function(d) 
-	
+	local iter =  Utils.where(list:items(),
+		function(v) return (nodeIndex == nil or v.nodeIndex ~= nodeIndex) end)
+
+	iter = Utils.map(iter,function(d)
 		local known,name = Wayshrine.Data.GetNodeInfo(d.nodeIndex)
-		
 		d.name = name
-	
-		return AttachWayshrineDataHandlers(args,d) 
+		return AttachWayshrineDataHandlers(args,d)
 	end)
-	
+
 	return Utils.toTable(iter)
 end
 
@@ -214,12 +213,12 @@ local function GetFavouritesWayshrinesData(favourites,args)
 	return GetListWayshrinesData(favourites.list,args)
 end
 
-					
+
 local function HandleCategoryClicked(self,i,item,data,control,c)
 	local idx = GetCurrentMapIndex()
 
-	if idx ~= item.mapIndex then 
-		if self:IsCategoryHidden(i) == true then 
+	if idx ~= item.mapIndex then
+		if self:IsCategoryHidden(i) == true then
 			self:SetCategoryHidden(i,false)
 		end
 		ZO_WorldMap_SetMapByIndex(item.mapIndex)
@@ -229,28 +228,28 @@ local function HandleCategoryClicked(self,i,item,data,control,c)
 	self:OnCategoryClicked(i,item,data,control,c)
 end
 
-local function PopualteLookup(lookup,data)
-	
+local function PopulateLookup(lookup,data)
+
 	for i,node in ipairs(data) do
 		lookup[node.nodeIndex] = {data=node}
 	end
-	
+
 end
 
 
 function MapTabWayshrines:init(control,locations,locationsLookup,recentList,favourites)
-	self.base.init(self,control)	
-	
-	control.IconMouseEnter = FasterTravel.hook(control.IconMouseEnter,function(base,control,...) 
+	self.base.init(self,control)
+
+	control.IconMouseEnter = FasterTravel.hook(control.IconMouseEnter,function(base,control,...)
 		base(control,...)
 		self:IconMouseEnter(...)
 	end)
-	
+
 	control.IconMouseExit = FasterTravel.hook(control.IconMouseExit,function(base,control,...)
 		base(control,...)
 		self:IconMouseExit(...)
 	end)
-	
+
 	control.IconMouseClicked = FasterTravel.hook(control.IconMouseClicked,function(base,control,...)
 		base(control,...)
 		self:IconMouseClicked(...)
@@ -260,157 +259,162 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList,favo
 		base(control,...)
 		self:RowMouseEnter(...)
 	end)
-	
+
 	control.RowMouseExit = FasterTravel.hook(control.RowMouseExit,function(base,control,...)
 		base(control,...)
 		self:RowMouseExit(...)
 	end)
-	
+
 	control.RowMouseClicked = FasterTravel.hook(control.RowMouseClicked,function(base,control,...)
 		base(control,...)
 		self:RowMouseClicked(...)
 	end)
-	
+
 	local _first = true
-	
+
 	local _rowLookup = {}
-	
+
 	local currentZoneIndex
 	local currentMapIndex
-	
+
 	local _locations = locations
 	local _locationsLookup = locationsLookup
-	
+
 	local currentNodeIndex,currentIsKeep, currentInCyrodiil
-	
+
 	self.IsRecall = function(self)
 		return currentNodeIndex == nil
 	end
-	
+
 	self.IsKeep = function(self)
 		return currentIsKeep
 	end
-	
+
 	self.InCyrodiil = function(self)
 		return currentInCyrodiil
-	end 
-	
+	end
+
 	self.GetRowLookups = function(self)
 		return _rowLookup
 	end
-	
+
 	self.GetCurrentZoneMapIndexes = function(self)
 		return currentZoneIndex,currentMapIndex
 	end
-	
+
 	self.SetCurrentZoneMapIndexes = function(self,zoneIndex,mapIndex)
-		
+
 		currentZoneIndex = zoneIndex
-		
-		if zoneIndex == nil then 
+
+		if zoneIndex == nil then
 			currentMapIndex = nil
-		elseif mapIndex == nil then 
+		elseif mapIndex == nil then
 			loc = locationsLookup[zoneIndex]
-			if loc ~= nil then 
+			if loc ~= nil then
 				currentMapIndex = loc.mapIndex
 			end
-		elseif mapIndex ~= nil then 
+		elseif mapIndex ~= nil then
 			currentMapIndex = mapIndex
-		end 
-		
+		end
+
 	end
-	
+
 	self.Refresh = function(self,nodeIndex,isKeep)
 		_rowLookup.categories ={}
 		_rowLookup.current = {}
 		_rowLookup.favourites = {}
 		_rowLookup.recent = {}
 		_rowLookup.zone = {}
-		
-		isKeep = isKeep == true 
-		
+
+		isKeep = isKeep == true
+
 		currentNodeIndex = nodeIndex
 		currentIsKeep = isKeep
-		
+
 		local inCyrodiil = IsInCampaign() or IsInCyrodiil() or IsInImperialCity() or Location.Data.IsZoneIndexCyrodiil(currentZoneIndex)
-		
+
 		currentInCyrodiil = inCyrodiil
-		
+
 		local recentlookup = _rowLookup.recent
 		local favouriteslookup = _rowLookup.favourites
 		local currentlookup = _rowLookup.current
-		
+
 		local recent = GetRecentWayshrinesData(recentList,{nodeIndex=nodeIndex,favourites=favourites, refresh=function(self,control) AddRowToLookup(self,control,recentlookup) end})
 		local faves = GetFavouritesWayshrinesData(favourites,{nodeIndex=nodeIndex,favourites=favourites, refresh=function(self,control) AddRowToLookup(self,control,favouriteslookup) end})
 		local current = GetZoneWayshrinesData({nodeIndex = nodeIndex, zoneIndex = currentZoneIndex, isKeep = isKeep, inCyrodiil = inCyrodiil, favourites=favourites, refresh=function(self,control) AddRowToLookup(self,control,currentlookup) end})
-		
+
 		local curLoc = _locationsLookup[currentZoneIndex] or _locationsLookup["tamriel"]
 		local curName = curLoc.name
-		
-		local categories ={
+
+		local categories = {
 			{
-				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT), 
+				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_RECENT),
 				data = recent,
-				hidden= not _first and self:IsCategoryHidden(1)
+				hidden = not _first and self:IsCategoryHidden(1)
 			},
 			{
 				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_FAVOURITES),
 				data = faves,
 				hidden = not _first and self:IsCategoryHidden(2)
 			},
-			{	
-				name = GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT).." ("..curName..")",
-				data = current, 
+			{
+				name = string.format("%s (%s)", GetString(SI_MAP_INFO_WAYSHRINES_CATEGORY_CURRENT), curName),
+				data = current,
 				hidden = not _first and self:IsCategoryHidden(3),
-				clicked=function(data,control,c) 
-					HandleCategoryClicked(self,3,{zoneIndex=currentZoneIndex,mapIndex=currentMapIndex},currentlookup,data,control,c) 
-					if self:IsCategoryHidden(3) == false and curLoc.click then 
+				clicked=function(data,control,c)
+					HandleCategoryClicked(self,3,{zoneIndex=currentZoneIndex,mapIndex=currentMapIndex},currentlookup,data,control,c)
+					if self:IsCategoryHidden(3) == false and curLoc.click then
 						curLoc.click()
 					end
 				end,
 				curZoneIndex = currentZoneIndex
-				
 			}
 		}
 
-		PopualteLookup(recentlookup,recent)
-		
-		PopualteLookup(currentlookup,current)
-		
-		PopualteLookup(favouriteslookup,faves)
-		
+		PopulateLookup(recentlookup,recent)
+
+		PopulateLookup(currentlookup,current)
+
+		PopulateLookup(favouriteslookup,faves)
+
 		local count = #categories
-		
+
 		local zoneLookup = _rowLookup.zone
-		
+
 		local locations = _locations
-		
+
 		local categoryLookup = _rowLookup.categories
-		
-		if locations ~= nil then 
-		
+
+		if locations ~= nil then
+
 			local lcount = #locations
-		
+
 			for i,item in ipairs(locations) do
 				local id = i + count
 				local lookup = {}
 				zoneLookup[item.zoneIndex]=lookup
 
-				local data = GetZoneWayshrinesData({nodeIndex=nodeIndex,isKeep=isKeep, zoneIndex=item.zoneIndex, inCyrodiil = inCyrodiil,favourites=favourites ,refresh = function(self,control) AddRowToLookup(self,control,lookup) end})
-				
-				PopualteLookup(lookup,data)
-				
+				local data = GetZoneWayshrinesData({
+					nodeIndex=nodeIndex,
+					isKeep=isKeep,
+					zoneIndex=item.zoneIndex,
+					inCyrodiil = inCyrodiil,
+					favourites=favourites,
+					refresh = function(self,control) AddRowToLookup(self,control,lookup) end
+				})
+
+				PopulateLookup(lookup,data)
+
 				local category = {
-					name = item.name, 
+					name = item.name,
 					hidden = _first or self:IsCategoryHidden(id),
-					data=data, 
-					clicked= function(data,control,c) 
-					
-						HandleCategoryClicked(self,id,item,lookup,data,control,c) 
-						if item.click then 
+					data=data,
+					clicked= function(data,control,c)
+						HandleCategoryClicked(self,id,item,lookup,data,control,c)
+						if item.click then
 							item.click()
 						end
-						if self:IsCategoryHidden(id) == false then 
+						if not self:IsCategoryHidden(id) then
 							for ii=count+1,lcount do
 								if ii ~= id and self:IsCategoryHidden(ii) == false then
 									self:SetCategoryHidden(ii,true)
@@ -420,35 +424,35 @@ function MapTabWayshrines:init(control,locations,locationsLookup,recentList,favo
 					end,
 					zoneIndex = item.zoneIndex
 				}
-				
+
 				table.insert(categories,category)
 			end
 		end
-		
+
 		self:ClearControl()
 
 		local cdata = self:AddCategories(categories)
-		
+
 		self:RefreshControl(categories)
-		
+
 		for i,c in ipairs(cdata) do
-			if c.zoneIndex ~= nil then 
+			if c.zoneIndex ~= nil then
 				categoryLookup[c.zoneIndex] = c
 			end
-		end 
-		
+		end
+
 		_rowLookup.categoriesTable = cdata
-		
-		_first = false 
-	
+
+		_first = false
+
 	end
-	
+
 	self.HideAllZoneCategories = function(self)
-		for i, loc in ipairs(locations) do 
+		for i, loc in ipairs(locations) do
 			self:SetCategoryHidden(i+3,true)
-		end 
-	end 
-	
+		end
+	end
+
 end
 
 function MapTabWayshrines:OnCategoryClicked(i,item,lookup,data,control,c)
@@ -465,7 +469,7 @@ end
 
 function MapTabWayshrines:IconMouseClicked(...)
 
-end 
+end
 
 function MapTabWayshrines:RowMouseEnter(...)
 

@@ -23,7 +23,7 @@ end
 
 function InfoControl:Clear(...)
 	local count = select('#',...)
-	local control 
+	local control
 	for i=1,count do
 		control = select(i,...)
 		ZO_ScrollList_Clear(control)
@@ -32,21 +32,21 @@ end
 
 function InfoControl:AddEntries(control,data,typeId,categoryId)
 	if control == nil or data == nil then return end
-	
+
 	local count = #data
 
-	if count < 1 then return end 
-	
+	if count < 1 then return end
+
 	local scrollData = ZO_ScrollList_GetDataList(control)
-	
-	for i,entry in ipairs(data) do 
+
+	for i,entry in ipairs(data) do
 
 		typeId = entry.typeId or typeId or 1
 		categoryId = entry.categoryId or categoryId
 		scrollData[#scrollData+1] = ZO_ScrollList_CreateDataEntry(typeId, entry,categoryId)
 
 	end
-	
+
 	ZO_ScrollList_Commit(control)
 end
 
@@ -54,7 +54,7 @@ end
 function InfoControl:Refresh(...)
 
 	local count = select('#',...)
-	local control 
+	local control
 	for i=1,count do
 		control = select(i,...)
 		ZO_ScrollList_RefreshVisible(control)
@@ -64,18 +64,18 @@ end
 
 function InfoControl:RowMouseDown(control, button)
     if(button == 1) then
-        control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 1)
+	control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 1)
     end
 end
 
 function InfoControl:RowMouseUp(control, button, upInside)
     if(button == 1) then
-        control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 0)
+	control.label:SetAnchor(LEFT, nil, LEFT, control.offsetX or 0, 0)
 	 end
-	 
+
 	if(upInside) then
 		local data = ZO_ScrollList_GetData(control)
-		if data.clicked then 
+		if data.clicked then
 			data:clicked(control,button)
 			self:RowMouseClicked(control,data,button)
 		end
@@ -93,16 +93,16 @@ end
 
 function InfoControl:RefreshRow(control,data)
 
-	if data ~= nil and data.refresh ~= nil then 
+	if data ~= nil and data.refresh ~= nil then
 		data:refresh(control)
 	end
-	
+
 	control.label:SetHidden(data == nil or (data.hidden ~= nil and data.hidden == true))
 
-	control.RowMouseDown = function(...) self:RowMouseDown(...) end 
-	
+	control.RowMouseDown = function(...) self:RowMouseDown(...) end
+
 	control.RowMouseUp = function(...) self:RowMouseUp(...) end
-	
+
 	self:OnRefreshRow(control,data)
 end
 

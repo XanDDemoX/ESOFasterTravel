@@ -10,7 +10,7 @@ local function AddManualLocations(locations)
 	}
 
 	table.insert(locations,loc)
-end 
+end
 
 local function GetLocations(callback)
 	local locations = {}
@@ -27,66 +27,66 @@ local function GetLocations(callback)
 	local curIndex
 	local curZoneIndex
 	local curZoneKey
-	
+
 	local cur = 0
 	local count = #locations
 	local mouseClickQuest,mouseDownLoc,mouseUpLoc=WORLD_MAP_QUESTS.QuestHeader_OnClicked,WORLD_MAP_LOCATIONS.RowLocation_OnMouseDown,WORLD_MAP_LOCATIONS.RowLocation_OnMouseUp
 
-	local done = false 
-	local complete = false 
+	local done = false
+	local complete = false
 
 	return function()
 
-		if complete == true then 
-			return 
+		if complete == true then
+			return
 		end
-		
-		if done == true then 
-			complete = true 
+
+		if done == true then
+			complete = true
 			ZO_WorldMap_SetMapByIndex(curIndex)
 			callback(locations) -- ensure callback is called
-			return 
+			return
 		end
-		
+
 		if cur == 0 then
-			
+
 			curIndex = GetCurrentMapIndex()
 			curZoneIndex = GetCurrentMapZoneIndex()
 			curZoneKey = GetMapTileTexture()
 			cur = cur + 1
-			
+
 			ZO_WorldMap_SetMapByIndex(locations[cur].mapIndex)
-			
+
 			return
 		end
-		
+
 		local item = locations[cur]
-		
+
 		local path = GetMapTileTexture()
-	
+
 		item.tile = item.tile or path
-		
+
 		if cur >= count then
-			done = true 
-			
+			done = true
+
 			ZO_WorldMap_SetMapByIndex(curIndex)
-			
-		elseif cur > 0 and cur < count then 
+
+		elseif cur > 0 and cur < count then
 			cur = cur + 1
 
 			ZO_WorldMap_SetMapByIndex(locations[cur].mapIndex or -1)
 		end
-		 
-		
+
+
 	end
-	
+
 end
 
 
 local function Generate(callback)
-	local locationFunc  
+	local locationFunc
 	-- hack for zone keys
-	locationFunc = GetLocations(function(...)   
+	locationFunc = GetLocations(function(...)
 		FasterTravel.removeCallback(CALLBACK_ID_ON_WORLDMAP_CHANGED,locationFunc)
 		callback(...)
 	end)

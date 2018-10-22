@@ -1,15 +1,13 @@
-ESOFasterTravel v2.1.2
-By XanDDemoX
-Last updated by Valandil, 2018-08-17
-Last updated by @SimonIllyan, 2018-06-28
+ESOFasterTravel v2.2.3
+Original code by XanDDemoX
+Updates by upyachka, Valandil, SimonIllyan
+Last updated by @SimonIllyan, 2018-09-02
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
+Adds Favourite Wayshrines Category!
+Also supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
 
-New Favourite Wayshrines Category!
-
-Now supports Cyrodiil campaigns and Transitus Wayshrines including queuing, entering, travelling and tooltip display!
-
-Wayshrines
+WAYSHRINES
 Displays the closest known wayshrine to your quests by marking them with the quest's icon from the map (when it is possible to obtain the data ).
 Displays quest objective tooltips when the mouse is over quest icons.
 Fast travel to or recall a recently used wayshrine
@@ -17,64 +15,77 @@ Fast travel to or recall a wayshrine in the current zone
 Fast travel to or recall a wayshrine in another zone
 All fast travels and recalls use the appropriate standard confirmation dialog.
 
-Players
+PLAYERS
 Teleport to players in your group
 Teleport to players on your friends list
 Teleport to zones using players on your friends list, in your group or guild
 Teleport to players in your any of your guilds
 
-Usage
-
+USAGE
 Use a wayshrine or open the world map.
-
 Right Click in Wayshrines Menu to Add or Remove Favourites.
 
-Slash Commands
+SLASH COMMANDS
 /goto zoneName - attempts to teleport to a zone via a player. (zoneName can be partial)
 /goto @PlayerName - attempts to teleport to a player.
 /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
 /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
 /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc)
+/f5housing - turns on/off the fix allowing use of F5 to preview house purchase options
 
+RECENT CHANGE LOG
+Version 2.2.3 (by SimonIllyan 2018-09-02)
+	- /f5housing on|off now reloads UI by itself
+	- favourites, aliases and the status of /f5housing are now account-wide (shared by all characters),
+	  recents are still per character
 
-Recent Change Log
+Version 2.2.2 (by SimonIllyan 2018-08-24)
+	- Fixed sorting of zone names beginning with "The" ("The" should be ignored)
+	- Fixed reverse alphabetical sorting
+
+Version 2.2.1 (by SimonIllyan 2018-08-20)
+	- Fixed alliance icons in Wayshrines tab
+	- "/agoto" output is now sorted by value
+	- When /f5housing is set to off, recents list is not being updated;
+	  as an interim solution it is hidden from view as well.
+
+Version 2.2.0 (by SimonIllyan 2018-08-19)
+	- /agoto without arguments now lists existing aliases, "/agoto key" removes an alias for "key"
+	- Added predefined aliases for ambiguous zone names
+	- Added "/f5housing on|off" command to dynamically enable/disable WfD's fix for house preview.
+	  This fix, unfortunately, has a side effect - cancelling a teleport must be done TWICE.
+	  Some people find it annoying, so now it is possible to switch it off and on;
+	  "/reloadui" is REQUIRED afterwards.
 
 Version 2.1.1, 2.1.2 (by Valandil 2018-08-17)
+    - Updated for API 100024
 
-        - Updated for API 100024
-
-Version 2.1.0 (by @SimonIllyan, 2018-06-28)
-
+Version 2.1.0 (by SimonIllyan 2018-06-28)
 	- Updated for API 100023
 	- Added locations from chapters and DLCs - Vvardenfell, Summerset, Clockwork City, etc.
 	- Fixed a bug causing F5 (previev house) to fail, thanks to WfD.
-	
+
 Version 2.0.5
-	
 	- Updated for API 100012 - Thanks Garkin!
-	- Fixed incorrect Zone names 
+	- Fixed incorrect Zone names
 	- Fixed currency tooltip for recall
+
 Version 2.0.4
-	
-	- Fixed teleport during interaction fall through map bug. 
+	- Fixed teleport during interaction fall through map bug.
 
 Version 2.0.3
-
 	- Added favourites category and right click menu.
 	- Added partial Zone Name matching for /goto command
 
 Version 2.0.2
-
-	-  Added Craglorn Trial wayshrine support.
-	-  Added teleport error detection and attempt next player upon failure when teleporting by zone name.
+	- Added Craglorn Trial wayshrine support.
+	- Added teleport error detection and attempt next player upon failure when teleporting by zone name.
 
 Version 2.0.1
-
-	- Fixed intermittent display of incorrect focussed quest icon
-	- Removed prefix from Cyrodiil queue status displays. 
+	- Fixed intermittent display of incorrect focused quest icon
+	- Removed prefix from Cyrodiil queue status displays.
 	- Fixed potential error message when clearing icons on world map open.
 	- Fixed AD faction order table in LocationData.
-
 
 DISCLAIMER
 THIS ADDON IS NOT CREATED BY, ENDORSED, MAINTAINED OR SUPPORTED BY ZENIMAX OR ANY OF ITS AFFLIATES.

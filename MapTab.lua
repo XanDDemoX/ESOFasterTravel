@@ -6,51 +6,51 @@ local Utils = FasterTravel.Utils
 
 function MapTab:init(control)
 	self.control = control
-	
+
 	local _refreshing = false
-	local _isDirty = true 
-	
+	local _isDirty = true
+
 	self.IsDirty = function()
 		return _isDirty
 	end
-	
+
 	self.SetDirty = function()
-		_isDirty = true 
+		_isDirty = true
 	end
-	
+
 	self.RefreshIfRequired = function(self,...)
-		if _isDirty == true and _refreshing == false then 
+		if _isDirty == true and _refreshing == false then
 			_refreshing = true -- only allow one refresh at any one time
 			self:Refresh(...)
 			_isDirty = false
 			_refreshing = false
-		end 
+		end
 	end
-	
+
 end
 
 function MapTab:AddCategory(categoryId,item)
 
-	local refresh = item.refresh 
+	local refresh = item.refresh
 	local clicked = item.clicked
-	
-	item.clicked =  function(data,c) 
-							if clicked then 
+
+	item.clicked =	function(data,c)
+							if clicked then
 								clicked(data,c)
 							else
-								self:SetCategoryHidden(categoryId,not self:IsCategoryHidden(categoryId)) 
+								self:SetCategoryHidden(categoryId,not self:IsCategoryHidden(categoryId))
 							end
 						end
-	item.refresh =  function(data,c)
-							c.label:SetText(data.name) 
+	item.refresh =	function(data,c)
+							c.label:SetText(data.name)
 							if refresh then
-								
+
 								refresh(data,c)
 							end
 						end
-	--item.data = nil 
+	--item.data = nil
 	local header = Utils.extend(item)
-	header.hidden = nil 
+	header.hidden = nil
 	self.control:AddCategory(self.control.list,header,categoryId)
 	return header
 end
@@ -58,14 +58,17 @@ end
 function MapTab:AddCategories(data)
 	local categoryId = 1
 	local parentId
-	
+
+	local WfDpatchEnabled = FasterTravel.IsWfDpatchEnabled()
 	local categories = {}
-	
-	for i,item in ipairs(data) do 
-		categories[i] = self:AddCategory(categoryId,item)
-		if #item.data > 0 then
-			self.control:AddEntries(self.control.list,item.data,1,categoryId)
-			item.categoryId=categoryId
+
+	for i,item in ipairs(data) do
+		if WfDpatchEnabled or i>1 then
+			categories[i] = self:AddCategory(categoryId,item)
+			if #item.data > 0 then
+				self.control:AddEntries(self.control.list,item.data,1,categoryId)
+				item.categoryId=categoryId
+			end
 		end
 		categoryId = categoryId + 1
 	end
@@ -88,11 +91,11 @@ function MapTab:RefreshControl(categories)
 	if self.control == nil then return end
 	self.control:Refresh(self.control.list)
 	if categories == nil then return end
-	
+
 	for i,item in ipairs(categories) do
 		self.control:SetCategoryHidden(self.control.list,item.categoryId,item.hidden)
 	end
-	
+
 	self.control:Refresh(self.control.list)
 end
 

@@ -1,6 +1,6 @@
 <GuiXml>
     <Controls>
-	
+
 	    <Control name="FasterTravel_WorldMapWayshrineCategoryRow" virtual="true">
 			<OnInitialized>
 				self.offsetX = 20
@@ -9,8 +9,8 @@
 				self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
 				self.label.GetTextColor = function() return GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_SELECTED) end
 			</OnInitialized>
-            <Dimensions x="285" y="23"/>
-            <Controls>
+	    <Dimensions x="285" y="23"/>
+	    <Controls>
 				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="true" mouseEnabled="true">
 					<Dimensions x="24" y="23"/>
 					<Anchor point="TOPLEFT" offsetX="-6" offsetY="-2" />
@@ -25,18 +25,18 @@
 						self:GetParent():RowMouseUp(button, upInside)
 					</OnMouseUp>
 				</Label>
-            </Controls>
-        </Control>
-		
-        <Control name="FasterTravel_WorldMapWayshrineRow" virtual="true">
+	    </Controls>
+	</Control>
+
+	<Control name="FasterTravel_WorldMapWayshrineRow" virtual="true">
 			<OnInitialized>
 				self.offsetX = 20
 				self.label = self:GetNamedChild("Label")
 				self.icon = self:GetNamedChild("Icon")
 				self.icon:SetDrawLayer(self.label:GetDrawLayer() + 1)
 			</OnInitialized>
-            <Dimensions x="285" y="23"/>
-            <Controls>
+	    <Dimensions x="285" y="23"/>
+	    <Controls>
 				<Texture name="$(parent)Icon" textureFile="EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds" hidden="true" mouseEnabled="true">
 					<Dimensions x="24" y="23"/>
 					<Anchor point="TOPLEFT" offsetX="-6" offsetY="-2" />
@@ -44,7 +44,7 @@
 					<OnMouseEnter>
 						self:GetParent():IconMouseEnter(self)
 					</OnMouseEnter>
-                    <OnMouseExit>
+		    <OnMouseExit>
 						self:GetParent():IconMouseExit(self)
 					</OnMouseExit>
 					<OnMouseDown>
@@ -59,7 +59,7 @@
 					<OnMouseEnter>
 						self:GetParent():RowMouseEnter(self)
 					</OnMouseEnter>
-                    <OnMouseExit>
+		    <OnMouseExit>
 						self:GetParent():RowMouseExit(self)
 					</OnMouseExit>
 					<OnMouseDown>
@@ -70,38 +70,38 @@
 					</OnMouseUp>
 				</Label>
 
-            </Controls>
-        </Control>
-        
-        <TopLevelControl name="FasterTravel_WorldMapWayshrines" inherits="ZO_WorldMapInfoContent">
-            <OnInitialized>
+	    </Controls>
+	</Control>
+
+	<TopLevelControl name="FasterTravel_WorldMapWayshrines" inherits="ZO_WorldMapInfoContent">
+	    <OnInitialized>
 				self.sortOrderDropDown =ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("SortOrder"))
 				self.sortDirectionDropDown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("SortDirection"))
-                self.list = self:GetNamedChild("List")	
+		self.list = self:GetNamedChild("List")
 				self.fragment = ZO_FadeSceneFragment:New(self)
 				self.fragment.duration = 100
 				ZO_ScrollList_AddDataType(self.list,0,"FasterTravel_WorldMapWayshrineCategoryRow", 23, function(control, data) self:RefreshRow(control,data) end)
 				ZO_ScrollList_AddDataType(self.list,1,"FasterTravel_WorldMapWayshrineRow", 23, function(control, data) self:RefreshRow(control,data) end)
-	        </OnInitialized>
-            <Controls>
+		</OnInitialized>
+	    <Controls>
 				<Control name="$(parent)SortOrder" inherits="ZO_ComboBox">
 					<Dimensions x="145" y="25" />
-                    <Anchor point="TOPRIGHT" offsetX="-25" offsetY="-35" />
-                </Control>
-				
+		    <Anchor point="TOPRIGHT" offsetX="-25" offsetY="-35" />
+		</Control>
+
 				<Control name="$(parent)SortDirection" inherits="ZO_ComboBox">
 					<Dimensions x="75" y="25" />
-                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SortOrder" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"  />
-                </Control>
+		    <Anchor point="TOPRIGHT" relativeTo="$(parent)SortOrder" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"  />
+		</Control>
 
 			    <Control name="$(parent)List" inherits="ZO_ScrollList">
 					<Dimensions x="285" y="400" />
-                    <Anchor point="TOPLEFT" offsetX="20" offsetY="10" />
-                    <Anchor point="BOTTOMRIGHT"/>
-                </Control>
-				
+		    <Anchor point="TOPLEFT" offsetX="20" offsetY="10" />
+		    <Anchor point="BOTTOMRIGHT"/>
+		</Control>
 
-            </Controls>
-        </TopLevelControl>
+
+	    </Controls>
+	</TopLevelControl>
     </Controls>
 </GuiXml>
