@@ -1,4 +1,4 @@
-## Title: Faster Travel v2.2.6
+## Title: Faster Travel
 ## Author: XanDDemoX (Updated by upyachka, Valandil, SimonIllyan)
 ## Version 2.2.6
 
