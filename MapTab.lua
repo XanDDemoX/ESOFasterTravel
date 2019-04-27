@@ -34,14 +34,14 @@ function MapTab:AddCategory(categoryId,item)
 	local refresh = item.refresh
 	local clicked = item.clicked
 
-	item.clicked =	function(data,c)
+	item.clicked =  function(data,c)
 							if clicked then
 								clicked(data,c)
 							else
 								self:SetCategoryHidden(categoryId,not self:IsCategoryHidden(categoryId))
 							end
 						end
-	item.refresh =	function(data,c)
+	item.refresh =  function(data,c)
 							c.label:SetText(data.name)
 							if refresh then
 

@@ -1,8 +1,8 @@
-## Title: Faster Travel v2.2.3
+## Title: Faster Travel v2.2.6
 ## Author: XanDDemoX (Updated by upyachka, Valandil, SimonIllyan)
-## Version 2.2.4
+## Version 2.2.6
 
-## APIVersion: 100024 100025
+## APIVersion: 100025 100026
 ## SavedVariables: FasterTravel_SavedVariables
 
 

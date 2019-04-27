@@ -80,8 +80,8 @@ local _locationsList = {
 	{["subzone"] = "hewsbane",			["zone"] = "thievesguild",		["name"] = "Hew's Bane",		["key"] = "thievesguild/hewsbane",		["zoneIndex"] = 468,			["mapIndex"] = 28,	["tile"] = "art/maps/thievesguild/hewsbane_base_0.dds",		},
 	{["subzone"] = "goldcoast",			["zone"] = "darkbrotherhood",	["name"] = "Gold Coast",		["key"] = "darkbrotherhood/goldcoast",	["zoneIndex"] = 474,			["mapIndex"] = 29,	["tile"] = "art/maps/darkbrotherhood/goldcoast_base_0.dds",	},
 	{["subzone"] = "vvardenfell",		["zone"] = "vvardenfell",		["name"] = "Vvardenfell",		["key"] = "vvardenfell/vvardenfell",	["zoneIndex"] = 493,			["mapIndex"] = 30,	["tile"] = "art/maps/vvardenfell/vvardenfell_base_0.dds",	},
-	{["subzone"] = "clockwork",			["zone"] = "clockwork",			["name"] = "Clockwork City",	["key"] = "clockwork/clockwork",		["zoneIndex"] = 615,			["mapIndex"] = 31,	["tile"] = "art/maps/clockwork/clockwork_base_0.dds",		},
-	{["subzone"] = "brassfortress",		["zone"] = "clockwork",			["name"] = "The Brass Fortress",["key"] = "clockwork/brassfortress",	["zoneIndex"] = 616,			["mapIndex"] = nil,	["tile"] = "art/maps/clockwork/brassfortress_base_0.dds",	},
+	{["subzone"] = "clockwork",			["zone"] = "clockwork",			["name"] = "Clockwork City",	["key"] = "clockwork/clockwork",		["zoneIndex"] = 618,			["mapIndex"] = 31,	["tile"] = "art/maps/clockwork/clockwork_base_0.dds",		},
+	{["subzone"] = "brassfortress",		["zone"] = "clockwork",			["name"] = "The Brass Fortress",["key"] = "clockwork/brassfortress",	["zoneIndex"] = 619,			["mapIndex"] = nil,	["tile"] = "art/maps/clockwork/brassfortress_base_0.dds",	},
 	{["subzone"] = "summerset",			["zone"] = "summerset",			["name"] = "Summerset",			["key"] = "summerset/summerset",		["zoneIndex"] = 642,			["mapIndex"] = 32,	["tile"] = "art/maps/summerset/summerset_base_0.dds",		},
 	{["subzone"] = "artaeum",			["zone"] = "summerset",			["name"] = "Artaeum",			["key"] = "summerset/artaeum",			["zoneIndex"] = 658,			["mapIndex"] = 33,	["tile"] = "art/maps/summerset/artaeum_base_0.dds",			},
 	{["subzone"] = "norgtzel",			["zone"] = "norgtzel",			["name"] = "Norg-Tzel",			["key"] = "norgtzel/norgtzel",			["zoneIndex"] = 687,			["mapIndex"] = 34,	["tile"] = "art/maps/norgtzel/norgtzel_base_0.dds",			},
@@ -289,7 +289,7 @@ local function AddSharedAndWorld(tbl,lookup,sortFunc)
 	local shared = GetAllianceZones(ALLIANCE_SHARED,lookup)
 	local world = GetAllianceZones(ALLIANCE_WORLD,lookup)
 	local newtbl = {}
-	Utils.copy(tbl,	   newtbl)
+	Utils.copy(tbl,    newtbl)
 	Utils.copy(shared, newtbl)
 	Utils.copy(world,  newtbl)
 	return newtbl

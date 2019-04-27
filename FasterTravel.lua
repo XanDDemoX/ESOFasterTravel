@@ -1,7 +1,7 @@
 FasterTravel = {}
 
 ADDON_NAME = "FasterTravel"
-ADDON_VERSION = "2.2.4"
+ADDON_VERSION = "2.2.6"
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 local CALLBACK_ID_ON_QUEST_TRACKER_TRACKING_STATE_CHANGED = "QuestTrackerTrackingStateChanged"
@@ -23,13 +23,22 @@ local predefined_aliases = {
 	["gc"] = "Gold Coast",
 	["go"] = "Gold Coast",
 	["gra"] = "Grahtwood",
+	["gw"] = "Grahtwood",
+	["gs"] = "Greenshade",
 	["he"] = "Hew's Bane",
+	["hb"] = "Hew's Bane",
 	["ma"] = "Malabal Tor",
+	["mt"] = "Malabal Tor",
+	["mu"] = "Murkmire",
 	["re"] = "Reaper's March",
+	["rm"] = "Reaper's March",
 	["rif"] = "The Rift",
+	["tr"] = "The Rift",
 	["riv"] = "Rivenspire",
-	["sh"] = "Shadowfen",
-	["str"] = "Stros M'Kai",
+	["rs"] = "Rivenspire",
+	["sf"] = "Stonefalls",
+	["sh"] = "Stormhaven",
+	["sm"] = "Stros M'Kai",
 	["su"] = "Summerset",
 }
 
@@ -706,9 +715,9 @@ init(function()
 	end
     end
 
-    SLASH_COMMANDS["/f5housing"] = function(args)
+    SLASH_COMMANDS["/recents"] = function(args)
 		if Utils.stringIsEmpty(args) then
-			df("%s F5 patch is %s", _prefix, f.bold(_account_settings.WfDpatchEnabled and "enabled" or "disabled"))
+			df("%s WfD's patch is %s", _prefix, f.bold(_account_settings.WfDpatchEnabled and "enabled" or "disabled"))
 	else
 			args = Utils.stringTrim(args)
 			if args == "on" then
@@ -720,12 +729,12 @@ init(function()
 				return
 			end
 			FasterTravel.WfDpatch(_account_settings.WfDpatchEnabled)
-			df("%s F5 patch %s; reloading UI", _prefix, f.bold(_account_settings.WfDpatchEnabled and "enabled" or "disabled"))
+			df("%s WfD's patch %s; reloading UI", _prefix, f.bold(_account_settings.WfDpatchEnabled and "enabled" or "disabled"))
 			ReloadUI("ingame")
 		end
     end
 
-	df("%s %s initialized with F5 patch %s (use \"/f5housing on||off\" to change).", ADDON_NAME, ADDON_VERSION, _account_settings.WfDpatchEnabled and "enabled" or "disabled")
+	df("%s %s initialized with WfD's patch %s (use \"/recents on||off\" to change).", ADDON_NAME, ADDON_VERSION, _account_settings.WfDpatchEnabled and "enabled" or "disabled")
 end)
 
 

@@ -12,7 +12,7 @@ local _keepNames = {}
 
 local function GetNodeInfo(ctx,nodeIndex)
 
-	local keepId, accessible, normalizedX,	normalizedY = GetKeepTravelNetworkNodeInfo(nodeIndex,ctx)
+	local keepId, accessible, normalizedX,  normalizedY = GetKeepTravelNetworkNodeInfo(nodeIndex,ctx)
 
 	local pinType,nx,ny  = GetKeepPinInfo(keepId, ctx)
 

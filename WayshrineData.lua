@@ -336,8 +336,8 @@ local _zoneNodeLookup = {
 	},
 
 	[301] = {
-	{ poiIndex = 5,	 nodeIndex = 141 },
-	{ poiIndex = 6,	 nodeIndex = 142 },
+	{ poiIndex = 5,  nodeIndex = 141 },
+	{ poiIndex = 6,  nodeIndex = 142 },
 	{ poiIndex = 17, nodeIndex = 300 },
 	},
 
@@ -417,14 +417,14 @@ local _zoneNodeLookup = {
 	{ poiIndex = 76, nodeIndex = 345 },
 	},
 
-	[615] = {
+	[618] = {
 	{ poiIndex = 4,nodeIndex = 338 },
 	{ poiIndex = 5,nodeIndex = 339 },
 	{ poiIndex = 8,nodeIndex = 347 },
 	{ poiIndex = 18, nodeIndex = 340 },
 	},
 
-	[616] = {
+	[619] = {
 	{ poiIndex = 2,nodeIndex = 337 },
 	},
 

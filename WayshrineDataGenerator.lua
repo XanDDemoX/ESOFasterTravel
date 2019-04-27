@@ -177,12 +177,16 @@ local function Generate(locations)
 
 	for zoneIndex,nodes in pairs(lookup) do
 		newLookup[zoneIndex]={}
+		df("  [%d] = {", zoneIndex)
 		for i,node in ipairs(nodes) do
+			df("    { poiIndex = %d, nodeIndex = %d },", node.poiIndex, node.nodeIndex)
 			table.insert(newLookup[zoneIndex],{nodeIndex = node.nodeIndex, poiIndex = node.poiIndex})
 		end
+		d("  },")
 	end
 	return newLookup
 end
+
 
 FasterTravel.WayshrineDataGenerator = {
 	Generate = Generate,
@@ -190,6 +194,4 @@ FasterTravel.WayshrineDataGenerator = {
 	GetNodesByZoneIndex = GetNodesByZoneIndex,
 }
 
--- loc = FasterTravel.Location.Data.GetList()
--- ws = FasterTravel.WayshrineDataGenerator.Generate(loc)
--- d(ws)
+

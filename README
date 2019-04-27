@@ -1,7 +1,7 @@
-ESOFasterTravel v2.2.3
+ESOFasterTravel v2.2.6
 Original code by XanDDemoX
 Updates by upyachka, Valandil, SimonIllyan
-Last updated by @SimonIllyan, 2018-09-02
+Last updated by @SimonIllyan, 2019-04-25
 
 FasterTravel adds two new tabs to the default world map information/navigation control and suggests approximately the closest known wayshrines to your current quest objectives.
 Adds Favourite Wayshrines Category!
@@ -31,9 +31,26 @@ SLASH COMMANDS
 /goto CharacterName - attempts to teleport a player using their character name. (only works in a group)
 /goto group - attempts to teleport to the group leader or a player in your group (if you are the group leader)
 /goto UnitTag - attempts to teleport to a player using their unit tag (group1 ,group2 group3 etc)
-/f5housing - turns on/off the fix allowing use of F5 to preview house purchase options
+/recents - turns on/off WfD's fix for F5 housing preview:
+	- when ON, your "recent" list is available, but you have to press Alt/Cancel *twice* if cancelling a teleport;
+	- when OFF, the "recent" list is not available, but cancelling teleport requires pressing Alt only once.
+	Sorry about this tradeoff.
 
 RECENT CHANGE LOG
+Version 2.2.6 (by SimonIllyan 2019-04-24)
+	- Fixed a bug where player teleported to a location that has a zone name as a substring rather than to the zone proper
+	  (for example, to Coldharbour Surreal Estate instead of Coldharbour)
+	- /f5housing command renamed to /recents, since housing preview works whether this option is set or not -
+	  what changes is the availability of the "recent" location list
+	- minor bugfixes and changes to predefined zone aliases
+
+Version 2.2.5 (by SimonIllyan 2019-03-17)
+	- Updated for API 100026 (Wrathstone)
+	- minor changes to predefined zone aliases
+
+Version 2.2.4 (by Valandil 2018-10-22)
+    - Updated for API 100025 (Murkmire)
+
 Version 2.2.3 (by SimonIllyan 2018-09-02)
 	- /f5housing on|off now reloads UI by itself
 	- favourites, aliases and the status of /f5housing are now account-wide (shared by all characters),

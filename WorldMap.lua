@@ -23,7 +23,7 @@ function PinManager:init()
     ZO_WorldMap_RefreshCustomPinsOfType(GetFakePinType())
 
     self.PanToPoint = function(self, x, y)
-	if false and _manager == nil then
+	if _manager == nil then
 	    d( "_manager was nil when called!", self, x, y)
 	    return
 	end

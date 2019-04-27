@@ -14,6 +14,26 @@ local function GetZoneName(zoneName)
     return localeName
 end
 
+local function ExpandZoneName(zoneName)
+    if Utils.stringIsEmpty(zoneName) == true then return zoneName end
+		local ZN = GetZoneName(zoneName)
+		if ZN then
+				-- full zone name
+				return ZN
+		else
+				-- zone name abbreviation
+				local lowerZoneName = string.lower(zoneName)
+				for k, name in _zoneNameCache do
+						if string.find(string.lower(name), lowerZoneName) then
+								d(zoneName .. " expanded to " .. name)
+								return name
+						end
+				end
+				d("No zone matching " .. zoneName .. " found")
+				return ""
+    end
+end
+
 local function GetGuildPlayers(guildId)
     if guildId == nil then return {} end
 
@@ -64,9 +84,9 @@ local function GetZonesGuildLookup()
 	pCount = GetNumGuildMembers(id)
 
 	for p = 1, pCount do
-	    local playerName, note, rankindex, playerStaus, secsSinceLogoff = GetGuildMemberInfo(id, p)
+	    local playerName, note, rankindex, playerStatus, secsSinceLogoff = GetGuildMemberInfo(id, p)
 	    -- only get players that are online >_<
-	    if playerStaus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 and pName ~= string.lower(playerName) then
+	    if playerStatus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 and pName ~= string.lower(playerName) then
 		local hasChar, charName, zoneName, classtype, alliance = GetGuildMemberCharacterInfo(id, p)
 
 		--if hasChar == true and alliance == pAlliance then
@@ -94,10 +114,10 @@ local function GetFriendsInfo()
     local fCount = GetNumFriends()
 
     for i = 1, fCount do
-	local displayName, note, playerstaus, secsSinceLogoff = GetFriendInfo(i)
+	local displayName, note, playerstatus, secsSinceLogoff = GetFriendInfo(i)
 
 	-- only get players that are online >_<
-	if playerstaus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 then
+	if playerstatus ~= PLAYER_STATUS_OFFLINE and secsSinceLogoff == 0 then
 
 	    local hasChar, charName, zoneName, classtype, alliance = GetFriendCharacterInfo(i)
 	    -- if hasChar == true and pAlliance == alliance then
@@ -263,40 +283,11 @@ local function TeleportToGroup()
     return TeleportToPlayer(target)
 end
 
-local function IsPartialMatch(lowerZoneName, lowerKey)
-
-    local strippedKey = lowerKey:gsub('%W', '')
-    -- matches without punctuation
-    if lowerZoneName == strippedKey then return true end
-    --	key starts with string
-    return string.sub(strippedKey, 1, string.len(lowerZoneName)) == lowerZoneName
-end
-
-local function checkPartialMatch(partialKey, name)
-    if name then
-	local index = string.find(string.lower(name), partialKey)
-	--d("Name: " .. name .. " Key: ".. partialKey .. " Match found: " .. (index or "false"))
-	return index
-    else
-	--d("Name empty, no match.")
-	return false
-    end
-end
-
 local function GetClosestGuildLookup(lowerZoneName)
 
     local lookups = GetZonesGuildLookup()
 
     local lookup = lookups[lowerZoneName]
-
-    if lookup == nil then
-	for k, v in pairs(lookups) do
-	    if checkPartialMatch(lowerZoneName, k) then
-		lookup = v
-		break
-	    end
-	end
-    end
 
     if lookup == nil then
 	d("No possible way found for FasterTravel.")
@@ -308,15 +299,15 @@ end
 
 local function GetTeleportIterator(zoneName)
 
-    local lowerZoneName = string.lower(zoneName)
+    local lowerZoneName = string.lower(ExpandZoneName(zoneName))
 
     local checkItem = function(item)
-	return checkPartialMatch(lowerZoneName, item.zoneName)
+	return lowerZoneName == string.lower(item.zoneName)
     end
     local locTables = {
 	Utils.where(GetGroupInfo(), checkItem),
 	Utils.where(GetFriendsInfo(), checkItem),
-	GetClosestGuildLookup(lowerZoneName) or {}
+	GetClosestGuildLookup(lowerZoneName)
     }
 
     local tbl = 0

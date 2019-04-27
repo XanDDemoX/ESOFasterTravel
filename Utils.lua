@@ -123,7 +123,7 @@ local function pairsByKeys(a_table, comparing_function)
 	local aux_index = {}
 	for n in pairs(a_table) do table.insert(aux_index, n) end
 	table.sort(aux_index, comparing_function)
-	local i = 0	 -- iterator variable
+	local i = 0      -- iterator variable
 	local iter = function ()   -- iterator function
 		i = i + 1
 		if aux_index[i] == nil then return nil

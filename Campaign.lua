@@ -288,7 +288,7 @@ local function EnterQueue(id,name,group)
 
 	local canQueueIndividual, canQueueGroup = CanQueue(id)
 
-	if canQueueIndividual == true and canQueueGroup == true	 then
+	if canQueueIndividual == true and canQueueGroup == true  then
 		ZO_Dialogs_ReleaseDialog("CAMPAIGN_QUEUE")
 		ZO_Dialogs_ShowDialog("CAMPAIGN_QUEUE", {campaignId = id}, {mainTextParams = {name}})
 	elseif canQueueGroup == true then
