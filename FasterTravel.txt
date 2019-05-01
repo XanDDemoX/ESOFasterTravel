@@ -1,9 +1,10 @@
 ## Title: Faster Travel
-## Author: XanDDemoX (Updated by upyachka, Valandil, SimonIllyan)
-## Version 2.2.7
-
-## APIVersion: 100026
+## Author: XanDDemoX (Updated by SimonIllyan, upyachka, Valandil)
+## Version 2.2.8
+## APIVersion: 100026 100027
 ## SavedVariables: FasterTravel_SavedVariables
+## OptionalDependsOn: tom
+## OptionalDependsOn: pChat
 
 FasterTravel.lua
 

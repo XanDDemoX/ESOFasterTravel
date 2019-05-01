@@ -35,6 +35,9 @@ SLASH COMMANDS
 	Sorry about this tradeoff.
 
 RECENT CHANGE LOG
+Version 2.2.8 (Valandil 2019-05-01)
+    - Get somewhat working on Elsewyr.
+
 Version 2.2.7 (Valandil 2019-05-01)
     - Incorporated fix by Votan for bug report:
     https://www.esoui.com/downloads/info1399-VotansMinimap.html#comments
