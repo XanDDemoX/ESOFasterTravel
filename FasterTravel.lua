@@ -1,7 +1,7 @@
 FasterTravel = {}
 
 ADDON_NAME = "FasterTravel"
-ADDON_VERSION = "2.2.6"
+ADDON_VERSION = "2.2.7"
 
 local CALLBACK_ID_ON_WORLDMAP_CHANGED = "OnWorldMapChanged"
 local CALLBACK_ID_ON_QUEST_TRACKER_TRACKING_STATE_CHANGED = "QuestTrackerTrackingStateChanged"

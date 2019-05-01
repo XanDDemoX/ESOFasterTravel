@@ -37,42 +37,46 @@ SLASH COMMANDS
 	Sorry about this tradeoff.
 
 RECENT CHANGE LOG
+Version 2.2.7 (Valandil 2019-05-01)
+    - Incorporated fix by Votan for bug report:
+    https://www.esoui.com/downloads/info1399-VotansMinimap.html#comments
+
 Version 2.2.6 (by SimonIllyan 2019-04-24)
-	- Fixed a bug where player teleported to a location that has a zone name as a substring rather than to the zone proper
-	  (for example, to Coldharbour Surreal Estate instead of Coldharbour)
-	- /f5housing command renamed to /recents, since housing preview works whether this option is set or not -
-	  what changes is the availability of the "recent" location list
-	- minor bugfixes and changes to predefined zone aliases
+    - Fixed a bug where player teleported to a location that has a zone name as a substring rather than to the zone proper
+      (for example, to Coldharbour Surreal Estate instead of Coldharbour)
+    - /f5housing command renamed to /recents, since housing preview works whether this option is set or not -
+      what changes is the availability of the "recent" location list
+    - minor bugfixes and changes to predefined zone aliases
 
 Version 2.2.5 (by SimonIllyan 2019-03-17)
-	- Updated for API 100026 (Wrathstone)
-	- minor changes to predefined zone aliases
+    - Updated for API 100026 (Wrathstone)
+    - minor changes to predefined zone aliases
 
 Version 2.2.4 (by Valandil 2018-10-22)
     - Updated for API 100025 (Murkmire)
 
 Version 2.2.3 (by SimonIllyan 2018-09-02)
-	- /f5housing on|off now reloads UI by itself
-	- favourites, aliases and the status of /f5housing are now account-wide (shared by all characters),
-	  recents are still per character
+    - /f5housing on|off now reloads UI by itself
+    - favourites, aliases and the status of /f5housing are now account-wide (shared by all characters),
+      recents are still per character
 
 Version 2.2.2 (by SimonIllyan 2018-08-24)
-	- Fixed sorting of zone names beginning with "The" ("The" should be ignored)
-	- Fixed reverse alphabetical sorting
+    - Fixed sorting of zone names beginning with "The" ("The" should be ignored)
+    - Fixed reverse alphabetical sorting
 
 Version 2.2.1 (by SimonIllyan 2018-08-20)
-	- Fixed alliance icons in Wayshrines tab
-	- "/agoto" output is now sorted by value
-	- When /f5housing is set to off, recents list is not being updated;
-	  as an interim solution it is hidden from view as well.
+    - Fixed alliance icons in Wayshrines tab
+    - "/agoto" output is now sorted by value
+    - When /f5housing is set to off, recents list is not being updated;
+      as an interim solution it is hidden from view as well.
 
 Version 2.2.0 (by SimonIllyan 2018-08-19)
-	- /agoto without arguments now lists existing aliases, "/agoto key" removes an alias for "key"
-	- Added predefined aliases for ambiguous zone names
-	- Added "/f5housing on|off" command to dynamically enable/disable WfD's fix for house preview.
-	  This fix, unfortunately, has a side effect - cancelling a teleport must be done TWICE.
-	  Some people find it annoying, so now it is possible to switch it off and on;
-	  "/reloadui" is REQUIRED afterwards.
+    - /agoto without arguments now lists existing aliases, "/agoto key" removes an alias for "key"
+    - Added predefined aliases for ambiguous zone names
+    - Added "/f5housing on|off" command to dynamically enable/disable WfD's fix for house preview.
+      This fix, unfortunately, has a side effect - cancelling a teleport must be done TWICE.
+      Some people find it annoying, so now it is possible to switch it off and on;
+      "/reloadui" is REQUIRED afterwards.
 
 Version 2.1.1, 2.1.2 (by Valandil 2018-08-17)
     - Updated for API 100024

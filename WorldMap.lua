@@ -6,7 +6,7 @@ local PinManager = FasterTravel.class()
 
 function PinManager:init()
 
-    local _manager
+    local _manager = ZO_WorldMap_GetPinManager()
 
     local _pinType = "FasterTravel_Fake_Pin"
 
@@ -15,7 +15,6 @@ function PinManager:init()
     end
 
     ZO_WorldMap_AddCustomPin(_pinType, function(manager)
-	_manager = manager
 	ZO_WorldMap_SetCustomPinEnabled(GetFakePinType(), false)
     end, nil, { level = 0, size = 0, texture = "" })
 
@@ -30,12 +29,8 @@ function PinManager:init()
 
 	local pin = _manager:CreatePin(GetFakePinType(), _pinType, x, y)
 
-	local orig_getPlayerPin = _manager.GetPlayerPin
-	_manager.GetPlayerPin = function() return pin end
+	ZO_WorldMap_GetPanAndZoom():PanToPin(pin)
 
-	ZO_WorldMap_PanToPlayer()
-
-	_manager.GetPlayerPin = orig_getPlayerPin
 	_manager:RemovePins(_pinType)
     end
 end
